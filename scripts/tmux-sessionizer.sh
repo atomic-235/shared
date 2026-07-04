@@ -50,9 +50,12 @@ if ! tmux has-session -t="$selected_name" 2> /dev/null; then
     fi
 
     tmux new-window -t "$selected_name" -n "ai" -c "$selected"
-    if [[ -n "${SESSIONIZER_AI_CMD:-}" ]]; then
-        tmux send-keys -t "$selected_name:ai" "$SESSIONIZER_AI_CMD" C-m
+    if [[ "$TMUX" == */share,* ]]; then
+      ai_cmd="${SESSIONIZER_AI_CMD_WORK:-work-opencode}"
+    else
+      ai_cmd="${SESSIONIZER_AI_CMD:-opencode}"
     fi
+    tmux send-keys -t "$selected_name:ai" "$ai_cmd" C-m
 
     tmux select-window -t "$selected_name:bash"
     # Source .tmux file if it exists in the selected directory

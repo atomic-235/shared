@@ -65,15 +65,6 @@
         local name="''${1:-tmux}"
         tmux -L share new-session -A -s "$name" 2>/dev/null || tmux -L share attach -t "$name"
       }
-
-      # tmux-sessionizer wrapper — sets AI command based on session context
-      tmux-sessionizer() {
-        if [[ "$TMUX" == */share,* ]]; then
-          SESSIONIZER_AI_CMD="work-opencode" command tmux-sessionizer "$@"
-        else
-          SESSIONIZER_AI_CMD="opencode" command tmux-sessionizer "$@"
-        fi
-      }
     '';
   };
 }
