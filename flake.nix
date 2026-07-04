@@ -13,6 +13,7 @@
     {
       homeManagerModules = {
         btop = import ./modules/btop.nix;
+        starship = import ./modules/starship.nix;
       };
 
       # For consumers that want to evaluate modules directly
