@@ -1,6 +1,12 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+    LIBSQLITE = "${pkgs.sqlite.out}/lib/libsqlite3.so";
+  };
+
   programs.bash = {
     enable = true;
 

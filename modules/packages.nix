@@ -28,6 +28,9 @@
     gawk
     procps
     tldr
+    figlet
+    toilet
+    fastfetch
 
     # AI coding agent
     opencode
@@ -41,12 +44,14 @@
     bun
     pkg-config
     openssl
+    opentimestamps-client
 
     # Secret management
     gnupg
     git-crypt
     sops
     age
+    age-plugin-yubikey
 
     # Backup
     restic
