@@ -4,11 +4,17 @@ let
   opencodeDir = ../opencode;
 in
 {
-  # Auto-link all generic opencode files (commands, agents, skills)
+  # Auto-link all generic opencode files (commands, agents, skills, tui.json)
   # Personal files (opencode.json, AGENTS.md, assistant.md, caveman.md,
   # telegram/sops/coinglass/venice skills) are managed by dotfiles separately
   xdg.configFile = builtins.listToAttrs (
     builtins.concatLists [
+      # tui.json (theme + keybindings)
+      [{
+        name = "opencode/tui.json";
+        value = { source = "${opencodeDir}/tui.json"; };
+      }]
+
       # commands/*.md
       (map
         (name: {

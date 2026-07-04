@@ -21,6 +21,10 @@
     # AI coding agent
     opencode
 
+    # Build tools (needed by nvim-treesitter to compile parsers)
+    gcc
+    tree-sitter
+
     # Scripts
     (pkgs.writeShellApplication {
       name = "tmux-sessionizer";
