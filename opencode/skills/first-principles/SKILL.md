@@ -1,0 +1,56 @@
+---
+name: first-principles
+description: Use when conventional wisdom is unhelpful, when redesigning from scratch, or when analogy-based thinking leads to local optima. Decomposes problems to fundamental truths and reconstructs solutions from the ground up.
+---
+
+# First Principles Framework
+
+Use this framework when conventional wisdom is unhelpful, when redesigning from scratch, or when analogy-based thinking leads to local optima.
+
+## Stages
+
+### 1. DECOMPOSE THE PROBLEM
+Break the problem into its smallest components:
+- What are the pieces? What are the assumptions baked into each?
+- Which parts are constraints, and which are just conventions?
+- What 'everyone knows' about this that might not be true?
+- Strip away analogy-based reasoning — what remains?
+- List every assumption, then mark each as 'proven' or 'inherited'
+
+### 2. IDENTIFY FUNDAMENTAL TRUTHS
+**IMPORTANT: You MUST use the `ai_venice_web_search` tool to verify constraints. Do NOT rely on training data or fabricate sources.**
+Find the irreducible facts you can build on:
+- Which of your assumptions are actually fundamental truths?
+- What is physically, logically, or mathematically inevitable here?
+- What constraints are real (laws of physics, hard deadlines) vs. artificial?
+- What do you know for certain vs. what do you assume?
+- Test each fundamental: 'Why is this true?' If you can't answer, it's not fundamental
+- Search for documentation, specifications, and authoritative sources to verify constraints
+
+### 3. RECONSTRUCT FROM FIRST PRINCIPLES
+Build a solution from the fundamentals up:
+- Given only the fundamental truths, what's possible?
+- If you started from scratch with no legacy constraints, how would you do this?
+- What novel combinations of fundamentals emerge?
+- Are there approaches that the fundamentals enable but convention overlooks?
+- Build the simplest solution that satisfies all real constraints
+
+### 4. VALIDATE THE SOLUTION
+**IMPORTANT: You MUST use the `ai_venice_web_search` tool to verify feasibility. Do NOT rely on training data or fabricate sources.**
+Test your first-principles solution against reality:
+- Does the solution violate any fundamentals? (If yes, it's wrong.)
+- Does it achieve the real constraints while ignoring the artificial ones?
+- Where does it conflict with conventional approaches, and why is that OK?
+- What's the weakest point in the reconstruction?
+- Can you prototype or test the core insight cheaply?
+- Search for similar solutions, case studies, or implementations to validate feasibility
+
+## Source Integrity Rules
+- You MUST use `ai_venice_web_search` whenever research or external information is needed.
+- NEVER fabricate, invent, or hallucinate URLs, citations, or sources.
+- NEVER cite sources from training data — only cite sources returned by `ai_venice_web_search` results.
+- If a search returns no results, say so explicitly rather than making up sources.
+- All claims about external facts, studies, or data must be traceable to a search result.
+
+## Usage
+Work through each stage sequentially. At IDENTIFY FUNDAMENTAL TRUTHS and VALIDATE THE SOLUTION, use `ai_venice_web_search` to verify constraints and feasibility.

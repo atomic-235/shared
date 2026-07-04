@@ -17,6 +17,7 @@
         shell-tools = import ./modules/shell-tools.nix;
         neovim = import ./modules/neovim.nix;
         lazygit = import ./modules/lazygit.nix;
+        opencode = import ./modules/opencode.nix;
       };
 
       overlays = {
