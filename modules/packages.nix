@@ -5,6 +5,8 @@
     # Editors
     neovim
     btop
+    moor
+    lnav
 
     # CLI tools
     git
@@ -48,6 +50,13 @@
 
     # Backup
     restic
+
+    # Encryption & cloud sync
+    cryptomator-cli
+    rclone
+
+    # Containers
+    podman-compose
 
     # LSP servers and formatters (for neovim)
     basedpyright
