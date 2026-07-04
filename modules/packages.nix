@@ -17,6 +17,15 @@
     curl
     wget
     gum
+    dust
+    htop
+    stow
+    unzip
+    zip
+    gnused
+    gawk
+    procps
+    tldr
 
     # AI coding agent
     opencode
@@ -24,6 +33,40 @@
     # Build tools (needed by nvim-treesitter to compile parsers)
     gcc
     tree-sitter
+
+    # Development
+    python3
+    bun
+    pkg-config
+    openssl
+
+    # Secret management
+    gnupg
+    git-crypt
+    sops
+    age
+
+    # Backup
+    restic
+
+    # LSP servers and formatters (for neovim)
+    basedpyright
+    vscode-langservers-extracted
+    lua-language-server
+    nixd
+    nixfmt
+    ruff
+    python313Packages.debugpy
+    shfmt
+    stylua
+    prettier
+
+    # nvim dependencies
+    sqlite
+    sqlite.out
+    imagemagick
+    librsvg
+    graphviz
 
     # Scripts
     (pkgs.writeShellApplication {
@@ -40,6 +83,5 @@
     # Tools used by shared modules
     # delta installed via programs.delta.enable (delta module)
     # fzf, zoxide, direnv, starship, lazygit, yazi installed via programs.*.enable
-    # sops, age installed via with-secrets runtimeInputs
   ];
 }
