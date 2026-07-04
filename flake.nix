@@ -16,6 +16,7 @@
         starship = import ./modules/starship.nix;
         shell-tools = import ./modules/shell-tools.nix;
         neovim = import ./modules/neovim.nix;
+        lazygit = import ./modules/lazygit.nix;
       };
 
       # For consumers that want to evaluate modules directly
