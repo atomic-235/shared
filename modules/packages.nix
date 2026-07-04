@@ -90,7 +90,7 @@
     })
     (pkgs.writeShellApplication {
       name = "ai-commit";
-      runtimeInputs = [ pkgs.gum pkgs.jq ];
+      runtimeInputs = [ pkgs.gum pkgs.jq pkgs.git pkgs.iproute2 ];
       text = builtins.readFile ../scripts/ai-commit.sh;
     })
 
