@@ -24,7 +24,6 @@ else
 fi
 
 # Smart proxy detection: if proxy is running on port 12334, route through it
-PROXY_PREFIX=""
 if ss -tlnH 'sport = :12334' 2>/dev/null | grep -q .; then
   export http_proxy=http://127.0.0.1:12334
   export https_proxy=http://127.0.0.1:12334
