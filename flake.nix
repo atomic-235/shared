@@ -29,12 +29,16 @@
         tmux = final: prev: {
           tmux = import ./overlays/tmux { pkgs = prev; };
         };
+        with-secrets = final: prev: {
+          with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
+        };
       };
 
       # Combined overlay for convenience
       defaultOverlay = final: prev: {
         lazygit = import ./overlays/lazygit { pkgs = prev; };
         tmux = import ./overlays/tmux { pkgs = prev; };
+        with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
       };
 
       # For consumers that want to evaluate modules directly
