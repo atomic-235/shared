@@ -20,6 +20,7 @@
         opencode = import ./modules/opencode.nix;
         bash = import ./modules/bash.nix;
         yazi = import ./modules/yazi.nix;
+        delta = import ./modules/delta.nix;
       };
 
       overlays = {
