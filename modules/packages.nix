@@ -18,11 +18,19 @@
     wget
     gum
 
+    # AI coding agent
+    opencode
+
     # Scripts
     (pkgs.writeShellApplication {
       name = "tmux-sessionizer";
       runtimeInputs = [ pkgs.fzf pkgs.tmux ];
       text = builtins.readFile ../scripts/tmux-sessionizer.sh;
+    })
+    (pkgs.writeShellApplication {
+      name = "ai-commit";
+      runtimeInputs = [ pkgs.gum pkgs.jq ];
+      text = builtins.readFile ../scripts/ai-commit.sh;
     })
 
     # Tools used by shared modules
