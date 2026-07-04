@@ -21,6 +21,7 @@
         bash = import ./modules/bash.nix;
         yazi = import ./modules/yazi.nix;
         delta = import ./modules/delta.nix;
+        packages = import ./modules/packages.nix;
       };
 
       overlays = {
