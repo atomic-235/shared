@@ -2,7 +2,7 @@
 
 pkgs.writeShellApplication {
   name = "with-secrets";
-  runtimeInputs = [ pkgs.sops ];
+  runtimeInputs = [ pkgs.sops pkgs.age ];
   text = ''
     set -euo pipefail
 
