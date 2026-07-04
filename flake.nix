@@ -19,6 +19,21 @@
         lazygit = import ./modules/lazygit.nix;
       };
 
+      overlays = {
+        lazygit = final: prev: {
+          lazygit = import ./overlays/lazygit { pkgs = prev; };
+        };
+        tmux = final: prev: {
+          tmux = import ./overlays/tmux { pkgs = prev; };
+        };
+      };
+
+      # Combined overlay for convenience
+      defaultOverlay = final: prev: {
+        lazygit = import ./overlays/lazygit { pkgs = prev; };
+        tmux = import ./overlays/tmux { pkgs = prev; };
+      };
+
       # For consumers that want to evaluate modules directly
       lib = {
         forAllSystems = forAllSystems;

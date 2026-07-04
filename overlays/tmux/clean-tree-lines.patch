@@ -1,0 +1,27 @@
+--- a/mode-tree.c
++++ b/mode-tree.c
+@@ -778,7 +778,7 @@
+ 		if (line->depth == 0)
+ 			start = xstrdup(symbol);
+ 		else {
+-			size = (4 * line->depth) + 32;
++			size = (10 * line->depth) + 64;
+ 
+ 			start = xcalloc(1, size);
+ 			for (j = 1; j < line->depth; j++) {
+@@ -786,12 +786,12 @@
+ 				    mtd->line_list[mti->parent->line].last)
+ 					strlcat(start, "    ", size);
+ 				else
+-					strlcat(start, "\001x\001   ", size);
++					strlcat(start, "│   ", size);
+ 			}
+ 			if (line->last)
+-				strlcat(start, "\001mq\001> ", size);
++				strlcat(start, "└── ", size);
+ 			else
+-				strlcat(start, "\001tq\001> ", size);
++				strlcat(start, "├── ", size);
+ 			strlcat(start, symbol, size);
+ 		}
+ 
