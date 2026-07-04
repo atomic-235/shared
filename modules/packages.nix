@@ -17,7 +17,6 @@
     curl
     wget
     gum
-    delta
 
     # Scripts
     (pkgs.writeShellApplication {
@@ -27,7 +26,8 @@
     })
 
     # Tools used by shared modules
-    # (fzf, zoxide, direnv, starship, lazygit, yazi installed via programs.*.enable)
-    # (sops, age installed via with-secrets runtimeInputs)
+    # delta installed via programs.delta.enable (delta module)
+    # fzf, zoxide, direnv, starship, lazygit, yazi installed via programs.*.enable
+    # sops, age installed via with-secrets runtimeInputs
   ];
 }
