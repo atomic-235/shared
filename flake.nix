@@ -18,6 +18,7 @@
         neovim = import ./modules/neovim.nix;
         lazygit = import ./modules/lazygit.nix;
         opencode = import ./modules/opencode.nix;
+        bash = import ./modules/bash.nix;
       };
 
       overlays = {
