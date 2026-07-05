@@ -96,8 +96,7 @@
       text = builtins.readFile ../scripts/ai-commit.sh;
     })
 
-    # Tools used by shared modules
-    # delta installed via programs.delta.enable (delta module)
-    # fzf, zoxide, direnv, starship, lazygit, yazi installed via programs.*.enable
+    # with-secrets — sops exec-env wrapper for decrypting secrets at runtime
+    (import ../scripts/with-secrets.nix { inherit pkgs; })
   ];
 }
