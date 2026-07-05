@@ -7,9 +7,10 @@ let
   # See: https://github.com/anomalyco/opencode/issues/26846
   opencode-fixed = pkgs.opencode.overrideAttrs (old: {
     # Strip smoke test from build.ts — segfaults on WSL2 (glibc mismatch)
+    # Lines 201-212: entire if block including closing brace
+    # See: https://github.com/anomalyco/opencode/issues/26846
     postPatch = (old.postPatch or "") + ''
-      sed -i '/Smoke test: only run/,/process\.exit(1)/c\    // smoke test removed for cross-platform compat' \
-        packages/opencode/script/build.ts
+      sed -i '/Smoke test: only run/,/^  }/d' packages/opencode/script/build.ts
     '';
     # Skip versionCheckHook — same segfault
     doInstallCheck = false;
