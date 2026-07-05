@@ -44,7 +44,8 @@
           name = "ai-commit";
           runtimeInputs = [ pkgs.git pkgs.iproute2 pkgs.gum ];
           text = ''
-            export GPG_TTY="$(tty)"
+            GPG_TTY="$(tty)"
+            export GPG_TTY
 
             # Smart proxy detection: if proxy is running on port 12334, route through it
             if ss -tlnH 'sport = :12334' 2>/dev/null | grep -q .; then
