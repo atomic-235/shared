@@ -19,8 +19,10 @@ OUT_FILE=$(mktemp)
 
 if [ -n "${AI_COMMIT_MODEL:-}" ]; then
   MODEL_ARG=(-m "$AI_COMMIT_MODEL")
+  gum style --foreground 6 "Using model: $AI_COMMIT_MODEL"
 else
   MODEL_ARG=()
+  gum style --foreground 3 "AI_COMMIT_MODEL not set — using opencode default"
 fi
 
 # Smart proxy detection: if proxy is running on port 12334, route through it
