@@ -1,10 +1,21 @@
-{ pkgs, ... }:
+{ lib, pkgs, aiModels ? { }, ... }:
 
 {
-  home.sessionVariables = {
-    EDITOR = "nvim";
-    VISUAL = "nvim";
-    LIBSQLITE = "${pkgs.sqlite.out}/lib/libsqlite3.so";
+  home.sessionVariables = lib.mkMerge [
+    {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+      LIBSQLITE = "${pkgs.sqlite.out}/lib/libsqlite3.so";
+    }
+    (lib.mapAttrs' (tier: model: lib.nameValuePair "AI_MODEL_${lib.toUpper tier}" model) aiModels)
+  ];
+
+  # AI model tiers — sourceable XDG config file for non-interactive shells
+  # (lazygit tmux popup). Consumer passes models via aiModels attrset.
+  xdg.configFile."ai/models" = lib.mkIf (aiModels != { }) {
+    text = lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (tier: model: "AI_MODEL_${lib.toUpper tier}=\"${model}\"") aiModels
+    ) + "\n";
   };
 
   programs.bash = {

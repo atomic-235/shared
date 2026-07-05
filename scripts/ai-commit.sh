@@ -4,8 +4,8 @@ set -euo pipefail
 GPG_TTY=$(tty)
 export GPG_TTY
 
-# Source config file if present (XDG-compliant, no hardcoded values)
-_config="${XDG_CONFIG_HOME:-$HOME/.config}/ai-commit/config"
+# Source AI model config if present (XDG-compliant, works in non-interactive shells)
+_config="${XDG_CONFIG_HOME:-$HOME/.config}/ai/models"
 [ -f "$_config" ] && source "$_config" && unset _config
 
 DIFF=$(git diff --cached)
@@ -21,12 +21,10 @@ gum confirm "Touch YubiKey to decrypt?" || exit 1
 
 OUT_FILE=$(mktemp)
 
-if [ -n "${AI_COMMIT_MODEL:-}" ]; then
-  MODEL_ARG=(-m "$AI_COMMIT_MODEL")
-  gum style --foreground 6 "Using model: $AI_COMMIT_MODEL"
+if [ -n "${AI_MODEL_FAST:-}" ]; then
+  MODEL_ARG=(-m "$AI_MODEL_FAST")
 else
   MODEL_ARG=()
-  gum style --foreground 3 "AI_COMMIT_MODEL not set — using opencode default"
 fi
 
 # Smart proxy detection: if proxy is running on port 12334, route through it
