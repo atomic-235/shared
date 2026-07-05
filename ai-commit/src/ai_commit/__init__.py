@@ -90,6 +90,11 @@ def main() -> None:
         print("AI_MODEL_FAST not set", file=sys.stderr)
         sys.exit(1)
 
+    # Strip provider prefix (e.g. "venice/mercury-2" → "mercury-2")
+    # pydantic-ai OpenAIChatModel takes bare model name, provider set via OpenAIProvider
+    if "/" in model:
+        model = model.split("/", 1)[1]
+
     # Get staged diff
     diff = _run_git("diff", "--cached")
     if not diff.strip():
