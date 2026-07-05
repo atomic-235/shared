@@ -1,5 +1,18 @@
 { pkgs, ... }:
 
+let
+  # Fix opencode segfault on WSL2 — nixpkgs bug: glibc 2.42/2.40 mismatch
+  # opencode derivation uses stdenvNoCC with no patchelf, causing
+  # ld-linux (glibc 2.40) to mismatch libc.so.6 (glibc 2.42)
+  # See: https://github.com/anomalyco/opencode/issues/26846
+  opencode-fixed = pkgs.opencode.overrideAttrs (old: {
+    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.patchelf ];
+    postFixup = (old.postFixup or "") + ''
+      ${pkgs.patchelf}/bin/patchelf --set-rpath ${pkgs.glibc}/lib $out/bin/opencode
+      ${pkgs.patchelf}/bin/patchelf --set-interpreter ${pkgs.glibc}/lib64/ld-linux-x86-64.so.2 $out/bin/opencode
+    '';
+  });
+in
 {
   home.packages = with pkgs; [
     # Editors
@@ -33,7 +46,7 @@
     fastfetch
 
     # AI coding agent
-    opencode
+    opencode-fixed
 
     # Build tools (needed by nvim-treesitter to compile parsers)
     gcc
