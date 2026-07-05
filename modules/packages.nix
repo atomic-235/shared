@@ -1,29 +1,5 @@
 { pkgs, ... }:
 
-let
-  # Fix opencode segfault on WSL2 — nixpkgs bug: glibc 2.42/2.40 mismatch
-  # opencode derivation uses stdenvNoCC with no patchelf.
-  # Build smoke test segfaults before postFixup runs — must strip it.
-  # See: https://github.com/anomalyco/opencode/issues/26846
-  opencode-fixed = pkgs.opencode.overrideAttrs (old: {
-    # Strip smoke test from build.ts — segfaults on WSL2 (glibc mismatch)
-    # Lines 201-212: entire if block including closing brace
-    # See: https://github.com/anomalyco/opencode/issues/26846
-    postPatch = (old.postPatch or "") + ''
-      sed -i '/Smoke test: only run/,/^  }/d' packages/opencode/script/build.ts
-    '';
-    # Skip versionCheckHook — same segfault
-    doInstallCheck = false;
-    # postInstall runs `opencode completion` which segfaults — replace with empty
-    postInstall = "";
-    # Patchelf binary to use consistent glibc
-    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.patchelf ];
-    postFixup = (old.postFixup or "") + ''
-      ${pkgs.patchelf}/bin/patchelf --set-rpath ${pkgs.glibc}/lib $out/bin/opencode
-      ${pkgs.patchelf}/bin/patchelf --set-interpreter ${pkgs.glibc}/lib64/ld-linux-x86-64.so.2 $out/bin/opencode
-    '';
-  });
-in
 {
   home.packages = with pkgs; [
     # Editors
@@ -57,7 +33,7 @@ in
     fastfetch
 
     # AI coding agent
-    opencode-fixed
+    opencode
 
     # Build tools (needed by nvim-treesitter to compile parsers)
     gcc
