@@ -39,26 +39,12 @@
           venv = pythonSet.mkVirtualEnv "ai-commit-env" {
             ai-commit = [];
           };
-          withSecrets = import ./scripts/with-secrets.nix { inherit pkgs; };
         in
         pkgs.writeShellApplication {
           name = "ai-commit";
-          runtimeInputs = [ pkgs.git pkgs.gum pkgs.gnupg withSecrets ];
+          runtimeInputs = [ pkgs.git pkgs.iproute2 ];
           text = ''
-            GPG_TTY="$(tty)"
-            export GPG_TTY
-
-            # Check staged changes before touching YubiKey
-            DIFF=$(git diff --cached)
-            if [ -z "$DIFF" ]; then
-                gum style --foreground 1 "No staged changes"
-                exit 1
-            fi
-
-            gum confirm "Touch YubiKey to decrypt?" || exit 1
-
-            gum spin --spinner dot --title "Generating..." -- \
-              with-secrets ai ${venv}/bin/ai-commit "$@"
+            exec ${venv}/bin/ai-commit "$@"
           '';
         };
     in
