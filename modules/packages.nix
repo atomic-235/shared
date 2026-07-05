@@ -32,10 +32,8 @@
     toilet
     fastfetch
 
-    # AI coding agent — on NixOS installed via system packages
-    # On portable (WSL2) installed via setup.sh curl (nixpkgs opencode
-    # segfaults on WSL2 due to Bun-compiled binary incompatibility)
-    # opencode
+    # AI coding agent
+    opencode
 
     # Build tools (needed by nvim-treesitter to compile parsers)
     gcc
