@@ -101,6 +101,20 @@ def main() -> None:
         print("No staged changes")
         sys.exit(1)
 
+    # Smart proxy detection: if proxy is running on port 12334, route through it
+    try:
+        result = subprocess.run(
+            ["ss", "-tlnH", "sport = :12334"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if result.stdout.strip():
+            os.environ["http_proxy"] = "http://127.0.0.1:12334"
+            os.environ["https_proxy"] = "http://127.0.0.1:12334"
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+
     agent = create_agent(model)
 
     prompt = f"Generate a conventional commit message for this staged diff:\n\n{diff}"
