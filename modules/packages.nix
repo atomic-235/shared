@@ -14,6 +14,9 @@ let
     '';
     # Skip versionCheckHook — same segfault
     doInstallCheck = false;
+    # Skip shell completion install — smoke test block generated these,
+    # removing it means completion files don't exist
+    dontInstallShellCompletion = true;
     # Patchelf binary to use consistent glibc
     nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.patchelf ];
     postFixup = (old.postFixup or "") + ''
