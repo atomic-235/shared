@@ -39,24 +39,26 @@
           venv = pythonSet.mkVirtualEnv "ai-commit-env" {
             ai-commit = [];
           };
+          withSecrets = import ./scripts/with-secrets.nix { inherit pkgs; };
         in
         pkgs.writeShellApplication {
           name = "ai-commit";
-          runtimeInputs = [ pkgs.git pkgs.iproute2 pkgs.gum ];
+          runtimeInputs = [ pkgs.git pkgs.gum withSecrets ];
           text = ''
             GPG_TTY="$(tty)"
             export GPG_TTY
 
-            # Smart proxy detection: if proxy is running on port 12334, route through it
-            if ss -tlnH 'sport = :12334' 2>/dev/null | grep -q .; then
-              export http_proxy=http://127.0.0.1:12334
-              export https_proxy=http://127.0.0.1:12334
+            # Check staged changes before touching YubiKey
+            DIFF=$(git diff --cached)
+            if [ -z "$DIFF" ]; then
+                gum style --foreground 1 "No staged changes"
+                exit 1
             fi
 
             gum confirm "Touch YubiKey to decrypt?" || exit 1
 
             gum spin --spinner dot --title "Generating..." -- \
-              exec ${venv}/bin/ai-commit "$@"
+              with-secrets ai ${venv}/bin/ai-commit "$@"
           '';
         };
     in
