@@ -4,6 +4,10 @@ set -euo pipefail
 GPG_TTY=$(tty)
 export GPG_TTY
 
+# Source config file if present (XDG-compliant, no hardcoded values)
+_config="${XDG_CONFIG_HOME:-$HOME/.config}/ai-commit/config"
+[ -f "$_config" ] && source "$_config" && unset _config
+
 DIFF=$(git diff --cached)
 if [ -z "$DIFF" ]; then
     gum style --foreground 1 "No staged changes"
