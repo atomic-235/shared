@@ -1,24 +1,37 @@
-{ lib, pkgs, aiModels ? { }, ... }:
+{ lib, pkgs, config, ... }:
 
+let
+  cfg = config.programs.bash.aiModels;
+in
 {
-  home.sessionVariables = lib.mkMerge [
-    {
-      EDITOR = "nvim";
-      VISUAL = "nvim";
-      LIBSQLITE = "${pkgs.sqlite.out}/lib/libsqlite3.so";
-    }
-    (lib.mapAttrs' (tier: model: lib.nameValuePair "AI_MODEL_${lib.toUpper tier}" model) aiModels)
-  ];
-
-  # AI model tiers — sourceable XDG config file for non-interactive shells
-  # (lazygit tmux popup). Consumer passes models via aiModels attrset.
-  xdg.configFile."ai/models" = lib.mkIf (aiModels != { }) {
-    text = lib.concatStringsSep "\n" (
-      lib.mapAttrsToList (tier: model: "AI_MODEL_${lib.toUpper tier}=\"${model}\"") aiModels
-    ) + "\n";
+  options.programs.bash.aiModels = lib.mkOption {
+    type = with lib.types; attrsOf str;
+    default = { };
+    description = ''
+      AI model tiers (fast, default, etc.) mapped to model IDs.
+      Creates AI_MODEL_<TIER> env vars and ~/.config/ai/models sourceable file.
+    '';
   };
 
-  programs.bash = {
+  config = {
+    home.sessionVariables = lib.mkMerge [
+      {
+        EDITOR = "nvim";
+        VISUAL = "nvim";
+        LIBSQLITE = "${pkgs.sqlite.out}/lib/libsqlite3.so";
+      }
+      (lib.mapAttrs' (tier: model: lib.nameValuePair "AI_MODEL_${lib.toUpper tier}" model) cfg)
+    ];
+
+    # AI model tiers — sourceable XDG config file for non-interactive shells
+    # (lazygit tmux popup).
+    xdg.configFile."ai/models" = lib.mkIf (cfg != { }) {
+      text = lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (tier: model: "AI_MODEL_${lib.toUpper tier}=\"${model}\"") cfg
+      ) + "\n";
+    };
+
+    programs.bash = {
     enable = true;
 
     historyControl = [
@@ -77,5 +90,6 @@
         tmux -L share new-session -A -s "$name" 2>/dev/null || tmux -L share attach -t "$name"
       }
     '';
+    };
   };
 }
