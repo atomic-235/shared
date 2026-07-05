@@ -42,9 +42,20 @@
         in
         pkgs.writeShellApplication {
           name = "ai-commit";
-          runtimeInputs = [ pkgs.git pkgs.iproute2 ];
+          runtimeInputs = [ pkgs.git pkgs.iproute2 pkgs.gum ];
           text = ''
-            exec ${venv}/bin/ai-commit "$@"
+            export GPG_TTY="$(tty)"
+
+            # Smart proxy detection: if proxy is running on port 12334, route through it
+            if ss -tlnH 'sport = :12334' 2>/dev/null | grep -q .; then
+              export http_proxy=http://127.0.0.1:12334
+              export https_proxy=http://127.0.0.1:12334
+            fi
+
+            gum confirm "Touch YubiKey to decrypt?" || exit 1
+
+            gum spin --spinner dot --title "Generating..." -- \
+              exec ${venv}/bin/ai-commit "$@"
           '';
         };
     in
