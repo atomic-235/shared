@@ -6,7 +6,11 @@ export GPG_TTY
 
 # Source AI model config if present (XDG-compliant, works in non-interactive shells)
 _config="${XDG_CONFIG_HOME:-$HOME/.config}/ai/models"
-[ -f "$_config" ] && source "$_config" && unset _config
+if [ -f "$_config" ]; then
+  # shellcheck disable=SC1090
+  . "$_config"
+  unset _config
+fi
 
 DIFF=$(git diff --cached)
 if [ -z "$DIFF" ]; then
