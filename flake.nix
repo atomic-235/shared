@@ -43,7 +43,7 @@
         in
         pkgs.writeShellApplication {
           name = "ai-commit";
-          runtimeInputs = [ pkgs.git pkgs.gum withSecrets ];
+          runtimeInputs = [ pkgs.git pkgs.gum pkgs.gnupg withSecrets ];
           text = ''
             GPG_TTY="$(tty)"
             export GPG_TTY
