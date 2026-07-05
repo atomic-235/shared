@@ -70,18 +70,8 @@ in
     };
 
     initExtra = ''
-      # Auto-enter nix-user-chroot for rootless nix (portable environment)
-      # Only triggers if nix-user-chroot binary exists and not already inside chroot
-      if [ -z "$IN_NIX_USER_CHROOT" ] && [ -x "$HOME/.local/bin/nix-user-chroot" ] && [ -d "$HOME/.nix/store" ]; then
-        export IN_NIX_USER_CHROOT=1
-        exec "$HOME/.local/bin/nix-user-chroot" "$HOME/.nix" bash --noprofile --norc -c '
-          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-          [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc"
-          exec bash -i
-        '
-      fi
-
-      # Source nix profile if inside nix-user-chroot (rootless nix)
+      # Source nix profile if inside nix-user-chroot (rootless nix portable)
+      # On NixOS this never triggers (IN_NIX_USER_CHROOT never set)
       if [ -n "$IN_NIX_USER_CHROOT" ] && [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
         . "$HOME/.nix-profile/etc/profile.d/nix.sh"
       fi
