@@ -73,7 +73,7 @@ in
   options.opencode.variants = lib.mkOption {
     type = lib.types.attrsOf lib.types.str;
     default = {};
-    description = "Model variants for research agents. Key = suffix, value = model id. e.g. { fast = \"venice/qwen3-235b-a22b-instruct-2507\"; }";
+    description = "Model variants for research agents. Key = suffix, value = model id. e.g. { fast = \"provider/model-id\"; }";
   };
 
   config.xdg.configFile = builtins.listToAttrs (
