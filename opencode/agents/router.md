@@ -206,6 +206,7 @@ If the request doesn't clearly map to any agents:
 - **Same model → sequential.** `research-red-team` + `research-inversion` (both default) = sequential. `research-design-vision` + `research-red-team-vision` (both kimi-2.6) = sequential.
 - **Different sub-request agents → parallel** regardless of model (they don't depend on each other).
 - **Chains (one agent's output feeds the next) → always sequential** regardless of model.
+- **Playwright browser tools → always sequential.** All agents share one browser instance/page. Parallel browser use overwrites each other's state. Use `ai_venice_web_search` / `webfetch` for parallel web research — those are stateless and parallel-safe. Only use Playwright as sequential fallback when Venice search is rate-limited.
 
 ## Token Budget & Error Handling
 

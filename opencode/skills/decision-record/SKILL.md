@@ -105,6 +105,6 @@ Work through each stage sequentially. You MUST NOT skip stages or jump to DECIDE
 3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
 4. NEVER write analysis text before obtaining search results.
 5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.
-6. If `ai_venice_web_search` is rate-limited or returns errors, use Playwright browser tools as a fallback: `playwright_browser_navigate` to visit a search engine (e.g. https://duckduckgo.com/?q=QUERY), `playwright_browser_snapshot` to read results, `playwright_browser_click` to follow links, `playwright_browser_evaluate` to extract text. Treat Playwright results the same as search results — cite URLs, never fabricate.
+6. If `ai_venice_web_search` is rate-limited or returns errors, use Playwright browser tools as a SEQUENTIAL fallback: `playwright_browser_navigate` to visit a search engine (e.g. https://duckduckgo.com/?q=QUERY), `playwright_browser_snapshot` to read results, `playwright_browser_click` to follow links, `playwright_browser_evaluate` to extract text. Playwright is shared across all agents — do NOT use it if another agent may be using the browser simultaneously. Treat Playwright results the same as search results — cite URLs, never fabricate.
 6. You MUST identify at least 3 alternatives in EVALUATE (including "do nothing" if applicable).
 7. You MUST search for disconfirming evidence against your preferred option before deciding.
