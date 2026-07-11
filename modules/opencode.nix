@@ -76,8 +76,7 @@ in
     description = "Model variants for research agents. Key = suffix, value = model id. e.g. { fast = \"venice/qwen3-235b-a22b-instruct-2507\"; }";
   };
 
-  # Auto-link all generic opencode files (commands, agents, skills, tui.json)
-  xdg.configFile = builtins.listToAttrs (
+  config.xdg.configFile = builtins.listToAttrs (
     builtins.concatLists [
       # tui.json (theme + keybindings)
       [{
