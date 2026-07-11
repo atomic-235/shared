@@ -54,24 +54,20 @@ Multiple agents catch blind spots that a single framework misses. Multiple model
 
 All variants load the same skill — identical framework, different inference model.
 
-**Parent-model collision:** If the parent model IS minimax-m3, then `-fast` is NOT a different model — skip it. If parent IS kimi-2.6, `-vision` is NOT different. If all variants resolve to the same model, do NOT claim model diversity in synthesis. Report confidence as model-dependent and LOW.
+**Parent-model collision:** If parent IS minimax-m3, `-fast` is NOT a different model. If parent IS kimi-2.6, `-vision` is NOT different. If all variants resolve to same model, do NOT claim model diversity in synthesis. Report confidence as model-dependent and LOW.
 
 # Step 0: Pre-Classification Gate
 
-Before routing, determine if this request actually needs research agents:
+| Request Type | Action |
+|---|---|
+| Research / analysis / investigation | Proceed to Step 1 |
+| Factual lookup / known fact | Answer directly or `general` |
+| Creative writing / code generation | Route to `general` |
+| Translation / formatting / calculation | Answer directly or `general` |
+| Action / command / file operation | Route to `general` |
+| Tutorial / explanation of known concept | `general`, or `research-first-principles` + `research-systems-thinking` |
 
-| Request Type | Action | Example |
-|---|---|---|
-| Research / analysis / investigation | Proceed to Step 1 | "Why did our API fail?" |
-| Factual lookup / known fact | Answer directly or route to `general` | "What's the capital of Brazil?" |
-| Creative writing / generation | Route to `general` | "Write a blog post about Rust" |
-| Code generation / writing | Route to `general` | "Write a Python scraper" |
-| Translation / formatting | Route to `general` | "Translate this to Japanese" |
-| Calculation / arithmetic | Answer directly | "Calculate 17 * 23" |
-| Action / command / file operation | Route to `general` | "Add this config file" |
-| Tutorial / explanation of known concept | Route to `general` or `research-first-principles` + `research-systems-thinking` | "Explain how TCP handshakes work" |
-
-If the request is clearly non-research, do NOT dispatch research agents. State what you did and why.
+If clearly non-research, do NOT dispatch research agents. State what you did and why.
 
 # Step 1: Question Validation
 
@@ -270,9 +266,37 @@ After ALL agents return (or errors are handled):
 <synthesized answer with confidence: HIGH / MEDIUM / LOW and reasoning for that rating>
 ```
 
-# Multi-Agent Chains
+# Step 7: Iteration Loop (Optional)
 
-Some problems require sequential agents where one's output feeds the next:
+After synthesis, decide: is this answer sufficient, or do you need another round?
+
+## When to Loop
+
+| Signal | Example |
+|--------|---------|
+| **Unresolved conflict** | Agents disagreed, conflict resolution couldn't decide |
+| **Critical gap** | No agent covered regulatory/legal angle |
+| **LOW confidence + high stakes** | Security assessment with incomplete attack surface |
+| **Agent failed** | `research-red-team` timed out, perspective missing |
+| **User requests deeper** | User asks "are you sure?" |
+
+## When NOT to Loop
+
+HIGH confidence → stop. MEDIUM + low stakes → stop. Max 3 iterations → stop. User satisfied → stop.
+
+## How to Loop
+
+1. **Orient:** What specific gap or conflict needs resolution?
+2. **Decide:** Which agent(s) can resolve it? Use a DIFFERENT skill than the ones that conflicted — if `red-team` and `inversion` disagreed, try `ach` or `scientific` as tiebreaker.
+3. **Dispatch:** Send new agent(s) with context from previous round.
+4. **Re-synthesize:** Merge new findings with previous. Update confidence.
+5. **Repeat or stop.** Max 3 iterations (initial + 2 follow-ups). Max 2 new agents per iteration. Unresolvable gaps after 3 iterations → present with "UNRESOLVED" markers.
+
+## Loop Output
+
+Present updated synthesis after each iteration. If decision point arises (which angle to pursue), use `question` tool. Otherwise proceed autonomously.
+
+# Multi-Agent Chains
 
 | Problem Type | Chain | Rationale |
 |---|---|---|
@@ -283,14 +307,10 @@ Some problems require sequential agents where one's output feeds the next:
 | Strategic foresight | `alternative-futures` + `hilp` → `ooda` | Scenarios + tail risks, iterate |
 | Investigation | `investigation` → `ach` + `link-analysis` | Gather, evaluate + map |
 
-## Chain Validation
-
-- Between chain steps, verify previous output before passing to next. For classification chains: present to user for confirmation before downstream dispatch. If user disagrees, re-classify.
-- Low-confidence/ambiguous output: stop and present findings. Don't propagate uncertainty.
-- Max 4 sequential steps. Exceeds 4 → split into parallel groups. Pass output as context to next. Present intermediate findings between agents if decision point arises.
+**Chain validation:** Verify previous output before passing to next. For classification chains: present to user for confirmation before downstream dispatch. Low-confidence/ambiguous output: stop and present. Max 4 sequential steps. Pass output as context to next. Present intermediate findings if decision point arises.
 
 # Venice AI / CoinGlass
 
 - **`Task()`** for research/analysis agents (all `research-*` skills).
 - **`skill()`** for generation tools: `skill(name="venice")` for TTS/images/music, `skill(name="coinglass")` for crypto derivatives data.
-- If a request needs BOTH research and generation: dispatch research agents first via `Task()`, then use `skill()` for generation based on findings. Do not mix in a single dispatch.
+- If a request needs BOTH: dispatch research agents first, then use `skill()` for generation based on findings.
