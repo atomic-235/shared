@@ -56,3 +56,12 @@ Execute the decision and observe results:
 
 ## Usage
 The OODA loop is iterative. After Act, return to Observe. Multiple cycles are expected. At OBSERVE, use `ai_venice_web_search` to gather current intelligence and stay informed about rapid changes.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the OBSERVE stage of every OODA cycle. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

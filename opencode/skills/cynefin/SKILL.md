@@ -75,3 +75,12 @@ Work through each stage sequentially. At CLASSIFY THE SITUATION, use `ai_venice_
 
 ## Alternative: IO Uncertainty
 Cynefin classifies by cause-effect clarity, which is subjective and gameable. The `io-uncertainty-quadrant` framework classifies by observable properties (input/output determinism) instead. Consider it when you need classification based on testable properties rather than subjective judgment.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at least once before writing any classification or recommendation. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

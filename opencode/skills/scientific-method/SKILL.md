@@ -76,3 +76,13 @@ Draw conclusions and determine next steps:
 
 ## Usage
 Work through each stage sequentially. At the RESEARCH stage, you MUST use `ai_venice_web_search` to find real sources. Do not fabricate citations or rely on training data alone.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` during the RESEARCH stage. No exceptions. Zero tolerance.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. NEVER cite studies, papers, or data unless they appear in `ai_venice_web_search` result snippets.
+6. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

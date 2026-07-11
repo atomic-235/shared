@@ -106,3 +106,12 @@ Identify which evidence is most valuable for distinguishing between hypotheses:
 
 ## Usage
 Work through each stage sequentially. At IDENTIFY ALL REASONABLE HYPOTHESES, use `ai_venice_web_search` to find alternative explanations. The matrix is the core tool — do not skip it. Focus on disproving hypotheses, not proving them. Evidence that is consistent with all hypotheses is diagnostically worthless — flag it as such.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the IDENTIFY HYPOTHESES stage. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

@@ -116,3 +116,12 @@ When stuck on Stage 2, cycle through these questions:
 
 ## Usage
 Work through each stage sequentially. At Stage 2, select heuristics from the repertoire based on the decision logic. If a plan fails, return to Stage 2 with a different heuristic — do not force a failing approach.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at least once during the DEVISE A PLAN stage to find related problems and techniques. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

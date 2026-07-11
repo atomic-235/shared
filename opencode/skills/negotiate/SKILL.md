@@ -303,3 +303,12 @@ Apply throughout, not just in stage 2:
 
 ## Usage
 Work through stages sequentially. At PREPARE AND DIAGNOSE, use `ai_venice_web_search` to research the counterpart's recent moves, market context, and comparable agreements. The conflict-mode (Thomas-Kilmann) choice at BARGAIN AND DECIDE is the critical coupling between style and process — re-check it at each major turn. Never skip the Glasl escalation diagnosis (1g) — Tier 2/3 conflicts need a different intervention before negotiation. In multi-party contexts, run a payoff matrix BEFORE opening. Post-mortem (5d) is non-optional. BATNA is your safety system — monitor continuously, walk to it when offer falls below reservation. Iterate: if a stage reveals new information, return to the prior stage with updated estimates.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the PREPARE AND DIAGNOSE stage. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

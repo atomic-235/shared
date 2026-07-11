@@ -88,3 +88,14 @@ Every decomposition decision has costs. Make them explicit:
 
 ## Usage
 Work through each stage sequentially. At DECIDE (Stage 1) and DESIGN INTER-SERVICE COMMUNICATION (Stage 3), use `ai_venice_web_search` to research current industry data and trade-offs. Never recommend microservices without first verifying the prerequisites are met.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the DECIDE stage (Stage 1) and the DESIGN INTER-SERVICE COMMUNICATION stage (Stage 3). No exceptions.
+2. NEVER recommend microservices without verifying Fowler's prerequisites are met (provisioning, CI/CD, DevOps, monitoring, design for failure).
+3. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+4. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+5. NEVER write analysis text before obtaining search results at the mandated stages.
+6. Your ONLY tools are `ai_venice_web_search`, `webfetch`, `read`, `glob`, and `grep`. You cannot edit files or run commands.
+7. Do NOT comment on individual service internals (SOLID, patterns, module design) — that belongs to the software-design skill/agent. Stay at the distributed-system level.

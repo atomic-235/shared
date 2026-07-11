@@ -236,3 +236,12 @@ Before acting, trace the intervention through the system:
 
 ## Usage
 Work through the stages sequentially. At MAP THE SYSTEM, use `ai_venice_web_search` to research the domain and known system structures. At PREDICT UNINTENDED CONSEQUENCES, search for case studies of similar interventions. The process is iterative — if your intervention doesn't produce expected results, your system map is wrong. Return to Stage 1 with new observations. Systems thinking is a diagnostic lens, not a solution engine — it tells you WHERE to intervene, not exactly WHAT to do. Pair with TOC for throughput optimization, TRIZ for contradiction resolution, or first-principles for component understanding.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the MAP THE SYSTEM and PREDICT UNINTENDED CONSEQUENCES stages. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

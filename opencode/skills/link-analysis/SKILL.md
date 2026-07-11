@@ -168,3 +168,12 @@ Based on network structure, answer the original question:
 
 ## Usage
 Work through stages sequentially. At DEFINE SCOPE, use `ai_venice_web_search` to research the domain and available data sources. At IDENTIFY ENTITIES, search for additional entities connected to seed entities. The network analysis (Stage 5) is the core — do not skip it. Conclusions are leads, not verdicts. Pair with structured-investigation to gather data first, then use link-analysis to map relationships.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the DEFINE SCOPE and IDENTIFY ENTITIES stages. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

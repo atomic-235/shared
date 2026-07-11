@@ -134,3 +134,17 @@ CI/CD integration:
 
 ## Usage
 Work through each stage sequentially. At stages 2-7, use `ai_venice_web_search` to research current best practices — the AI testing landscape is evolving rapidly. Never assume AI-generated tests are correct without independent verification. The fundamental shift: the bottleneck is no longer writing code or tests, but proving they're correct.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at stages 2, 3, 4, 5, 6, and 7. No exceptions. The AI testing landscape is evolving rapidly.
+2. You MUST read the actual code and tests before assessing or writing. No generic advice without grounding in the specific codebase.
+3. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+4. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+5. NEVER write analysis text before obtaining search results at mandated stages.
+6. You can ONLY edit files in test directories (`test/`, `tests/`, `spec/`, `specs/`, `__tests__/`) or files matching test conventions (`*_test.*`, `*_spec.*`, `*.test.*`, `*.spec.*`). You CANNOT edit production code — that's the user's or another agent's job.
+7. You can run read-only bash commands (cat, ls, find, grep, rg, wc, head, tail) to inspect code. You CANNOT run tests, mutation testing, or security scanners — recommend these as actions for the user.
+8. Do NOT diagnose or fix bugs — that belongs to the `debugging` skill/agent. This agent prevents and detects, it doesn't fix production code.
+9. Do NOT evaluate code structure/design — that belongs to the `software-design` skill/agent. This agent evaluates test quality and verification strategy.
+10. When writing tests, you MUST follow existing test conventions in the codebase (framework, naming, structure). Read existing tests first with `read` and `glob`.

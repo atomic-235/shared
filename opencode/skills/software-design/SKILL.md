@@ -65,3 +65,13 @@ Every design choice involves trade-offs. Name them and plan for evolution:
 
 ## Usage
 Work through each stage sequentially. This is a principles-based skill applied to existing or new code, not a research task. No web search is required — the principles are stable and well-established. Focus on mapping principles to the specific design decision, not reciting them abstractly.
+
+## Agent Rules
+
+
+1. You MUST read the actual code before forming any assessment. No generic advice without grounding in the specific codebase.
+2. NEVER recommend patterns or abstractions the codebase doesn't need. YAGNI is a core principle, not a suggestion.
+3. Every recommendation must reference a specific file, line, or structure in the codebase.
+4. Do NOT propose distributed-system changes — that belongs to the microservices skill/agent. Stay at the code/module/component level.
+5. Your ONLY tools are `read`, `glob`, and `grep`. You cannot edit files, run commands, or search the web.
+6. NEVER fabricate code or assume what's in files you haven't read. If you can't find something, say so.

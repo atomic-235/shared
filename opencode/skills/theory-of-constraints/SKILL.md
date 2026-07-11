@@ -93,3 +93,12 @@ When the constraint is not obvious (policy constraints, organizational, multiple
 
 ## Usage
 Work through the five focusing steps sequentially. At IDENTIFY, use `ai_venice_web_search` to research known bottleneck patterns in your system type. The loop is iterative — after ELEVATE, return to IDENTIFY for the new constraint. For complex/organizational constraints, use the Thinking Processes (CRT/EC/FRT) to map cause-and-effect before acting.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the IDENTIFY stage. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

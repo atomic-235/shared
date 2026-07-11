@@ -177,3 +177,12 @@ For each scenario, identify observable indicators that would signal this future 
 
 ## Usage
 Work through stages sequentially. At DEFINE THE FOCAL ISSUE, use `ai_venice_web_search` to research existing forecasts and expert perspectives. At DEVELOP INDICATORS, search for existing metrics tracked in this domain. The 2×2 matrix is the core tool — do not skip it. Multiple scenarios are the output, not a single forecast. Test your current strategy against ALL scenarios, not just the most likely one.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the DEFINE FOCAL ISSUE and DEVELOP INDICATORS stages. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

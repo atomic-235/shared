@@ -129,3 +129,13 @@ A single PPDAC iteration often generates as many new questions as it answers —
 
 ## Usage
 Work through each stage sequentially, but expect to iterate. The cycle is essential — conclusions that don't answer the original problem mean you need another iteration. Start with Problem, and ensure every subsequent stage traces back to that original question.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at least once during the PLAN stage to find relevant data sources, methods, and domain expertise. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. NEVER fabricate data. If you don't have real data, state what data would be needed and where to find it.
+6. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

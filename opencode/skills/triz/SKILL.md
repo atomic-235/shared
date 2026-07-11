@@ -202,3 +202,12 @@ If the problem is a values tension, redirect to `wrap` or `decision-record`. If 
 
 ## Usage
 Work through each stage sequentially. At IDENTIFY THE CONTRADICTION, use `ai_venice_web_search` to find how this contradiction pattern appears in other fields. At APPLY 40 INVENTIVE PRINCIPLES, search for specific principle applications if the mapping isn't clear. The 40 principles and separation principles can be applied in combination — try multiple before concluding.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the IDENTIFY and APPLY PRINCIPLES stages. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

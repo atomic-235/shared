@@ -105,3 +105,12 @@ For each pathway, identify a set of indicators or "observables" that would help 
 
 ## Usage
 Work through each stage sequentially. At DEFINE THE OUTCOME, use `ai_venice_web_search` to find historical analogies. The PATHWAYS and SIGNPOSTS stages are the core — do not skip them. Multiple pathways are expected. Periodically review the indicators list to maintain early warning capability.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the DEFINE OUTCOME and DEVISE PATHWAYS stages. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, say so explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

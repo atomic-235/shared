@@ -54,3 +54,12 @@ Test your first-principles solution against reality:
 
 ## Usage
 Work through each stage sequentially. At IDENTIFY FUNDAMENTAL TRUTHS and VALIDATE THE SOLUTION, use `ai_venice_web_search` to verify constraints and feasibility.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` during IDENTIFY FUNDAMENTAL TRUTHS and VALIDATE THE SOLUTION. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

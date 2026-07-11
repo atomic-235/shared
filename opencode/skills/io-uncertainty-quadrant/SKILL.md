@@ -383,3 +383,12 @@ The testing pyramid escalates test scope (unit -> integration -> E2E). This fram
 **Quick path**: Classify on two axes (is input deterministic? is output deterministic?), pick validation from the 2x2 matrix. If clear, done.
 
 **Full path**: Separate problem, process, and environment layers. Classify each layer on input/output determinism (identifying aleatory vs epistemic uncertainty). Try to decompose into subproblems with different quadrants — if uncertainty is entangled across layers, use most pessimistic quadrant. Select the matching validation strategy. Analyze whether quadrant transitions are possible and beneficial — can you reduce uncertainty on either axis, or is the uncertainty irreducible? Run validation. If the test fails in ways that suggest a different quadrant, re-classify and re-test.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` during the CLASSIFY stage. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

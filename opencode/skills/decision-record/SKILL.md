@@ -96,3 +96,14 @@ Make the decision and produce a structured decision record:
 
 ## Usage
 Work through each stage sequentially. You MUST NOT skip stages or jump to DECIDE without completing FRAME, RESEARCH, and EVALUATE. At RESEARCH, use `ai_venice_web_search` to gather evidence. At EVALUATE, search for disconfirming evidence. The output of this process is a structured decision record that can be stored alongside code or in a decision log.
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` during RESEARCH and again during EVALUATE (for disconfirming evidence). No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.
+6. You MUST identify at least 3 alternatives in EVALUATE (including "do nothing" if applicable).
+7. You MUST search for disconfirming evidence against your preferred option before deciding.

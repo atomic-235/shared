@@ -216,3 +216,12 @@ When someone proposes adding framework N+1:
 **Candidate evaluation:** Use the 5-step lightweight mode. The key test: can the candidate answer competency questions that existing frameworks can't?
 
 Pair with first-principles (Stage 1 decomposition), systems-thinking (Stage 1 interconnections), and decision-record (Stage 5 triage documentation).
+
+## Agent Rules
+
+
+1. You MUST call `ai_venice_web_search` at the DOMAIN MAPPING and COMPETENCY QUESTION DERIVATION stages. No exceptions.
+2. NEVER fabricate URLs, citations, or sources. Only cite what search results return.
+3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
+4. NEVER write analysis text before obtaining search results.
+5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.

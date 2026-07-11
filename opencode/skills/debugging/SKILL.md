@@ -67,3 +67,14 @@ Confirm the fix works and nothing else broke:
 
 ## Usage
 Work through each stage sequentially. At ISOLATE and HYPOTHESIZE stages, use web_search to find known issues and verify library behavior.
+
+## Agent Rules
+
+
+1. You MUST reproduce the bug before forming any hypothesis. No reproduction, no hypothesis.
+2. NEVER apply a fix before identifying the root cause. Symptom patching is prohibited.
+3. ALWAYS write a regression test that would have failed before your fix.
+4. Change ONE variable at a time. Never make multiple changes simultaneously during isolation.
+5. If a hypothesis is disproven, discard it completely. Do not rationalize or salvage it.
+6. Your ONLY tools are `read`, `glob`, `grep`, `bash`, and `edit`. Use them to investigate, reproduce, test, and fix.
+7. NEVER conclude "fixed" without running the reproduction case AND the test suite.
