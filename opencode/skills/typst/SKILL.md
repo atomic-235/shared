@@ -108,6 +108,177 @@ $->$  $!=$  $<=$              // symbol shorthands
 $"text in math"$              // literal text
 ```
 
+### CRITICAL: No Backslash Commands in Math
+
+Typst is NOT LaTeX. **There are no `\command` sequences in math mode.** Backslash in markup mode is a forced line break, and in math mode it is not a command prefix. Writing `\models`, `\sqsubseteq`, `\circ`, `\neg`, `\;`, `\,` will cause parse errors or wrong output.
+
+### Multi-Letter Identifiers Must Be Quoted
+
+Typst treats each letter in math as a separate variable. `models`, `iff`, `Mod`, `inf`, `sup` will all fail with "unknown variable" errors. **Always quote multi-letter words:**
+
+```typst
+$T models phi$          // ERROR: "unknown variable: odels"
+$T "models" phi$        // CORRECT
+$"Mod"(T)$              // CORRECT
+$"iff"$                 // CORRECT
+$"Sen" : bold("Sign") -> bold("Set")$   // CORRECT
+```
+
+### Math Spacing
+
+Typst math spacing uses punctuation characters, not LaTeX commands:
+
+| Typst | Width | LaTeX equivalent |
+|-------|-------|------------------|
+| `thin` | thin space | `\,` |
+| `;` | medium space | `\;` |
+| `:` | thick space | `\:` |
+| `::` | thicker | (none) |
+| `quad` | 1em | `\quad` |
+| `space` | normal space | (space) |
+
+```typst
+$R ; S$              // medium space between R and S
+$R quad S$           // 1em space
+$exists y.thin R(x,y)$   // thin space after dot
+```
+
+### LaTeX → Typst Math Symbol Mapping
+
+Many LaTeX math symbol names do NOT exist in Typst. Use the Typst name or Unicode character directly.
+
+#### Symbols with Typst names (use these)
+
+| LaTeX | Typst | Notes |
+|-------|-------|-------|
+| `\alpha` | `alpha` | Greek letters work by name |
+| `\beta` | `beta` | |
+| `\Delta` | `Delta` | Uppercase Greek |
+| `\Sigma` | `Sigma` | |
+| `\phi` | `phi` | |
+| `\sum` | `sum` | |
+| `\forall` | `forall` | |
+| `\exists` | `exists` | |
+| `\neg` / `\lnot` | `not` | NOT `neg` |
+| `\in` | `in` | |
+| `\subset` | `subset` | |
+| `\subseteq` | `subset.eq` | |
+| `\supset` | `supset` | |
+| `\cup` | `union.plus` | NOT `cup` |
+| `\cap` | `intersection` | NOT `cap` |
+| `\rightarrow` | `arrow.r` | |
+| `\leftarrow` | `arrow.l` | |
+| `\leftrightarrow` | `arrow.l.r` | |
+| `\Leftrightarrow` | `arrow.l.r.double` | |
+| `\Rightarrow` | `arrow.r.double` | |
+| `\Leftarrow` | `arrow.l.double` | |
+| `\approx` | `approx` | |
+| `\equiv` | `equiv` | |
+| `\times` | `times` | |
+| `\cdot` | `dot.op` | Binary operator ⋅. Use `dot(x)` for accent, `dot.op` for operator |
+| `\dots` / `\ldots` | `dots.h` / `dots.c` | |
+| `\leq` / `\leqslant` | `<=` | |
+| `\geq` / `\geqslant` | `>=` | |
+| `\neq` | `!=` | |
+| `\pm` | `plus.minus` | |
+| `\infty` | `infinity` | NOT `infty` |
+| `\partial` | `partial` | |
+| `\nabla` | `nabla` | |
+| `\mathcal{I}` | `cal(I)` | |
+| `\mathbb{R}` | `bb(R)` | |
+| `\mathbf{x}` | `bold(x)` | |
+| `\dot{x}` | `dot(x)` | |
+| `\hat{x}` | `hat(x)` | |
+| `\bar{x}` | `macron(x)` | |
+| `\overline{x}` | `overline(x)` | |
+| `\sqrt{x}` | `sqrt(x)` | |
+| `\frac{a}{b}` | `frac(a, b)` | or just `(a)/b` auto-detected |
+| `\binom{n}{k}` | `binom(n, k)` | |
+
+#### Symbols with Typst modifier names (NOT Unicode)
+
+Typst uses a base symbol + dot modifiers system. These symbols all have proper Typst names — do NOT use Unicode.
+
+| LaTeX | Typst | Notes |
+|-------|-------|-------|
+| `\sqsubseteq` | `subset.eq.sq` | Base `subset` + `.eq.sq` modifiers |
+| `\sqsupseteq` | `supset.eq.sq` | |
+| `\sqcap` | `inter.sq` | Base `inter` + `.sq` |
+| `\sqcup` | `union.sq` | Base `union` + `.sq` |
+| `\circ` | `compose` | Function composition ∘ |
+| `\mapsto` | `mapsto` | Alias for `arrow.r.bar` |
+| `\vdash` | `tack.r` | Turnstile ⊢ |
+| `\dashv` | `tack.l` | Left turnstile ⊣ |
+| `\models` | `tack.r.double` | Double turnstile ⊨ (NOT `models` — that's ⊧, a different symbol!) |
+| `\top` | `top` | |
+| `\bot` | `bot` | |
+| `\wedge` | `and` | |
+| `\vee` | `or` | |
+| `\Diamond` | `diamond` | |
+| `\Box` | `square` | |
+| `\hookrightarrow` | `arrow.r.hook` | Hook arrow ↪ |
+| `\bar{x}` | `macron(x)` | Accent function |
+| `\overline{x}` | `overline(x)` | Accent function |
+| `\dot{x}` | `dot(x)` | Accent function (dot above) |
+
+**CRITICAL: `models` vs `tack.r.double`**
+Typst's `models` = ⊧ (U+22A7), which is a DIFFERENT symbol from LaTeX's `\models` = ⊨ (U+22A8).
+Use `tack.r.double` (or `tack.rr`) for the standard double-turnstile "models" relation.
+
+### LaTeX Constructs Not in Typst
+
+| LaTeX | Status | Typst alternative |
+|-------|--------|-------------------|
+| `\stackrel{a}{b}` | Does NOT exist | Place text above/below using `scripts(b, a)` or just write `$b "with" a$` |
+| `\overset{a}{b}` | Does NOT exist | Same as above |
+| `\underbrace{...}` | Use `underbrace(...)` | |
+| `\overbrace{...}` | Use `overbrace(...)` | |
+| `\text{...}` | Use `"..."` (quotes) | `$"text in math"$` |
+| `\mathrm{...}` | Use `"..."` or `upright(...)` | |
+| `\;` `\,` `\:` | Use `;` `thin` `:` | See spacing table above |
+| `\And` `\and` | Use `and` (logical) or `&` (spacing) | |
+| `\circ` | Use `compose` | NOT Unicode |
+| `\neg` | Use `not` | |
+
+### Working Math Examples
+
+```typst
+// Set theory
+$A subset.eq B$                    // A ⊆ B
+$A union.plus B$                   // A ∪ B
+$A intersection B$                 // A ∩ B
+$A setminus B$                     // A \ B
+
+// Logic
+$T tack.r.double phi$               // T ⊨ φ (models = double turnstile)
+$not phi$                          // ¬φ
+$phi and psi$                      // φ ∧ ψ
+$phi or psi$                       // φ ∨ ψ
+$forall x. exists y. R(x, y)$     // ∀x.∃y.R(x,y)
+
+// Entailment
+$T tack.r.double_(Sigma) phi$     // T ⊨_Σ φ
+$M' tack.r.double_(Sigma') sigma(phi) quad arrow.l.r.double quad M'|_sigma tack.r.double_Sigma phi$
+
+// Relations
+$R compose S$                       // composition ∘
+$R^(-1)$                           // inverse
+$C subset.eq.sq D$                 // subsumption ⊑
+
+// Calligraphic / blackboard bold
+$cal(I) = (Delta^cal(I), dot^cal(I))$   // 𝓘 = (Δ^𝓘, ⋅^𝓘)
+$bb(R), bb(N), bb(Z)$              // ℝ, ℕ, ℤ
+
+// Matrix and cases
+$mat(1, 0; 0, 1)$                  // 2×2 identity
+$cases(1 "if" x > 0, 0 "if" x <= 0)$  // piecewise
+
+// Subscripts on operators
+$sum_(k=1)^n k = (n(n+1))/2$       // sum with limits
+$prod_(i=1)^n x_i$                 // product with limits
+$int_0^infinity f(x) thin d x$    // integral (use thin for spacing before dx)
+```
+
 ---
 
 ## Bibliography
@@ -402,7 +573,7 @@ scales linearly.
 #set page(margin: 1.75in)
 #set par(leading: 0.55em, spacing: 0.55em, first-line-indent: 1.8em, justify: true)
 #set text(font: "New Computer Modern")
-#show raw: set text(font: "New Computer Modern Mono")
+#show raw: set text(font: "DejaVu Sans Mono")   // NCM Mono not available on all systems
 #show heading: set block(above: 1.4em, below: 1em)
 
 = Introduction
@@ -445,6 +616,14 @@ As shown by @smith2023, this approach works well.
 
 9. **Styles use CSL** (Citation Style Language), not `.bst`/`.bbx`. Download any `.csl` file from the CSL repository and pass its path as `style:`.
 
+10. **No backslash commands in math mode** — Typst is not LaTeX. `\models`, `\sqsubseteq`, `\circ`, `\neg`, `\;`, `\,` all fail. Use Typst symbol names: `tack.r.double`, `subset.eq.sq`, `compose`, `not`, `;`, `thin`. See the LaTeX → Typst Math Symbol Mapping section above. Do NOT use Unicode characters as a fallback — every common math symbol has a proper Typst name.
+
+11. **Multi-letter identifiers in math must be quoted** — Typst treats each letter as a separate variable. `$models$` errors with "unknown variable: odels". Write `$"models"$` or `$"Mod"(T)$` instead. Note: for the *entailment relation* (LaTeX `\models` = ⊨), use `tack.r.double`, NOT the quoted word `"models"` (which is Typst's `models` = ⊧, a different symbol).
+
+12. **`"New Computer Modern Mono"` font may not be available** — on NixOS and some systems this font is missing. Use `"DejaVu Sans Mono"` or another available monospace font for `#show raw: set text(font: ...)`.
+
+13. **`stackrel` and `overset` do not exist** — for text above/below arrows or symbols, use `scripts()` or restructure the expression. `$"BAOs" arrow.l.r.double "frames" quad "duality"$` instead of `$\stackrel{\text{duality}}{\leftrightarrow}$`.
+
 ### LaTeX → Typst quick reference
 
 | LaTeX | Typst |
@@ -455,3 +634,36 @@ As shown by @smith2023, this approach works well.
 | `\nocite{key}` | `#cite(<key>, form: none)` |
 | `\bibliography{refs}` + `\bibliographystyle{...}` | `#bibliography("refs.bib", style: "ieee")` |
 | `\bibliography{a,b}` | `#bibliography(("a.bib", "b.yaml"))` |
+
+### LaTeX → Typst math quick reference
+
+| LaTeX | Typst | Notes |
+|-------|-------|-------|
+| `\models` | `tack.r.double` | NOT `models` (that's ⊧, different symbol!) |
+| `\vdash` | `tack.r` | Turnstile |
+| `\dashv` | `tack.l` | Left turnstile |
+| `\sqsubseteq` | `subset.eq.sq` | Modifier chain |
+| `\sqsupseteq` | `supset.eq.sq` | |
+| `\sqcap` | `inter.sq` | |
+| `\sqcup` | `union.sq` | |
+| `\circ` | `compose` | Function composition |
+| `\mapsto` | `mapsto` | Alias for `arrow.r.bar` |
+| `\hookrightarrow` | `arrow.r.hook` | |
+| `\neg` | `not` | NOT `neg` |
+| `\cup` | `union.plus` | NOT `cup` |
+| `\cap` | `intersection` | NOT `cap` |
+| `\infty` | `infinity` | NOT `infty` |
+| `\cdot` | `dot.op` | Binary operator; `dot(x)` is accent |
+| `\Rightarrow` | `arrow.r.double` | |
+| `\Leftrightarrow` | `arrow.l.r.double` | |
+| `\;` | `;` | Medium space |
+| `\,` | `thin` | Thin space |
+| `\:` | `:` | Thick space |
+| `\text{...}` | `"..."` | Quoted text in math |
+| `\mathcal{I}` | `cal(I)` | |
+| `\mathbb{R}` | `bb(R)` | |
+| `\mathbf{x}` | `bold(x)` | |
+| `\bar{x}` | `macron(x)` | Accent function |
+| `\overline{x}` | `overline(x)` | Accent function |
+| `\stackrel{a}{b}` | `scripts(b, a)` or restructure | Does NOT exist as-is |
+| `\frac{a}{b}` | `frac(a, b)` or `(a)/b` | Auto-detected in many cases |
