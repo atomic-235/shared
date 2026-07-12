@@ -200,13 +200,15 @@ If the request doesn't clearly map to any agents:
 
 ## Parallel vs Sequential
 
+**Default: sequential.** Venice search (`ai_venice_web_search`) is shared rate-limited across all agents. Running multiple agents in parallel causes rate-limit errors. Dispatch agents one at a time unless explicitly using different model providers.
+
 **Model identity for dispatch purposes:** default = parent model, `-fast` = minimax-m3, `-vision` = kimi-2.6. Two agents are "same model" if they share the same model identity, regardless of suffix.
 
-- **Different models → parallel OK.** `research-red-team` + `research-red-team-fast` = different models = parallel.
-- **Same model → sequential.** `research-red-team` + `research-inversion` (both default) = sequential. `research-design-vision` + `research-red-team-vision` (both kimi-2.6) = sequential.
-- **Different sub-request agents → parallel** regardless of model (they don't depend on each other).
-- **Chains (one agent's output feeds the next) → always sequential** regardless of model.
-- **Playwright browser tools → router-managed exclusive access.** All agents share one browser instance. Router grants browser access to ONE agent at a time. Other parallel agents must use `ai_venice_web_search` / `webfetch` only. Include in agent's Task prompt: "You have exclusive browser access" or "Do NOT use Playwright browser tools — use web_search/webfetch only." Sequential agents can each get browser access.
+- **Same model → sequential.** Always. Shared rate limit on Venice search.
+- **Different models → parallel OK** only if neither agent needs `ai_venice_web_search` (e.g. pure reasoning tasks). If either agent needs web search, run sequentially.
+- **Different sub-request agents → sequential** unless confirmed no web search needed by either.
+- **Chains (one agent's output feeds the next) → always sequential.**
+- **Playwright browser tools → router-managed exclusive access.** Router grants browser access to ONE agent at a time. Include in agent's Task prompt: "You have exclusive browser access" or "Do NOT use Playwright browser tools — use web_search/webfetch only."
 
 ## Token Budget & Error Handling
 
