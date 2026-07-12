@@ -35,6 +35,10 @@
     # AI coding agent
     opencode
 
+    # Typesetting
+    typst
+    tinymist
+
     # Build tools (needed by nvim-treesitter to compile parsers)
     gcc
     tree-sitter
