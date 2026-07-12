@@ -1,0 +1,47 @@
+{
+  "lsp": {
+    "pyright": {
+      "disabled": true
+    },
+    "basedpyright": {
+      "command": ["basedpyright-langserver", "--stdio"],
+      "extensions": [".py", ".pyi"]
+    },
+    "lua-ls": {
+      "command": ["lua-language-server"],
+      "extensions": [".lua"]
+    },
+    "ruff": {
+      "command": ["ruff", "server"],
+      "extensions": [".py", ".pyi"]
+    },
+    "nixd": {
+      "command": ["nixd"],
+      "extensions": [".nix"],
+      "initialization": {
+        "nixpkgs": {
+          "expr": "import <nixpkgs> { }"
+        },
+        "formatting": {
+          "command": ["nixfmt"]
+        },
+        "options": {
+          "nixos": {
+            "expr": "(builtins.getFlake (toString ./nix)).nixosConfigurations.default.options"
+          },
+          "home-manager": {
+            "expr": "(builtins.getFlake (toString ./nix)).nixosConfigurations.default.options.home-manager.users.type.getSubOptions []"
+          }
+        }
+      }
+    },
+    "tinymist": {
+      "command": ["tinymist", "lsp"],
+      "extensions": [".typ", ".typc"],
+      "initialization": {
+        "formatterMode": "typstyle",
+        "exportPdf": "onSave"
+      }
+    }
+  }
+}

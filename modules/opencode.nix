@@ -75,12 +75,33 @@ let
           { agent = "research-debug"; skill = "debugging"; desc = "Debug"; }
         ])
     cfg);
+
+  mergedOpencodeJson =
+    let
+      personalPath = config.opencode.personalConfigFile or null;
+      sharedLsp = builtins.fromJSON (builtins.readFile "${opencodeDir}/opencode-lsp.json");
+    in
+      if personalPath == null then
+        null
+      else
+        let
+          personal = builtins.fromJSON (builtins.readFile personalPath);
+          mergedLsp = (personal.lsp or {}) // sharedLsp.lsp;
+          merged = personal // { lsp = mergedLsp; };
+        in
+          builtins.toFile "opencode.json" (builtins.toJSON merged);
 in
 {
   options.opencode.variants = lib.mkOption {
     type = lib.types.attrsOf lib.types.str;
     default = {};
     description = "Model variants for research agents. Key = suffix, value = model id. e.g. { fast = \"provider/model-id\"; }";
+  };
+
+  options.opencode.personalConfigFile = lib.mkOption {
+    type = lib.types.nullOr lib.types.path;
+    default = null;
+    description = "Path to the user's personal opencode.json. Shared LSP stanzas from opencode-lsp.json will be deep-merged into its `lsp` key (personal LSP entries win on conflict).";
   };
 
   config.xdg.configFile = builtins.listToAttrs (
@@ -120,6 +141,12 @@ in
           };
         })
         (builtins.attrNames (builtins.readDir "${opencodeDir}/skills")))
+
+      # opencode.json (personal + shared LSP deep-merge)
+      (lib.optional (mergedOpencodeJson != null) {
+        name = "opencode/opencode.json";
+        value = { source = mergedOpencodeJson; };
+      })
     ]
   );
 }
