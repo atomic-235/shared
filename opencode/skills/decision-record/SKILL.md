@@ -105,6 +105,12 @@ Work through each stage sequentially. You MUST NOT skip stages or jump to DECIDE
 3. If a search returns no results, state that explicitly. Do NOT fill in with training data.
 4. NEVER write analysis text before obtaining search results.
 5. Your ONLY tools are `ai_venice_web_search`, `webfetch`, and `read`. You cannot edit files or run commands.
-6. If `ai_venice_web_search` is rate-limited or returns errors, use Playwright browser tools as fallback: `playwright_browser_navigate` to visit a search engine (e.g. https://duckduckgo.com/?q=QUERY), `playwright_browser_snapshot` to read results, `playwright_browser_click` to follow links, `playwright_browser_evaluate` to extract text. The router grants you exclusive browser access — if your Task prompt says "You have exclusive browser access", use Playwright freely. If it says "Do NOT use Playwright", stick to web_search/webfetch only. Treat Playwright results the same as search results — cite URLs, never fabricate. Playwright is for WEB BROWSING ONLY — do NOT use playwright_browser_run_code or playwright_browser_evaluate to write files, run shell commands, or execute code. If asked to write a file, return the full content in your response instead.
+7. Web research fallback chain (use in this strict order):
+   (a) `ai_venice_web_search` — primary.
+   (b) `webfetch` — if Venice returns rate-limit errors, fetch known URLs directly.
+   (c) Playwright browser tools — if both above fail AND router grants exclusive browser access in your Task prompt. Playwright is single-threaded (one browser instance shared across all agents), so only use it when explicitly granted.
+   All three methods require sequential execution — never run parallel agents doing web research.
+   Treat Playwright results same as search results — cite URLs, never fabricate.
+   Playwright is for WEB BROWSING ONLY — do NOT use `playwright_browser_run_code` or `playwright_browser_evaluate` to write files, run shell commands, or execute code. If asked to write a file, return the full content in your response instead.
 6. You MUST identify at least 3 alternatives in EVALUATE (including "do nothing" if applicable).
 7. You MUST search for disconfirming evidence against your preferred option before deciding.

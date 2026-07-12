@@ -200,15 +200,11 @@ If the request doesn't clearly map to any agents:
 
 ## Parallel vs Sequential
 
-**Default: sequential.** Venice search (`ai_venice_web_search`) is shared rate-limited across all agents. Running multiple agents in parallel causes rate-limit errors. Dispatch agents one at a time unless explicitly using different model providers.
+**Always sequential.** Every web research method is rate-limited or single-threaded: `ai_venice_web_search` (shared rate limit), `webfetch` (per-domain rate limit), Playwright (single browser instance). Parallel agents will produce rate-limit errors or browser conflicts. Dispatch agents one at a time, wait for return, then dispatch next.
 
-**Model identity for dispatch purposes:** default = parent model, `-fast` = minimax-m3, `-vision` = kimi-2.6. Two agents are "same model" if they share the same model identity, regardless of suffix.
-
-- **Same model → sequential.** Always. Shared rate limit on Venice search.
-- **Different models → parallel OK** only if neither agent needs `ai_venice_web_search` (e.g. pure reasoning tasks). If either agent needs web search, run sequentially.
-- **Different sub-request agents → sequential** unless confirmed no web search needed by either.
-- **Chains (one agent's output feeds the next) → always sequential.**
-- **Playwright browser tools → router-managed exclusive access.** Router grants browser access to ONE agent at a time. Include in agent's Task prompt: "You have exclusive browser access" or "Do NOT use Playwright browser tools — use web_search/webfetch only."
+- **Chains (one agent's output feeds the next) → sequential** as usual.
+- **Playwright browser tools → router-managed exclusive access.** Router grants browser access to ONE agent at a time in its Task prompt: "You have exclusive browser access" or "Do NOT use Playwright — use web_search/webfetch only."
+- **Web research fallback chain:** `ai_venice_web_search` (primary) → `webfetch` (if Venice rate-limited) → Playwright browser tools (if both fail, sequential-only). Pass this chain in each agent's Task prompt.
 
 ## Token Budget & Error Handling
 
