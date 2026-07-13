@@ -106,3 +106,17 @@ vim.keymap.set({ "n", "v" }, "d", [["xd]], { desc = "Delete to x register" })
 vim.keymap.set({ "n", "v" }, "D", [["xD]], { desc = "Delete to EOL to x register" })
 vim.keymap.set({ "n", "v" }, "c", [["xc]], { desc = "Change to x register" })
 vim.keymap.set({ "n", "v" }, "C", [["xC]], { desc = "Change to EOL to x register" })
+
+-- Grep with prefilled glob filter in input
+vim.keymap.set("n", "<leader>sg", function()
+  Snacks.picker.grep({
+    search = " -- -g *",
+    on_show = function()
+      vim.schedule(function()
+        vim.cmd("stopinsert")
+        vim.api.nvim_win_set_cursor(0, { 1, 0 })
+        vim.cmd("startinsert")
+      end)
+    end,
+  })
+end, { desc = "Grep (glob filter)" })
