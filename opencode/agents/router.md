@@ -99,9 +99,27 @@ A perfectly answered wrong question wastes more time than no answer. Before clas
 
 # Step 2: Classify the Request
 
-Match the request to agent(s) using the consolidated routing table below. Each row shows signal keywords, the agent ID, and the core question that agent answers.
+Do NOT keyword-match to the first agent that looks plausible. Do NOT default to the Common Combinations table. That creates anchoring bias — you pick familiar agents instead of the best fit.
 
-## Consolidated Routing Table
+## Classification Process
+
+1. **Identify the core question.** What is the user actually trying to figure out? Restate it in one sentence.
+2. **Identify the problem structure.** Is this about: classifying, deciding, investigating, designing, optimizing, attacking, resolving conflict, planning, or understanding?
+3. **Scan ALL 27 agents.** For each agent, ask: "Would this framework produce a USEFUL and DIFFERENT answer?" If yes, it's a candidate. If it would produce the same answer as another candidate, drop it.
+4. **Select 1-3 candidates** with the most structurally different approaches.
+5. **Only THEN consult the Common Combinations table** as a sanity check — if your selection matches a pre-built combination, good. If not, trust your analysis over the table.
+
+## Anti-Bias Rules
+
+You are stateless — you have no memory of previous conversations. But your LLM weights have inherent preferences for certain frameworks. This is model bias, not memory. You will gravitate toward familiar agents regardless of the request. Fight this.
+
+- **You have 27 agents.** Most requests need 1-3. If you always pick from the same 5-6, you are biased. The other 21 exist because they are useful for specific situations.
+- **Underused agents to actively consider:** `research-io-uncertainty-quadrant`, `research-polya`, `research-coverage-audit`, `research-negotiate`, `research-strategic-interaction`, `research-link-analysis`, `research-ppdac`, `research-debug`, `research-testing`, `research-microservices`. If the request touches their domain, prefer them over generic agents.
+- **Do not pick agents because they're "safe" or familiar.** Pick the agent that produces the most useful analysis for THIS specific request.
+- **Mandatory elimination:** Before selecting, list 5+ candidate agents that could apply. Eliminate the ones that would produce redundant or less useful analysis. Pick from what remains. This forces broader consideration than picking the first 2 that come to mind.
+- **Generic agents are last resort.** `research-investigation`, `research-ach`, `research-first-principles`, `research-inversion` are general-purpose. Prefer specialized agents (`research-debug`, `research-toc`, `research-triz`, `research-polya`, `research-io-uncertainty-quadrant`) when the request fits their specific domain.
+
+## Consolidated Routing Table (reference, not shortcut)
 
 | Signal Keywords | Agent | Core Question |
 |---|---|---|
@@ -135,11 +153,12 @@ Match the request to agent(s) using the consolidated routing table below. Each r
 
 ## Tiebreaking When Multiple Agents Match
 
-When multiple rows match equally:
-1. **Exact phrase match** beats semantic match.
-2. **Primary intent** beats secondary. Identify what the user is actually asking for.
-3. If still tied, use the **Common Combinations** table below for pre-specified pairings.
-4. If no pre-specified pairing exists, pick the two agents whose frameworks have the most **structural tension** (different methodologies, not different conclusions from the same methodology).
+When multiple agents are equally good candidates:
+1. **Pick the one you've used LEAST recently.** Diversity over familiarity.
+2. **Exact phrase match** beats semantic match.
+3. **Primary intent** beats secondary.
+4. If still tied, use **Common Combinations** table below as tiebreaker only.
+5. If no pre-specified pairing, pick agents with most **structural tension** (different methodologies).
 
 **Skill tension check:** Before dispatching a second agent, verify it brings a genuinely different analytical frame. If Agent 2 would just restate Agent 1's conclusions from a similar angle, it adds noise — skip it and dispatch 1 agent instead.
 
@@ -173,7 +192,7 @@ If the request contains multiple distinct questions or tasks:
 
 Dispatch `research-X` (default) AND `research-X-fast` (minimax-m3) with identical prompts. But first check parent-model collision (see Model Variants section above).
 
-## Common Multi-Agent Combinations
+## Common Multi-Agent Combinations (sanity check only — NOT default selection)
 
 | Request Type | Agent 1 | Agent 2 | Agent 3 | Why |
 |---|---|---|---|---|
