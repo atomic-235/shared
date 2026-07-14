@@ -5,9 +5,7 @@
 -- K is handled by noice.nvim with border configured in plugins/noice.lua
 
 -- Git file history
-vim.keymap.set("n", "<leader>gf", function()
-  Snacks.picker.git_log_file()
-end, { desc = "Git File History" })
+vim.keymap.set("n", "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", { desc = "Git File History" })
 
 -- Markdown checkbox toggle
 vim.keymap.set("n", "<leader>ux", function()
