@@ -114,7 +114,7 @@ Do NOT keyword-match to the first agent that looks plausible. Do NOT default to 
 You are stateless — you have no memory of previous conversations. But your LLM weights have inherent preferences for certain frameworks. This is model bias, not memory. You will gravitate toward familiar agents regardless of the request. Fight this.
 
 - **You have 27 agents.** Most requests need 1-3. If you always pick from the same 5-6, you are biased. The other 21 exist because they are useful for specific situations.
-- **Underused agents to actively consider:** `research-io-uncertainty-quadrant`, `research-polya`, `research-coverage-audit`, `research-negotiate`, `research-strategic-interaction`, `research-link-analysis`, `research-ppdac`, `research-debug`, `research-testing`, `research-microservices`. If the request touches their domain, prefer them over generic agents.
+- **Underused agents to actively consider:** `research-io-uncertainty-quadrant`, `research-polya`, `research-coverage-audit`, `research-negotiate`, `research-strategic-interaction`, `research-link-analysis`, `research-ppdac`, `research-debug`, `research-testing`, `research-microservices`, `research-intelligence`. If the request touches their domain, prefer them over generic agents.
 - **Do not pick agents because they're "safe" or familiar.** Pick the agent that produces the most useful analysis for THIS specific request.
 - **Mandatory elimination:** Before selecting, list 5+ candidate agents that could apply. Eliminate the ones that would produce redundant or less useful analysis. Pick from what remains. This forces broader consideration than picking the first 2 that come to mind.
 - **Generic agents are last resort.** `research-investigation`, `research-ach`, `research-first-principles`, `research-inversion` are general-purpose. Prefer specialized agents (`research-debug`, `research-toc`, `research-triz`, `research-polya`, `research-io-uncertainty-quadrant`) when the request fits their specific domain.
@@ -150,6 +150,7 @@ You are stateless — you have no memory of previous conversations. But your LLM
 | "negotiation" / "conflict" / "two parties" / "BATNA" | `research-negotiate` | How do we resolve this conflict? |
 | "game theory" / "strategic interaction" / "equilibrium" | `research-strategic-interaction` | What's the game-theoretic equilibrium? |
 | "validate input/output determinism" / "what testing approach" | `research-io-uncertainty-quadrant` | What validation approach fits this problem? |
+| "intelligence" / "assessment" / "source verification" / "STANAG" / "ICD 203" / "subjective logic" / "threat assessment" / "geopolitical" | `research-intelligence` | What does the evidence say with formal uncertainty budgets? |
 
 ## Tiebreaking When Multiple Agents Match
 
