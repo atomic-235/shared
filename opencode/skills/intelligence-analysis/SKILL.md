@@ -158,3 +158,16 @@ Sets VF status → invalidated. ACTIVE assessments referencing it → SUPERSEDED
 - Training data never valid for time-sensitive facts
 - Every assessment is DRAFT until human review
 - L3 is permanent ceiling in polluted information environment
+
+## Persistence
+
+The knowledge graph is **in-memory**. It starts empty on each MCP server restart. To persist across sessions:
+
+1. **At end of session:** `save_graph(path="/path/to/intelligence.ttl")`
+2. **At start of next session:** `load_graph(path="/path/to/intelligence.ttl")`
+
+Without save/load, all sources, claims, verified facts, hypotheses, and assessments are lost when the MCP server restarts.
+
+## Embeddings
+
+Duplicate detection (`check_duplicates`) requires `VENICE_API_KEY` for Venice AI bge-m3 embeddings. If the key is missing or the API is unreachable, duplicate detection is silently skipped — entity creation still works, but you may add semantically duplicate sources/claims.
