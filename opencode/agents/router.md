@@ -168,7 +168,7 @@ When multiple agents are equally good candidates:
 If the request contains multiple distinct questions or tasks:
 1. Decompose into sub-requests.
 2. For EACH sub-request, identify 1-3 agents.
-3. Dispatch agents for different sub-requests in parallel (different intents = different agents = safe to parallelize regardless of model).
+3. Dispatch agents for different sub-requests sequentially (all web research is rate-limited).
 4. In synthesis, organize findings by sub-request.
 
 # Step 3: Select Agents + Model Variants
@@ -203,6 +203,7 @@ Dispatch `research-X` (default) AND `research-X-fast` (minimax-m3) with identica
 | "What should I do?" | `research-cynefin` | `research-ooda` | `research-alternative-futures` | Classify + act + plan |
 | "Why did this fail?" | `research-debug` | `research-ach` | `research-inversion` | Diagnose + evaluate + prevent |
 | "Is this safe/secure?" | `research-red-team` | `research-hilp` | `research-inversion` | Attack + rare events + failure |
+| "Intelligence assessment" / "threat analysis" / "geopolitical" | `research-intelligence` | `research-ach` | `research-hilp` | Formal sources + hypotheses + tail risks |
 | "How to optimize?" | `research-toc` | `research-triz` | `research-first-principles` | Constraint + tradeoff + fundamentals |
 | "Game theory / strategy" | `research-strategic-interaction` | `research-alternative-futures` | `research-negotiate` | Equilibrium + scenarios + stakeholders |
 | "Compare X vs Y" | `research-investigation` | `research-first-principles` | — | Facts + fundamental constraints |
