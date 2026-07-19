@@ -17,7 +17,7 @@
         shell-tools = import ./modules/shell-tools.nix;
         neovim = import ./modules/neovim.nix;
         lazygit = import ./modules/lazygit.nix;
-        usql = import ./modules/usql.nix;
+        lazysql = import ./modules/lazysql.nix;
         opencode = import ./modules/opencode.nix;
         bash = import ./modules/bash.nix;
         yazi = import ./modules/yazi.nix;
