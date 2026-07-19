@@ -17,7 +17,7 @@
         shell-tools = import ./modules/shell-tools.nix;
         neovim = import ./modules/neovim.nix;
         lazygit = import ./modules/lazygit.nix;
-        harlequin = import ./modules/harlequin.nix;
+        litecli = import ./modules/litecli.nix;
         opencode = import ./modules/opencode.nix;
         bash = import ./modules/bash.nix;
         yazi = import ./modules/yazi.nix;
