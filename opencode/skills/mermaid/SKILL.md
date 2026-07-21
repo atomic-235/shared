@@ -45,6 +45,22 @@ Subtitle role`")
 
 **Why blank line:** The renderer wraps labels in `<div style="display: table; white-space: break-spaces">` with a `<p>` tag. A `<br>` inside a single `<p>` is ignored by Chrome's SVG foreignObject. A blank line creates two separate `<p>` elements which stack vertically.
 
+**Critical: Every line break requires its own blank line — not just the title/subtitle separation.** If two text lines share a single `<p>` (no blank line between them), Chrome's SVG foreignObject concatenates them with no space, e.g. "PuLP LP solverresult parsing".
+
+**Rule: one blank line per line break, everywhere in the backtick string.**
+
+```
+NODE("`**Bold Name**
+
+Line two
+
+Line three
+
+Line four`")
+```
+
+**Cylinder shape `[( )]` does not support backtick strings in the Chrome extension** — use rounded `( )` instead for any multiline database/storage nodes.
+
 **Why `theme: default`:** With `htmlLabels: false`, the `color` property in `classDef` is not applied to text. Using `theme: default` ensures dark text on light background regardless of host app's dark mode.
 
 ### GitHub / mermaid.live
