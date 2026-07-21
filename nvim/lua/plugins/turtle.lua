@@ -15,6 +15,15 @@ return {
           turtle = "turtle",
         },
       })
+      -- Disable modelines for turtle: URIs like <https://...> and
+      -- prefixed names like vi:foo trigger E518 (Unknown option) when
+      -- nvim's modeline parser misreads them as option syntax.
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "turtle",
+        callback = function()
+          vim.opt_local.modeline = false
+        end,
+      })
     end,
   },
 }
