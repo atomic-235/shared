@@ -72,6 +72,7 @@
     vscode-langservers-extracted
     lua-language-server
     nixd
+    yaml-language-server
     nixfmt
     ruff
     python313Packages.debugpy

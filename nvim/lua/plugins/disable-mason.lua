@@ -46,6 +46,10 @@ return {
             },
           },
         },
+        yamlls = {
+          mason = false,
+          cmd = { "yaml-language-server", "--stdio" },
+        },
       },
     },
   },
@@ -77,6 +81,7 @@ return {
         typescript = { "prettier" },
         typescriptreact = { "prettier" },
         markdown = { "prettier" },
+        yaml = { "prettier" },
       },
     },
   },
