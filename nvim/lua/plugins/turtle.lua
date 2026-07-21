@@ -1,5 +1,6 @@
--- Turtle RDF (.ttl) support: treesitter highlight + filetype registration.
--- LSP not configured: turtle-language-server (Stardog, npm) is not in nixpkgs.
+-- Turtle RDF (.ttl) support: treesitter highlight + filetype + LSP (swls).
+-- swls (Semantic Web Language Server) handles Turtle/TriG/JSON-LD/SPARQL.
+-- Pinned via nix flake input (swls-v0.4.1). Not in nixpkgs or lspconfig.
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -13,6 +14,8 @@ return {
         extension = {
           ttl = "turtle",
           turtle = "turtle",
+          -- swls also supports these, but we only register .ttl/.turtle
+          -- to avoid surprising users with new filetype mappings.
         },
       })
       -- Disable modelines for turtle: URIs like <https://...> and
@@ -25,5 +28,25 @@ return {
         end,
       })
     end,
+  },
+  -- Register swls as a new lspconfig server (not in upstream lspconfig).
+  -- swls speaks standard LSP over stdio. Configuration mirrors the
+  -- upstream swls.nvim plugin defaults.
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        swls = {
+          mason = false,
+          cmd = { "swls" },
+          filetypes = { "turtle" },
+          root_markers = { ".git" },
+          init_options = {
+            -- SPARQL support is experimental per swls docs; leave off.
+            sparql = false,
+          },
+        },
+      },
+    },
   },
 }
