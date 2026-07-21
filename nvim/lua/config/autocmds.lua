@@ -19,11 +19,16 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Disable wrap for markdown (markview inline virt_text wraps incorrectly with wrap on)
+-- Replace LazyVim's lazyvim_wrap_spell: keep spell checking for text filetypes
+-- but drop the wrap=true part so manual wrap toggles survive `:e` (FileType
+-- autocmds re-fire on `:e`, which was resetting wrap). Global nowrap default
+-- from LazyVim applies; per-buffer toggles now persist.
+vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "markdown",
+  group = vim.api.nvim_create_augroup("wrap_spell_noset", { clear = true }),
+  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
   callback = function()
-    vim.opt_local.wrap = false
+    vim.opt_local.spell = true
   end,
 })
 
