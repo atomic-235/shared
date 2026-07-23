@@ -1,16 +1,7 @@
 -- Smart confirm for Snacks file picker: binary files open a readonly
 -- message buffer in nvim instead of loading garbage bytes.
 -- Per-source `confirm` shortcut avoids the keymap override bug (#554).
-local system_exts = {
-  png = true, jpg = true, jpeg = true, gif = true, bmp = true,
-  webp = true, tiff = true, svg = true, xcf = true,
-  pdf = true, epub = true,
-  mp4 = true, mkv = true, webm = true, avi = true, mov = true,
-  mp3 = true, flac = true, wav = true, ogg = true,
-  odt = true, ods = true, odp = true,
-  doc = true, docx = true, xlsx = true, pptx = true,
-  zip = true, gz = true, tgz = true, bz2 = true, ["7z"] = true, rar = true,
-}
+local binary = require("utils.binary")
 
 return {
   {
@@ -41,35 +32,10 @@ return {
                 return Snacks.picker.actions.jump(picker, item, action)
               end
 
-              local ext = (vim.fn.fnamemodify(path, ":e") or ""):lower()
-
-              if system_exts[ext] then
+              if binary.is_binary(path) then
                 picker:close()
                 vim.schedule(function()
-                  local existing = vim.fn.bufnr("^" .. path .. "$")
-                  local buf
-                  if existing > 0 then
-                    buf = existing
-                  else
-                    buf = vim.api.nvim_create_buf(true, false)
-                    local rel = vim.fn.fnamemodify(path, ":~")
-                    vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-                      "",
-                      "  Binary file: " .. rel,
-                      "",
-                      "  This file cannot be displayed as text.",
-                      "  Press gx to open with system application.",
-                      "",
-                    })
-                    vim.bo[buf].filetype = "binary"
-                    vim.bo[buf].buftype = "nofile"
-                    vim.bo[buf].modifiable = false
-                    vim.api.nvim_buf_set_name(buf, path)
-                    vim.keymap.set("n", "gx", function()
-                      vim.system({ "xdg-open", path }, { detach = true })
-                    end, { buffer = buf, nowait = true, silent = true, desc = "Open with system app" })
-                  end
-                  vim.api.nvim_set_current_buf(buf)
+                  binary.open_binary(path)
                 end)
                 return true
               end

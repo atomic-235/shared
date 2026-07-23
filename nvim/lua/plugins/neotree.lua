@@ -61,6 +61,22 @@ return {
       width = 35,
       mappings = {
         ["<space>"] = "none", -- disable space to avoid conflict with leader
+        ["<cr>"] = function(state)
+          local node = state.tree:get_node()
+          if not node or node.type ~= "file" then
+            state.commands["open"](state)
+            return
+          end
+          local binary = require("utils.binary")
+          if binary.is_binary(node.path) then
+            require("neo-tree.sources.manager").navigate("filesystem", nil, node.path)
+            vim.schedule(function()
+              binary.open_binary(node.path)
+            end)
+            return
+          end
+          state.commands["open"](state)
+        end,
         ["gx"] = function(state)
           local node = state.tree:get_node()
           if node and node.path then
