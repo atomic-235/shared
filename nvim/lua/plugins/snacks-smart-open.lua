@@ -56,5 +56,30 @@ return {
       },
     },
   },
-
+  -- Reveal opened buffer in the existing Snacks explorer sidebar.
+  -- BufWinEnter fires on the main window when jump() opens a file.
+  -- Skip if BufWinEnter fires on the explorer's own buffer (feedback loop).
+  {
+    "folke/snacks.nvim",
+    init = function()
+      local group = vim.api.nvim_create_augroup("snacks_reveal_existing_explorer", { clear = true })
+      vim.api.nvim_create_autocmd("BufWinEnter", {
+        group = group,
+        callback = function(ev)
+          local explorer = Snacks.picker.get({ source = "explorer", tab = true })[1]
+          if not explorer or explorer.closed then
+            return
+          end
+          if explorer.list and explorer.list.win and explorer.list.win.buf == ev.buf then
+            return
+          end
+          local name = vim.api.nvim_buf_get_name(ev.buf)
+          if name == "" then
+            return
+          end
+          require("snacks.explorer").reveal({ buf = ev.buf })
+        end,
+      })
+    end,
+  },
 }
