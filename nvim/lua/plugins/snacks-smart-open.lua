@@ -49,12 +49,7 @@ return {
                 return true
               end
 
-              -- Text file: delegate to jump, then reveal in explorer.
-              picker:action("jump")
-              vim.defer_fn(function()
-                Snacks.explorer.reveal({ file = path })
-              end, 50)
-              return true
+              return Snacks.picker.actions.jump(picker, item, action)
             end,
           },
         },
