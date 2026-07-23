@@ -19,7 +19,17 @@ return {
       picker = {
         sources = {
           files = {
-            exclude = { ".Trash", ".Trash-1000", ".playwright", ".playwright-mcp", ".direnv" },
+            exclude = {
+              ".Trash", ".Trash-1000", ".playwright", ".playwright-mcp", ".direnv",
+              ".venv", ".ruff_cache", ".pytest_cache", ".mypy_cache",
+              ".databricks", ".dbx", ".dagster", ".airflow", ".dlt",
+              ".buildozer", ".angular", ".vite",
+              ".claude", ".opencode", ".agent_loop", ".generated",
+              ".obsidian", ".idea", ".vscode",
+              ".aws-sam", ".circleci", ".azuredevops", ".gitlab",
+              ".husky", ".tx", ".devcontainer", ".git-crypt",
+              ".secrets", ".ivpn-data", ".local",
+            },
             confirm = function(picker, item, action)
               if not item then
                 return Snacks.picker.actions.jump(picker, item, action)
