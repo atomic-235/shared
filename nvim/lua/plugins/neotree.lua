@@ -1,5 +1,37 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
+  init = function()
+    vim.api.nvim_create_autocmd("BufEnter", {
+      group = vim.api.nvim_create_augroup("neotree_reveal_on_open", { clear = true }),
+      callback = function(ev)
+        if vim.bo[ev.buf].filetype == "neo-tree" or vim.bo[ev.buf].filetype == "neo-tree-popup" then
+          return
+        end
+        local path = vim.api.nvim_buf_get_name(ev.buf)
+        if path == "" then
+          return
+        end
+        local win = vim.api.nvim_get_current_win()
+        if vim.api.nvim_win_get_config(win).relative ~= "" then
+          return
+        end
+        vim.schedule(function()
+          if not package.loaded["neo-tree"] then
+            return
+          end
+          local manager = require("neo-tree.sources.manager")
+          local state = manager.get_state("filesystem")
+          if not state or not state.path then
+            return
+          end
+          if path:sub(1, #state.path) ~= state.path then
+            return
+          end
+          manager.navigate("filesystem", nil, path)
+        end)
+      end,
+    })
+  end,
   opts = {
     filesystem = {
       hijack_netrw_behavior = "open_current", -- opens neo-tree when opening a directory
