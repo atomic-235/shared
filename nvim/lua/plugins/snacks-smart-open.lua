@@ -62,7 +62,7 @@ return {
                   vim.bo[buf].modifiable = false
                   vim.api.nvim_set_current_buf(buf)
                   vim.keymap.set("n", "gx", function()
-                    vim.ui.open(path)
+                    vim.system({ "xdg-open", path }, { detach = true })
                   end, { buffer = buf, nowait = true, silent = true, desc = "Open with system app" })
                 end)
                 return true
