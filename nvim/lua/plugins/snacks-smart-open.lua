@@ -21,7 +21,8 @@ return {
           files = {
             exclude = {
               ".Trash", ".Trash-1000", ".playwright", ".playwright-mcp", ".direnv",
-              ".venv", ".ruff_cache", ".pytest_cache", ".mypy_cache",
+              ".venv", ".ruff_cache", ".pytest_cache", ".mypy_cache", "__pycache__",
+              ".eggs", "*.egg-info",
               ".databricks", ".dbx", ".dagster", ".airflow", ".dlt",
               ".buildozer", ".angular", ".vite",
               ".claude", ".opencode", ".agent_loop", ".generated",
