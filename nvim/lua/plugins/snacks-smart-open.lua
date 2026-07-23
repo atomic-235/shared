@@ -1,5 +1,5 @@
--- Smart confirm for Snacks file picker: open images/PDFs/media with
--- xdg-open instead of loading binary into nvim buffer.
+-- Smart confirm for Snacks file picker: binary files open a readonly
+-- message buffer in nvim instead of loading garbage bytes.
 -- Per-source `confirm` shortcut avoids the keymap override bug (#554).
 local system_exts = {
   png = true, jpg = true, jpeg = true, gif = true, bmp = true,
@@ -45,7 +45,23 @@ return {
 
               if system_exts[ext] then
                 picker:close()
-                vim.system({ "xdg-open", path }, { detach = true })
+                local buf = vim.api.nvim_create_buf(false, true)
+                local rel = vim.fn.fnamemodify(path, ":~")
+                vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+                  "",
+                  "  Binary file: " .. rel,
+                  "",
+                  "  This file cannot be displayed as text.",
+                  "  Press gx to open with system application.",
+                  "",
+                })
+                vim.bo[buf].filetype = "binary"
+                vim.bo[buf].modifiable = false
+                vim.bo[buf].readonly = true
+                vim.api.nvim_set_current_buf(buf)
+                vim.keymap.set("n", "gx", function()
+                  vim.system({ "xdg-open", path }, { detach = true })
+                end, { buffer = buf, nowait = true, silent = true })
                 return true
               end
 
@@ -55,31 +71,5 @@ return {
         },
       },
     },
-  },
-  -- Reveal opened buffer in the existing Snacks explorer sidebar.
-  -- BufWinEnter fires on the main window when jump() opens a file.
-  -- Skip if BufWinEnter fires on the explorer's own buffer (feedback loop).
-  {
-    "folke/snacks.nvim",
-    init = function()
-      local group = vim.api.nvim_create_augroup("snacks_reveal_existing_explorer", { clear = true })
-      vim.api.nvim_create_autocmd("BufWinEnter", {
-        group = group,
-        callback = function(ev)
-          local explorer = Snacks.picker.get({ source = "explorer", tab = true })[1]
-          if not explorer or explorer.closed then
-            return
-          end
-          if explorer.list and explorer.list.win and explorer.list.win.buf == ev.buf then
-            return
-          end
-          local name = vim.api.nvim_buf_get_name(ev.buf)
-          if name == "" then
-            return
-          end
-          require("snacks.explorer").reveal({ buf = ev.buf })
-        end,
-      })
-    end,
   },
 }
