@@ -19,9 +19,12 @@ end
 function M.open_binary(path)
   local existing = vim.fn.bufnr("^" .. path .. "$")
   local buf
-  if existing > 0 then
+  if existing > 0 and vim.bo[existing].filetype == "binary" then
     buf = existing
   else
+    if existing > 0 then
+      vim.api.nvim_buf_delete(existing, { force = true })
+    end
     buf = vim.api.nvim_create_buf(true, false)
     local rel = vim.fn.fnamemodify(path, ":~")
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
