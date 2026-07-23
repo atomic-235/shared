@@ -34,9 +34,17 @@ return {
           if node and node.type == "file" then
             local binary = require("utils.binary")
             if binary.is_binary(node.path) then
+              for _, win in ipairs(vim.api.nvim_list_wins()) do
+                local wb = vim.api.nvim_win_get_buf(win)
+                if vim.bo[wb].filetype ~= "neo-tree" and vim.bo[wb].filetype ~= "neo-tree-popup" then
+                  vim.api.nvim_set_current_win(win)
+                  break
+                end
+              end
               vim.schedule(function()
                 binary.open_binary(node.path)
               end)
+              require("neo-tree.command").execute({ action = "close" })
               return
             end
           end
