@@ -49,7 +49,17 @@ return {
                 return true
               end
 
-              return Snacks.picker.actions.jump(picker, item, action)
+              -- Text file: delegate to jump, then focus explorer on opened file.
+              Snacks.picker.actions.jump(picker, item, action)
+              vim.schedule(function()
+                for _, p in ipairs(Snacks.picker.pickers or {}) do
+                  if p.opts.source == "explorer" and not p.closed then
+                    local Actions = require("snacks.explorer.actions")
+                    Actions.update(p, { target = path })
+                  end
+                end
+              end)
+              return true
             end,
           },
         },
