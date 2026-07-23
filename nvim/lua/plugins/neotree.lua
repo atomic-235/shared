@@ -4,6 +4,10 @@ return {
     filesystem = {
       hijack_netrw_behavior = "open_current", -- opens neo-tree when opening a directory
       use_libuv_file_watcher = true,
+      follow_current_file = {
+        enabled = true,
+        leave_dirs_open = true,
+      },
       filtered_items = {
         visible = false,
         hide_dotfiles = false,
