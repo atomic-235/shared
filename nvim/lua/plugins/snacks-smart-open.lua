@@ -1,5 +1,6 @@
--- Smart confirm: open images/PDFs with xdg-open instead of as buffers.
--- Applied to Snacks picker confirm action globally.
+-- Smart confirm: open images/PDFs/media with xdg-open instead of as buffers.
+-- For text files, delegates to Snacks' built-in jump action
+-- so split/vtab/reuse_win/jumplist/tagstack all keep working.
 local binary_exts = {
   png = true, jpg = true, jpeg = true, gif = true, bmp = true,
   webp = true, svg = true, ico = true, tiff = true,
@@ -31,13 +32,13 @@ return {
             end
             local ext = item.file:match("%.([^.]+)$")
             if ext and binary_exts[ext:lower()] then
+              -- Binary file: open with system handler (xdg-open on Linux).
+              picker:close()
               vim.ui.open(item.file)
-              picker:close()
             else
-              picker:close()
-              vim.schedule(function()
-                vim.cmd("edit " .. vim.fn.fnameescape(item.file))
-              end)
+              -- Text file: delegate to Snacks' built-in jump action.
+              -- jump() handles close, jumplist, tagstack, split/vtab, etc.
+              require("snacks.picker.actions").jump(picker, item)
             end
           end,
         },
