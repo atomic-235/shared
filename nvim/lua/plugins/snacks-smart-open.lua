@@ -19,7 +19,7 @@ return {
       picker = {
         sources = {
           files = {
-            args = { "--exclude", ".Trash", "--exclude", ".playwright" },
+            exclude = { ".Trash", ".playwright" },
             confirm = function(picker, item, action)
               if not item then
                 return Snacks.picker.actions.jump(picker, item, action)
