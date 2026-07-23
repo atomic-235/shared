@@ -45,23 +45,26 @@ return {
 
               if system_exts[ext] then
                 picker:close()
-                local buf = vim.api.nvim_create_buf(false, true)
-                local rel = vim.fn.fnamemodify(path, ":~")
-                vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
-                  "",
-                  "  Binary file: " .. rel,
-                  "",
-                  "  This file cannot be displayed as text.",
-                  "  Press gx to open with system application.",
-                  "",
-                })
-                vim.bo[buf].filetype = "binary"
-                vim.bo[buf].modifiable = false
-                vim.bo[buf].readonly = true
-                vim.api.nvim_set_current_buf(buf)
-                vim.keymap.set("n", "gx", function()
-                  vim.system({ "xdg-open", path }, { detach = true })
-                end, { buffer = buf, nowait = true, silent = true })
+                vim.schedule(function()
+                  local buf = vim.api.nvim_create_buf(true, false)
+                  vim.api.nvim_buf_set_name(buf, path)
+                  local rel = vim.fn.fnamemodify(path, ":~")
+                  vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+                    "",
+                    "  Binary file: " .. rel,
+                    "",
+                    "  This file cannot be displayed as text.",
+                    "  Press gx to open with system application.",
+                    "",
+                  })
+                  vim.bo[buf].filetype = "binary"
+                  vim.bo[buf].buftype = "nofile"
+                  vim.bo[buf].modifiable = false
+                  vim.api.nvim_set_current_buf(buf)
+                  vim.keymap.set("n", "gx", function()
+                    vim.ui.open(path)
+                  end, { buffer = buf, nowait = true, silent = true, desc = "Open with system app" })
+                end)
                 return true
               end
 
