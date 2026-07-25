@@ -88,7 +88,7 @@ let
         let
           personal = builtins.fromJSON (builtins.readFile personalPath);
           mergedLsp = (personal.lsp or {}) // sharedLsp.lsp;
-          merged = personal // { lsp = mergedLsp; };
+          merged = personal // { lsp = mergedLsp; subagent_depth = personal.subagent_depth or 2; };
         in
           builtins.toFile "opencode.json" (builtins.toJSON merged);
 in
