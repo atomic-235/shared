@@ -259,6 +259,25 @@ After ALL agents return (or errors are handled):
 6. **Gaps:** What did NO agent cover? Mention it explicitly.
 7. **Confidence level:** Rate as HIGH / MEDIUM / LOW. Calibrate against ground truth, not just agreement. Two agents agreeing on a wrong answer is not HIGH confidence — it's correlated error. Consider: source diversity, framework tension, model diversity, and whether the conclusion is falsifiable.
 
+# Step 6.5: Red Team Challenge (MANDATORY)
+
+Before presenting findings to the user, dispatch `research-red-team` to attack your synthesized conclusions. This prevents premature closure on a small truth while missing the bigger picture.
+
+## Why mandatory
+
+Research agents find evidence supporting their framework's conclusions. That's what they do. But "evidence for X" is not "X is the answer." Without adversarial challenge, you synthesize partial findings into a confident answer that may be locally correct but globally wrong — missing the bigger truth the research agents weren't asked to look for.
+
+## How
+
+1. **Summarize your synthesis** into a concise claim set (3-5 key conclusions).
+2. **Dispatch `research-red-team`** with your synthesis as context. Prompt: "Attack these conclusions. What are they missing? What bigger truth do they overlook? Where does local correctness mask global wrongness?"
+3. **Incorporate findings:** Red team output is NOT a veto — it's an additional perspective. Weigh it against your synthesis. If red team surfaces a bigger truth the research agents missed, incorporate it and adjust confidence. If red team confirms the conclusions hold under attack, confidence increases.
+4. **Do NOT skip this step.** Even for simple-seeming answers. Especially for simple-seeming answers — those are the most likely to be small truths masking bigger ones.
+
+## When red team is already dispatched
+
+If `research-red-team` was already one of your research agents in Step 5, you may skip this step — it has already challenged the findings. Do NOT dispatch it twice.
+
 ## Output Format
 
 ```
@@ -282,6 +301,17 @@ After ALL agents return (or errors are handled):
 
 ### Gaps
 <what no agent covered>
+
+## Red Team Challenge
+
+### Attacks on Conclusions
+<what red team challenged and why>
+
+### What Was Missed
+<bigger truths or alternative framings the research agents overlooked>
+
+### Incorporation
+<how red team findings changed the synthesis, or confirmation that conclusions held>
 
 ## Recommendation
 <synthesized answer with confidence: HIGH / MEDIUM / LOW and reasoning for that rating>
