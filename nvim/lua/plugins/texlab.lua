@@ -44,7 +44,7 @@ local function forward_search(buf)
             "dbus-send", "--session", "--print-reply",
             "--dest=org.pwmt.zathura.PID-" .. name,
             "/org/pwmt/zathura", "org.pwmt.zathura.SynctexView",
-            "string:" .. filename, "uint32:" .. line, "uint32:" .. col
+            "string:" .. filename, "uint32:" .. line, "uint32:0"
           }, { detach = true })
           return
         end
