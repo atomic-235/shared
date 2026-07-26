@@ -91,7 +91,8 @@ return {
 
           -- Set NVIM env var for nvr (inverse search from zathura)
           -- Use fixed socket path so zathura's nvr can find this nvim instance
-          local socket = "/run/user/" .. vim.fn.getuid() .. "/nvim.texlab"
+          local xdg = os.getenv("XDG_RUNTIME_DIR") or ("/run/user/" .. os.getuid())
+          local socket = xdg .. "/nvim.texlab"
           vim.fn.serverstart(socket)
           vim.env.NVIM = socket
 
