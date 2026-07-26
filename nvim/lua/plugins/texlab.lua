@@ -136,21 +136,17 @@ return {
           vim.keymap.set("n", "<leader>lf", function() forward_search(buf) end, { buffer = buf, desc = "LaTeX Forward Search" })
           vim.keymap.set("n", "<leader>lv", view_pdf, { buffer = buf, desc = "LaTeX View PDF" })
 
-          -- Auto forward search on CursorHold (cursor stops moving in Normal mode)
+          -- Auto forward search only on cursor position change (not on every CursorHold)
+          local last_line = -1
           vim.api.nvim_create_autocmd("CursorHold", {
             group = sync_group,
             buffer = buf,
             callback = function()
-              forward_search(buf)
-            end,
-          })
-
-          -- Auto forward search on scroll
-          vim.api.nvim_create_autocmd({ "WinScrolled" }, {
-            group = sync_group,
-            buffer = buf,
-            callback = function()
-              forward_search(buf)
+              local cur_line = vim.api.nvim_win_get_cursor(0)[1]
+              if cur_line ~= last_line then
+                last_line = cur_line
+                forward_search(buf)
+              end
             end,
           })
         end,
