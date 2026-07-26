@@ -91,11 +91,13 @@ return {
 
           -- Set NVIM env var for nvr (inverse search from zathura)
           -- Use fixed socket path so zathura's nvr can find this nvim instance
-          local xdg = os.getenv("XDG_RUNTIME_DIR")
-          if xdg then
-            local socket = xdg .. "/nvim.texlab"
-            vim.fn.serverstart(socket)
-            vim.env.NVIM = socket
+          if not os.getenv("NVIM") then
+            local xdg = os.getenv("XDG_RUNTIME_DIR")
+            if xdg then
+              local socket = xdg .. "/nvim.texlab"
+              pcall(vim.fn.serverstart, socket)
+              vim.env.NVIM = socket
+            end
           end
 
           -- Manual keymaps
