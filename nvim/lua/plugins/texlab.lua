@@ -83,9 +83,11 @@ return {
 
           -- Forward search: jump to cursor position in Zathura
           vim.keymap.set("n", "<leader>lf", function()
+            local client = vim.lsp.get_clients({ bufnr = 0, name = "texlab" })[1]
+            local offset_encoding = client and client.offset_encoding or "utf-16"
             texlab_request("textDocument/forwardSearch", {
-              textDocument = vim.lsp.util.make_text_document_params(),
-              position = vim.lsp.util.make_position_params(0),
+              textDocument = vim.lsp.util.make_text_document_params(offset_encoding),
+              position = vim.lsp.util.make_position_params(0, offset_encoding),
             })
           end, { buffer = true, desc = "LaTeX Forward Search" })
 
