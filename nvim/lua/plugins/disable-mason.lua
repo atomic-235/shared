@@ -50,6 +50,10 @@ return {
           mason = false,
           cmd = { "yaml-language-server", "--stdio" },
         },
+        texlab = {
+          mason = false,
+          cmd = { "texlab" },
+        },
       },
     },
   },

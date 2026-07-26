@@ -73,6 +73,7 @@
     lua-language-server
     nixd
     yaml-language-server
+    texlab
     nixfmt
     ruff
     python313Packages.debugpy
