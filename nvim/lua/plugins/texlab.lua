@@ -89,6 +89,13 @@ return {
         callback = function(event)
           local buf = event.buf
 
+          -- Set NVIM env var for nvr (inverse search from zathura)
+          -- nvr uses $NVIM to find the running nvim instance
+          if not os.getenv("NVIM") then
+            local socket = vim.fn.serverstart()
+            vim.env.NVIM = socket
+          end
+
           -- Manual keymaps
           vim.keymap.set("n", "<leader>lb", function() build_document(buf) end, { buffer = buf, desc = "LaTeX Build" })
           vim.keymap.set("n", "<leader>lf", function() forward_search(buf) end, { buffer = buf, desc = "LaTeX Forward Search" })
