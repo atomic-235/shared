@@ -24,6 +24,7 @@ local function forward_search(buf)
   local enc = client.offset_encoding or "utf-16"
   local pos = vim.lsp.util.make_position_params(0, enc)
   local line = pos.position.line + 1
+  local col = pos.position.character + 1
   local filename = vim.api.nvim_buf_get_name(buf)
   local pdf = filename:gsub("%.tex$", ".pdf")
   if vim.fn.filereadable(pdf) == 0 then return end
@@ -43,7 +44,7 @@ local function forward_search(buf)
             "dbus-send", "--session", "--print-reply",
             "--dest=org.pwmt.zathura.PID-" .. name,
             "/org/pwmt/zathura", "org.pwmt.zathura.SynctexView",
-            "string:" .. filename, "uint32:" .. line, "uint32:0"
+            "string:" .. filename, "uint32:" .. line, "uint32:" .. col
           }, { detach = true })
           return
         end
