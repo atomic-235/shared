@@ -2,24 +2,44 @@
 -- Forward search: cursor in nvim → jump to matching position in Zathura PDF
 -- Inverse search: Ctrl+click in Zathura → jump to matching line in nvim
 --   (requires zathurarc: set synctex-editor-command "nvr --remote-silent +%{line} %{input}")
+-- Auto-sync: moving cursor in nvim (Normal mode) or scrolling auto-jumps Zathura
 
 local function texlab_request(method, params)
   local clients = vim.lsp.get_clients({ bufnr = 0, name = "texlab" })
   if #clients == 0 then
-    vim.notify("texlab LSP not attached", vim.log.levels.WARN)
     return
   end
   clients[1]:request(method, params, function(err, result)
     if err then
       vim.notify("texlab error: " .. vim.inspect(err), vim.log.levels.ERROR)
-    elseif result and result.status ~= nil then
-      if result.status == 0 then
-        vim.notify("texlab: success", vim.log.levels.INFO)
-      else
-        vim.notify("texlab: " .. (result.message or "failed (status=" .. result.status .. ")"), vim.log.levels.WARN)
-      end
     end
   end)
+end
+
+local function forward_search(buf)
+  local client = vim.lsp.get_clients({ bufnr = buf, name = "texlab" })[1]
+  if not client then return end
+  local enc = client.offset_encoding or "utf-16"
+  local pos = vim.lsp.util.make_position_params(0, enc)
+  texlab_request("textDocument/forwardSearch", {
+    textDocument = vim.lsp.util.make_text_document_params(buf),
+    position = pos.position,
+  })
+end
+
+local function build_document(buf)
+  texlab_request("textDocument/build", {
+    textDocument = vim.lsp.util.make_text_document_params(buf),
+  })
+end
+
+local function view_pdf()
+  local fname = vim.fn.expand("%:p:r") .. ".pdf"
+  if vim.fn.filereadable(fname) == 1 then
+    vim.fn.jobstart({ "zathura", fname }, { detach = true })
+  else
+    vim.notify("PDF not found: " .. fname .. " — build first", vim.log.levels.WARN)
+  end
 end
 
 return {
@@ -41,7 +61,7 @@ return {
                   "%f",
                 },
                 forwardSearchAfter = true,
-                onSave = false,
+                onSave = true,
               },
               forwardSearch = {
                 executable = "zathura",
@@ -61,38 +81,36 @@ return {
       },
     },
     init = function()
+      local sync_group = vim.api.nvim_create_augroup("TexlabSync", { clear = true })
+
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "tex",
+        group = sync_group,
         callback = function(event)
           local buf = event.buf
 
-          -- Build document (latexmk via texlab)
-          vim.keymap.set("n", "<leader>lb", function()
-            texlab_request("textDocument/build", {
-              textDocument = vim.lsp.util.make_text_document_params(buf),
-            })
-          end, { buffer = buf, desc = "LaTeX Build" })
+          -- Manual keymaps
+          vim.keymap.set("n", "<leader>lb", function() build_document(buf) end, { buffer = buf, desc = "LaTeX Build" })
+          vim.keymap.set("n", "<leader>lf", function() forward_search(buf) end, { buffer = buf, desc = "LaTeX Forward Search" })
+          vim.keymap.set("n", "<leader>lv", view_pdf, { buffer = buf, desc = "LaTeX View PDF" })
 
-          -- Forward search: jump to cursor position in Zathura
-          vim.keymap.set("n", "<leader>lf", function()
-            local client = vim.lsp.get_clients({ bufnr = buf, name = "texlab" })[1]
-            local offset_encoding = client and client.offset_encoding or "utf-16"
-            local pos = vim.lsp.util.make_position_params(0, offset_encoding)
-            texlab_request("textDocument/forwardSearch", {
-              textDocument = vim.lsp.util.make_text_document_params(buf),
-              position = pos.position,
-            })
-          end, { buffer = buf, desc = "LaTeX Forward Search" })
+          -- Auto forward search on CursorHold (cursor stops moving in Normal mode)
+          vim.api.nvim_create_autocmd("CursorHold", {
+            group = sync_group,
+            buffer = buf,
+            callback = function()
+              forward_search(buf)
+            end,
+          })
 
-          -- View PDF in Zathura (open without forward search)
-          vim.keymap.set("n", "<leader>lv", function()
-            local fname = vim.fn.expand("%:p:r") .. ".pdf"
-            if vim.fn.filereadable(fname) == 1 then
-              vim.fn.jobstart({ "zathura", fname }, { detach = true })
-            else
-              vim.notify("PDF not found: " .. fname .. " — build first", vim.log.levels.WARN)
-            end
-          end, { buffer = buf, desc = "LaTeX View PDF" })
+          -- Auto forward search on scroll
+          vim.api.nvim_create_autocmd({ "WinScrolled" }, {
+            group = sync_group,
+            buffer = buf,
+            callback = function()
+              forward_search(buf)
+            end,
+          })
         end,
       })
     end,
