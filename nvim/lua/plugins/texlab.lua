@@ -60,7 +60,7 @@ return {
                   "-synctex=1",
                   "%f",
                 },
-                forwardSearchAfter = true,
+                forwardSearchAfter = false,
                 onSave = true,
               },
               forwardSearch = {
