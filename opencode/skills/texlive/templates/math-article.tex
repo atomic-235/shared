@@ -1,0 +1,183 @@
+%%% math-article.tex
+%%% Template for pure mathematics articles using AMS-LaTeX
+%%% Based on AMS best practices and community conventions
+%%%------------------------------------------------------------------
+\documentclass[11pt]{amsart}
+
+%%% Packages
+\usepackage{mathtools}   % loads amsmath, fixes bugs, adds extensions
+\usepackage{amssymb}     % \mathbb, \mathfrak, extra symbols
+\usepackage{bm}          % bold math symbols (\bm)
+\usepackage{graphicx}    % includegraphics (uncomment if needed)
+% \usepackage{hyperref}  % hyperlinks (uncomment if needed, load last)
+
+%%% Equation numbering
+\numberwithin{equation}{section}
+
+%%% Theorem environments
+% plain style: italic body (theorems, lemmas, propositions, corollaries)
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+
+% definition style: upright body (definitions, examples)
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{ex}[thm]{Example}
+
+% remark style: upright body (remarks, notes)
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem*{note}{Note}
+
+%%% Math operators (define your own)
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Ext}{Ext}
+\DeclareMathOperator{\Tor}{Tor}
+% \DeclareMathOperator*{\limsup}{lim\,sup}  % limits below (like \lim)
+
+%%% Common macros — number sets
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+
+%%% Common macros — bold vectors/matrices
+\newcommand{\vect}[1]{\bm{#1}}
+\newcommand{\mat}[1]{\bm{#1}}
+
+%%% Common macros — differential (choose ONE convention)
+% Convention 1: upright d (ISO standard, common in applied math)
+\newcommand{\dd}{\mathrm{d}}
+% Convention 2: italic d with thin space (pure math convention, Knuth)
+% \newcommand{\dd}{\,d}
+
+%%% Common macros — formatting
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\inner}[2]{\langle #1, #2 \rangle}
+\newcommand{\set}[1]{\{\, #1 \,\}}
+
+%%%------------------------------------------------------------------
+\begin{document}
+
+\title[Short title]{Full Title of the Paper}
+\author{Author Name}
+\address{Department of Mathematics, University, City, Country}
+\email{author@university.edu}
+\date{\today}
+
+\subjclass[2020]{Primary 00A00; Secondary 00B00}
+\keywords{keyword one, keyword two, keyword three}
+
+\begin{abstract}
+Write the abstract here. Summarize the main results and techniques.
+\end{abstract}
+
+\maketitle
+
+%%%------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+Write the introduction here. Use inline math like $f \colon X \to Y$.
+
+A single numbered equation:
+\begin{equation}
+  \label{eq:example}
+  \int_0^1 f(x) \, \dd x = F(1) - F(0).
+\end{equation}
+
+Reference it with \eqref{eq:example}.
+
+%%%------------------------------------------------------------------
+\section{Main Results}
+\label{sec:main}
+
+\begin{thm}[Main Theorem]
+  \label{thm:main}
+  Let $X$ be a complete metric space and $T \colon X \to X$ a contraction
+  mapping with constant $k < 1$. Then $T$ has a unique fixed point $x^* \in X$.
+\end{thm}
+
+\begin{proof}
+  Define the sequence $x_{n+1} = T(x_n)$ for some starting point $x_0 \in X$.
+  We show $\{x_n\}$ is Cauchy:
+  \begin{align*}
+    \norm{x_{n+1} - x_n}
+      &= \norm{T(x_n) - T(x_{n-1})} \\
+      &\le k \norm{x_n - x_{n-1}} \\
+      &\le k^n \norm{x_1 - x_0}.
+  \end{align*}
+  Since $k < 1$, the geometric series converges, so $\{x_n\}$ is Cauchy.
+  Completeness gives convergence; continuity of $T$ gives the fixed point.
+\end{proof}
+
+\begin{cor}
+  \label{cor:apply}
+  The fixed point depends continuously on the contraction map $T$.
+\end{cor}
+
+\begin{defn}
+  \label{defn:lipschitz}
+  A function $f \colon X \to Y$ between metric spaces is \emph{Lipschitz}
+  if there exists $L \ge 0$ such that $\norm{f(x) - f(y)} \le L \norm{x - y}$
+  for all $x, y \in X$.
+\end{defn}
+
+\begin{rem}
+  Every contraction is Lipschitz with constant $L = k < 1$.
+\end{rem}
+
+%%% Aligned equations with shared number
+\begin{equation}
+  \label{eq:multiline}
+  \begin{split}
+    a &= b + c \\
+      &= d + e + f \\
+      &= g.
+  \end{split}
+\end{equation}
+
+%%% Gathered equations (centered, each numbered)
+\begin{gather}
+  \label{eq:gather1}
+  \alpha = \beta + \gamma, \\
+  \label{eq:gather2}
+  \delta = \epsilon.
+\end{gather}
+
+%%%------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+Summarize results and discuss future directions.
+
+%%%------------------------------------------------------------------
+%%% Bibliography (bibtex + amsplain)
+%%% Create a .bib file and uncomment:
+% \bibliographystyle{amsplain}
+% \bibliography{references}
+
+%%% Or inline bibliography (amsrefs style):
+% \begin{bibdiv}
+%   \begin{biblist}
+%     \bib{key}{article}{
+%       author={Name, A.},
+%       title={Title},
+%       journal={Journal},
+%       date={2024},
+%       volume={1},
+%       pages={1--10},
+%     }
+%   \end{biblist}
+% \end{bibdiv}
+
+\end{document}

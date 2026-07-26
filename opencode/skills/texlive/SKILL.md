@@ -1,6 +1,6 @@
 ---
 name: texlive
-description: Use when compiling LaTeX documents via the texlive/texlive Docker container. Covers pdflatex/xelatex/lualatex, latexmk, biber/bibtex, tlmgr package management, and common compilation errors. Use instead of installing TeX Live natively.
+description: Use when compiling LaTeX documents via the texlive/texlive Docker container. Covers pdflatex/xelatex/lualatex, latexmk, biber/bibtex, tlmgr package management, common compilation errors, and math article best practices (amsart, amsmath, theorems, multiline equations). Use instead of installing TeX Live natively. Includes a ready-to-use math article template.
 ---
 
 # TeX Live Docker Skill
@@ -197,6 +197,177 @@ docker run -d --name texlive -v "$PWD:/workdir" -w /workdir texlive/texlive:late
 docker exec texlive latexmk -pdf document.tex
 docker stop texlive && docker rm texlive
 ```
+
+## Math article best practices
+
+### Document class
+
+| Class | Use when |
+|-------|----------|
+| `amsart` | AMS journal submissions, pure math papers (auto-loads amsmath + amsthm) |
+| `article` | Portability, preprints, non-AMS journals (add `\usepackage{amsmath,amsthm}`) |
+
+`amsart` defaults: 10pt, left equation numbers, structured top matter (`\author`, `\address`, `\email`, `\subjclass`, `\keywords`).
+
+### Standard package stack (pdflatex)
+
+```latex
+\usepackage{mathtools}  % loads amsmath, fixes bugs, adds extensions
+\usepackage{amssymb}     % loads amsfonts: \mathbb, \mathfrak, extra symbols
+\usepackage{amsthm}      % theorem environments (skip if using amsart)
+\usepackage{bm}          % bold math symbols (superior to \boldsymbol)
+```
+
+For `lualatex`/`xelatex`: use `unicode-math` with a math font instead:
+```latex
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}  % or Libertinus Math, New Computer Modern Math
+```
+
+### Packages to avoid
+
+| Package | Problem | Alternative |
+|---------|---------|-------------|
+| `physics` | Spacing issues, counter-intuitive syntax | Define custom macros |
+| `eqnarray` | Deprecated, broken spacing around `=` | `align` from amsmath |
+| `$$ ... $$` | Deprecated (plain TeX relic) | `\[ ... \]` or `equation` env |
+
+### Theorem environments (amsthm)
+
+Three built-in styles:
+
+| Style | Body font | Use for |
+|-------|-----------|---------|
+| `plain` | Italic | Theorem, Lemma, Proposition, Corollary |
+| `definition` | Upright | Definition, Example |
+| `remark` | Upright | Remark, Note |
+
+```latex
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}         % shared counter with thm
+\newtheorem{cor}[thm]{Corollary}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem*{note}{Note}             % unnumbered
+```
+
+- `\numberwithin{equation}{section}` — section-based equation numbering
+- `proof` environment auto-adds QED symbol
+- **Proof goes OUTSIDE the theorem environment** — do not nest
+- `\newtheorem*` for unnumbered environments
+
+### Multiline equations
+
+| Environment | Use case | Numbering |
+|-------------|----------|-----------|
+| `equation` | Single equation | One number |
+| `align` | Multiple aligned equations | One per line |
+| `split` (inside `equation`) | One long equation, aligned | One number |
+| `gather` | Centered consecutive equations | One per line |
+| `multline` | One long equation, no alignment | One number |
+| `aligned` (inside `\[\]` or `equation`) | Like align but inner | No standalone |
+
+- Starred variants (`align*`, `gather*`, `equation*`) suppress numbering
+- `\notag` on individual lines to suppress specific numbers
+- `\label{eq:name}` + `\eqref{eq:name}` for cross-references (adds parens)
+
+### Text in math mode
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `\operatorname{}` | Function names (proper spacing) | `\operatorname{sgn}` |
+| `\DeclareMathOperator` | Define reusable operators | `\DeclareMathOperator{\sgn}{sgn}` |
+| `\text{}` | Words in math (uses text font) | `x \text{ if } x > 0` |
+| `\mathrm{}` | Upright Roman in math (no op spacing) | `\mathrm{d}` |
+
+- **Do not use `\text` for function names** — use `\operatorname` or `\DeclareMathOperator`
+- `\DeclareMathOperator*` for operators with limits below (e.g., `\lim`)
+
+### Dots and ellipsis
+
+With `amsmath` loaded, `\dots` auto-selects baseline vs centered based on context:
+
+| Command | Context | Example |
+|---------|---------|---------|
+| `\dots` | Auto-detect (preferred) | `a_1, \dots, a_n` |
+| `\dotsc` | After commas | `a, \dotsc, z` |
+| `\dotsb` | Between binary operators | `a + \dotsb + z` |
+| `\dotsm` | Multiplication | `a_1 \dotsm a_n` |
+| `\dotsi` | Integrals | `\int \dotsi \int` |
+
+### Bold math
+
+| Command | Source | Handles | Style |
+|---------|--------|---------|-------|
+| `\bm{}` | bm package | Latin, Greek, symbols | Bold italic |
+| `\boldsymbol{}` | amsmath | Latin, Greek, symbols | Bold italic (less robust) |
+| `\mathbf{}` | LaTeX kernel | Latin only | Bold upright (no Greek) |
+
+Define semantic macros: `\newcommand{\vect}[1]{\bm{#1}}`, `\newcommand{\mat}[1]{\bm{#1}}`
+
+### Differential d — debated
+
+- **ISO standard**: upright `\mathrm{d}` (physics/applied math)
+- **Pure math convention**: italic `d` (Knuth, Tao, most mathematicians)
+- **Consistency > choice** — define a macro either way:
+```latex
+\newcommand{\dd}{\mathrm{d}}  % upright (ISO)
+% or
+\newcommand{\dd}{\,d}         % italic with thin space (pure math)
+```
+
+### Math fonts
+
+| Font | Engine | Notes |
+|------|--------|-------|
+| Computer Modern | pdflatex | Default, expected by math journals |
+| Latin Modern (`lmodern`) | pdflatex | Modern CM replacement, better Unicode |
+| New TX Math (`newtxmath`) | pdflatex | Times-style, more glyphs |
+| Libertinus Math | lualatex/xelatex | Via `unicode-math`, elegant |
+| New Computer Modern Math | lualatex/xelatex | Via `unicode-math`, CM-like |
+
+For journal submissions: stick with Computer Modern or Latin Modern.
+
+### Bibliography for math
+
+| Method | Use when |
+|--------|----------|
+| `bibtex` + `amsplain`/`amsalpha` | AMS journal submissions (expected) |
+| `biblatex` + `biber` | Preprints, personal documents (more powerful) |
+| `amsrefs` | AMS-native, embeds refs in .tex (niche) |
+
+```latex
+% bibtex + amsplain (journal standard)
+\bibliographystyle{amsplain}
+\bibliography{references}
+```
+
+### Common math mistakes to avoid
+
+1. **`$$ ... $$`** — use `\[ ... \]` or `equation` environment
+2. **`eqnarray`** — use `align` from amsmath
+3. **`\text` for function names** — use `\operatorname` or `\DeclareMathOperator`
+4. **No `\,` before `dx` in integrals** — use `\int f(x)\,dx` (thin space)
+5. **Inconsistent notation** — define macros for all recurring symbols
+6. **Proof inside theorem** — place `proof` after `\end{theorem}`, not nested
+7. **Manual spacing** — use semantic spacing commands (`\,` `\;` `\:` `\quad`)
+8. **Missing thin space before `\dd`** — `\int f(x)\,\dd x`
+
+### Math article template
+
+A ready-to-use template is in `templates/math-article.tex` alongside this skill. It includes `amsart` document class, standard package stack, theorem environments, common macros (`\R`, `\C`, `\Z`, `\N`, `\Q`, `\norm`, `\abs`, `\inner`), `\DeclareMathOperator` examples, and bibliography setup.
+
+**Always start from the template for math articles:**
+```bash
+cp ~/.config/opencode/skills/texlive/templates/math-article.tex mypaper.tex
+docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
+  latexmk -pdf -interaction=nonstopmode mypaper.tex
+```
+
+When the user asks to write a math document, **use this template as the starting point** — do not write LaTeX from scratch. Copy the template, then modify preamble macros and body content as needed.
 
 ## Quick reference
 
