@@ -21,9 +21,30 @@ local function forward_search(buf)
   if not client then return end
   local enc = client.offset_encoding or "utf-16"
   local pos = vim.lsp.util.make_position_params(0, enc)
-  texlab_request("textDocument/forwardSearch", {
-    textDocument = vim.lsp.util.make_text_document_params(buf),
-    position = pos.position,
+  local line = pos.position.line + 1
+  local filename = vim.api.nvim_buf_get_name(buf)
+  -- Use D-Bus SynctexView to talk to existing zathura instance (no new window)
+  vim.fn.jobstart({
+    "dbus-send", "--session", "--print-reply",
+    "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
+    "org.freedesktop.DBus.ListNames"
+  }, {
+    stdout_buffered = true,
+    on_stdout = function(_, data)
+      if not data then return end
+      for _, line_data in ipairs(data) do
+        local name = line_data:match("org%.pwmt%.zathura%.PID%-(%d+)")
+        if name then
+          vim.fn.jobstart({
+            "dbus-send", "--session", "--print-reply",
+            "--dest=org.pwmt.zathura.PID-" .. name,
+            "/org/pwmt/zathura", "org.pwmt.zathura.SynctexView",
+            "string:" .. filename, "uint32:" .. line, "uint32:0"
+          }, { detach = true })
+          break
+        end
+      end
+    end,
   })
 end
 
