@@ -53,7 +53,7 @@ return {
           settings = {
             texlab = {
               build = {
-                executable = "latexmk-docker",
+                executable = vim.fn.exepath("latexmk-docker"),
                 args = {
                   "-pdf",
                   "-interaction=nonstopmode",
