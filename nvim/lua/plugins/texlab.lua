@@ -23,7 +23,7 @@ local function forward_search(buf)
   local pos = vim.lsp.util.make_position_params(0, enc)
   local line = pos.position.line + 1
   local filename = vim.api.nvim_buf_get_name(buf)
-  -- Use D-Bus SynctexView to talk to existing zathura instance (no new window)
+  -- Check if zathura is already running via D-Bus
   vim.fn.jobstart({
     "dbus-send", "--session", "--print-reply",
     "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
@@ -32,9 +32,11 @@ local function forward_search(buf)
     stdout_buffered = true,
     on_stdout = function(_, data)
       if not data then return end
+      local found = false
       for _, line_data in ipairs(data) do
         local name = line_data:match("org%.pwmt%.zathura%.PID%-(%d+)")
         if name then
+          found = true
           vim.fn.jobstart({
             "dbus-send", "--session", "--print-reply",
             "--dest=org.pwmt.zathura.PID-" .. name,
@@ -42,6 +44,13 @@ local function forward_search(buf)
             "string:" .. filename, "uint32:" .. line, "uint32:0"
           }, { detach = true })
           break
+        end
+      end
+      -- No zathura running — launch it
+      if not found then
+        local pdf = filename:gsub("%.tex$", ".pdf")
+        if vim.fn.filereadable(pdf) == 1 then
+          vim.fn.jobstart({ "zathura", pdf }, { detach = true })
         end
       end
     end,
