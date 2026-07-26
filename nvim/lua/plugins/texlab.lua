@@ -53,7 +53,7 @@ return {
           settings = {
             texlab = {
               build = {
-                executable = "latexmk",
+                executable = "latexmk-docker",
                 args = {
                   "-pdf",
                   "-interaction=nonstopmode",
