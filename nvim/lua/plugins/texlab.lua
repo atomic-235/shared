@@ -16,6 +16,8 @@ local function texlab_request(method, params)
   end)
 end
 
+local zathura_launching = false
+
 local function forward_search(buf)
   local client = vim.lsp.get_clients({ bufnr = buf, name = "texlab" })[1]
   if not client then return end
@@ -23,7 +25,9 @@ local function forward_search(buf)
   local pos = vim.lsp.util.make_position_params(0, enc)
   local line = pos.position.line + 1
   local filename = vim.api.nvim_buf_get_name(buf)
-  -- Check if zathura is already running via D-Bus
+  local pdf = filename:gsub("%.tex$", ".pdf")
+  if vim.fn.filereadable(pdf) == 0 then return end
+
   vim.fn.jobstart({
     "dbus-send", "--session", "--print-reply",
     "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
@@ -32,26 +36,27 @@ local function forward_search(buf)
     stdout_buffered = true,
     on_stdout = function(_, data)
       if not data then return end
-      local found = false
       for _, line_data in ipairs(data) do
         local name = line_data:match("org%.pwmt%.zathura%.PID%-(%d+)")
         if name then
-          found = true
           vim.fn.jobstart({
             "dbus-send", "--session", "--print-reply",
             "--dest=org.pwmt.zathura.PID-" .. name,
             "/org/pwmt/zathura", "org.pwmt.zathura.SynctexView",
             "string:" .. filename, "uint32:" .. line, "uint32:0"
           }, { detach = true })
-          break
+          return
         end
       end
-      -- No zathura running — launch it
-      if not found then
-        local pdf = filename:gsub("%.tex$", ".pdf")
-        if vim.fn.filereadable(pdf) == 1 then
-          vim.fn.jobstart({ "zathura", pdf }, { detach = true })
-        end
+      -- No zathura running — launch once
+      if not zathura_launching then
+        zathura_launching = true
+        vim.fn.jobstart({ "zathura", pdf }, {
+          detach = true,
+          on_exit = function()
+            zathura_launching = false
+          end,
+        })
       end
     end,
   })
@@ -94,12 +99,8 @@ return {
                 onSave = true,
               },
               forwardSearch = {
-                executable = "zathura",
-                args = {
-                  "--synctex-forward",
-                  "%l:1:%f",
-                  "%p",
-                },
+                executable = "true",
+                args = {},
               },
               chktex = {
                 onOpenAndSave = true,
