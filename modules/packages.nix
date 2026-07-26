@@ -38,6 +38,8 @@
     # Typesetting
     typst
     tinymist
+    texlab
+    neovim-remote
 
     # Build tools (needed by nvim-treesitter to compile parsers)
     gcc
