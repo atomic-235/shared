@@ -10,12 +10,11 @@ Compile LaTeX documents using the `texlive/texlive:latest` Docker image. No loca
 ## Container basics
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest <command>
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest <command>
 ```
 
 - Image: `texlive/texlive:latest` (~5.7GB, TeX Live 2026, scheme-full)
-- Default workdir: `/workdir`
-- Runs as root — output files owned by root (fix with `--user $(id -u):$(id -g)` if needed)
+- Mount at same path as host (`$PWD:$PWD`) so `.synctex.gz` stores correct paths for zathura synctex
 - All engines available: `pdflatex`, `xelatex`, `lualatex`, `latexmk`, `tectonic`
 - Bibliography: `bibtex`, `biber`
 - Package manager: `tlmgr` (5000+ packages pre-installed)
@@ -24,7 +23,7 @@ docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest <command>
 ## User-mapped run (preserves file ownership)
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/workdir" -w /workdir texlive/texlive:latest <command>
+docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest <command>
 ```
 
 ## Compilation
@@ -32,22 +31,22 @@ docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/workdir" -w /workdir texliv
 ### Single pass
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
-  pdflatex -interaction=nonstopmode -halt-on-error document.tex
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
+  pdflatex -interaction=nonstopmode -halt-on-error -synctex=1 document.tex
 ```
 
 ### Multiple passes (for cross-references, TOC)
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
   bash -c "pdflatex -interaction=nonstopmode document.tex && pdflatex -interaction=nonstopmode document.tex"
 ```
 
 ### latexmk (recommended — auto-detects passes needed)
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
-  latexmk -pdf -interaction=nonstopmode document.tex
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
+  latexmk -pdf -interaction=nonstopmode -synctex=1 document.tex
 ```
 
 Engine flags for latexmk:
@@ -62,8 +61,8 @@ Engine flags for latexmk:
 ### With bibliography
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
-  bash -c "latexmk -pdf -interaction=nonstopmode -bibtex document.tex"
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
+  bash -c "latexmk -pdf -interaction=nonstopmode -synctex=1 -bibtex document.tex"
 ```
 
 Use `-biber` instead of `-bibtex` if the document uses `biblatex` with biber backend.
@@ -71,7 +70,7 @@ Use `-biber` instead of `-bibtex` if the document uses `biblatex` with biber bac
 ### Clean auxiliary files
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
   latexmk -c document.tex
 ```
 
@@ -94,7 +93,7 @@ docker run --rm texlive/texlive:latest tlmgr info <package>
 ### Install a package (ephemeral — lost when container stops)
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
   tlmgr install <package>
 ```
 
@@ -178,7 +177,7 @@ Compile: `latexmk -xelatex document.tex`
 `minted` requires `--shell-escape` and Python Pygments:
 
 ```bash
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
   pdflatex -shell-escape -interaction=nonstopmode document.tex
 ```
 
@@ -193,7 +192,7 @@ Pygments is pre-installed in the container.
 - **Persistent container for iterative work:**
 
 ```bash
-docker run -d --name texlive -v "$PWD:/workdir" -w /workdir texlive/texlive:latest sleep infinity
+docker run -d --name texlive -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest sleep infinity
 docker exec texlive latexmk -pdf document.tex
 docker stop texlive && docker rm texlive
 ```
@@ -363,8 +362,8 @@ A ready-to-use template is in `templates/math-article.tex` alongside this skill.
 **Always start from the template for math articles:**
 ```bash
 cp ~/.config/opencode/skills/texlive/templates/math-article.tex mypaper.tex
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
-  latexmk -pdf -interaction=nonstopmode mypaper.tex
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
+  latexmk -pdf -interaction=nonstopmode -synctex=1 mypaper.tex
 ```
 
 When the user asks to write a math document, **use this template as the starting point** — do not write LaTeX from scratch. Copy the template, then modify preamble macros and body content as needed.
@@ -372,18 +371,61 @@ When the user asks to write a math document, **use this template as the starting
 ## Quick reference
 
 ```bash
-# Compile (auto passes + bib)
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
-  latexmk -pdf -interaction=nonstopmode document.tex
+# Compile (auto passes + bib + synctex)
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
+  latexmk -pdf -interaction=nonstopmode -synctex=1 document.tex
 
 # XeLaTeX
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
-  latexmk -xelatex -interaction=nonstopmode document.tex
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
+  latexmk -xelatex -interaction=nonstopmode -synctex=1 document.tex
 
 # Clean aux files
-docker run --rm -v "$PWD:/workdir" -w /workdir texlive/texlive:latest \
+docker run --rm -v "$PWD:$PWD" -w "$PWD" texlive/texlive:latest \
   latexmk -c
 
 # Check package
 docker run --rm texlive/texlive:latest tlmgr info <package>
 ```
+
+## Build script for projects
+
+For any LaTeX project, create a `build.sh` that uses the same-path mount pattern. This ensures `.synctex.gz` stores correct host paths for zathura forward/inverse search.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+
+DOC="document.tex"
+[ ! -f "$DOC" ] && { echo "error: $DOC not found"; exit 1; }
+
+export DOCKER_HOST="unix://${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock"
+docker run --rm \
+    -v "$PWD:$PWD" -w "$PWD" \
+    texlive/texlive:latest \
+    latexmk -pdf -interaction=nonstopmode -halt-on-error -synctex=1 "$DOC"
+
+echo "Built: $(pwd)/${DOC%.tex}.pdf"
+```
+
+**Critical:** Mount at `$PWD:$PWD` (same path inside and outside container), NOT `$PWD:/workdir`. The `.synctex.gz` file stores absolute paths — if they don't match the host path, zathura synctex forward/inverse search breaks.
+
+**Add to `.gitignore`:**
+```
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.out
+*.toc
+*.bbl
+*.blg
+document.pdf
+```
+
+When creating a new LaTeX project, always:
+1. Create `build.sh` with the pattern above (change `DOC` variable)
+2. Create `.gitignore` with the patterns above
+3. Run `bash build.sh` to compile
+4. Use `latexmk -C` to force full rebuild when synctex paths are stale
