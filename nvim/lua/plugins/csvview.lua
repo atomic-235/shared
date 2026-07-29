@@ -15,9 +15,21 @@ return {
     },
   },
   cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
-  ft = { "csv", "tsv" },
+  event = "BufReadPost",
   config = function(_, opts)
     require("csvview").setup(opts)
+
+    local function is_csv(buf)
+      local name = vim.api.nvim_buf_get_name(buf)
+      return name:match("%.csv$") ~= nil or name:match("%.tsv$") ~= nil
+    end
+
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) and is_csv(buf) then
+        pcall(require("csvview").enable, buf)
+      end
+    end
+
     vim.api.nvim_create_autocmd("BufReadPost", {
       pattern = { "*.csv", "*.tsv" },
       callback = function(args)
