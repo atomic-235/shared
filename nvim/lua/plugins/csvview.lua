@@ -25,7 +25,8 @@ return {
     end
 
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-      if vim.api.nvim_buf_is_loaded(buf) and is_csv(buf) then
+      if vim.api.nvim_buf_is_loaded(buf) and is_csv(buf) and not vim.b[buf]._csvview then
+        vim.b[buf]._csvview = true
         pcall(require("csvview").enable, buf)
       end
     end
@@ -33,7 +34,10 @@ return {
     vim.api.nvim_create_autocmd("BufReadPost", {
       pattern = { "*.csv", "*.tsv" },
       callback = function(args)
-        pcall(require("csvview").enable, args.buf)
+        if not vim.b[args.buf]._csvview then
+          vim.b[args.buf]._csvview = true
+          pcall(require("csvview").enable, args.buf)
+        end
       end,
       group = vim.api.nvim_create_augroup("csvview-auto", { clear = true }),
     })
