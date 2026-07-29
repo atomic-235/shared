@@ -16,6 +16,16 @@ return {
   },
   cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
   ft = { "csv", "tsv" },
+  config = function(_, opts)
+    require("csvview").setup(opts)
+    vim.api.nvim_create_autocmd("BufReadPost", {
+      pattern = { "*.csv", "*.tsv" },
+      callback = function(args)
+        pcall(require("csvview").enable, args.buf)
+      end,
+      group = vim.api.nvim_create_augroup("csvview-auto", { clear = true }),
+    })
+  end,
   keys = {
     { "<leader>tc", "<cmd>CsvViewToggle<cr>", desc = "Toggle CSV view" },
   },
