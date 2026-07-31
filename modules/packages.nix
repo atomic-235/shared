@@ -82,6 +82,7 @@
     shfmt
     stylua
     prettier
+    lean4
 
     # nvim dependencies
     sqlite
