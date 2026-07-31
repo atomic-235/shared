@@ -9,7 +9,8 @@ description: Set up and maintain Python projects with uv2nix flakes on NixOS, in
 - Handle packages that require setuptools or native C libraries
 - Handle older Python versions (3.10, 3.11) via pinned nixpkgs channels
 - Set correct UV env vars so uv and the Nix-built venv stay in sync
-- Wrap Python in a bubblewrap (bwrap) sandbox by default
+- Ask the user whether to wrap Python in a bubblewrap (bwrap) sandbox or run it unsandboxed
+- Include basedpyright and ruff for type checking and linting
 - Measure build performance with verbose timestamped logging before declaring a build slow
 
 ## System context
@@ -65,7 +66,9 @@ description: Set up and maintain Python projects with uv2nix flakes on NixOS, in
         <project-name> = [];          # [] = default extras, or e.g. [ "dev" ]
       };
 
-      # Python wrapped in a bubblewrap sandbox — always do this by default
+      # --- Bwrap variant (ask user: with or without sandbox) ---
+
+      # With bwrap sandbox:
       pythonBwrap = pkgs.writeShellScriptBin "python" ''
         exec ${pkgs.bubblewrap}/bin/bwrap \
           --ro-bind /nix/store /nix/store \
@@ -77,13 +80,20 @@ description: Set up and maintain Python projects with uv2nix flakes on NixOS, in
           --die-with-parent \
           -- ${venv}/bin/python "$@"
       '';
+
+      # Use pythonBwrap when sandboxed, or venv directly when not.
+      # Set `withBwrap = true;` or `withBwrap = false;` based on user choice.
+      withBwrap = true;  # ask user — see bwrap section below
+
+      python' = if withBwrap then pythonBwrap else venv;
+      extraBwrapPkgs = pkgs.lib.optionals withBwrap [ pkgs.bubblewrap ];
     in
     {
       devShells.${system}.default = pkgs.mkShell {
-        packages = [ pythonBwrap venv pkgs.uv pkgs.bubblewrap pkgs.pyright ];
+        packages = [ python' venv pkgs.uv pkgs.basedpyright pkgs.ruff ] ++ extraBwrapPkgs;
         env = {
           UV_NO_SYNC             = "1";
-          UV_PYTHON              = "${pythonBwrap}/bin/python";
+          UV_PYTHON              = "${python'}/bin/python";
           UV_PYTHON_DOWNLOADS    = "never";
           UV_PROJECT_ENVIRONMENT = "${venv}";
         };
@@ -202,7 +212,7 @@ EOF
 
 devShell env + hook for ODBC:
 ```nix
-packages = [ venv pkgs.uv pkgs.unixODBC msodbcsql pkgs.sops pkgs.pyright ];
+packages = [ venv pkgs.uv pkgs.unixODBC msodbcsql pkgs.sops pkgs.basedpyright pkgs.ruff ];
 env = {
   UV_NO_SYNC            = "1";
   UV_PYTHON             = "${venv}/bin/python";
@@ -347,7 +357,11 @@ Always add this override when `yfinance` is a dependency.
 
 ## Bubblewrap sandbox for Python
 
-Always wrap the Python interpreter in a bwrap sandbox. This restricts what Python code can access at runtime. The wrapper is a `writeShellScriptBin` derivation named `python` that execs `bwrap` around the real venv Python. Point `UV_PYTHON` at the wrapper so all uv invocations use the sandboxed interpreter.
+**Always ask the user whether they want bwrap or not before generating the flake.** Some projects need access to paths that bwrap restricts (e.g. `$HOME/.config`, network sockets, D-Bus). Others benefit from the isolation.
+
+### With bwrap
+
+Wrap the Python interpreter in a bwrap sandbox. The wrapper is a `writeShellScriptBin` derivation named `python` that execs `bwrap` around the real venv Python. Point `UV_PYTHON` at the wrapper so all uv invocations use the sandboxed interpreter.
 
 Default bind mounts:
 - `/nix/store` — read-only (all Nix-built libs live here)
@@ -357,6 +371,25 @@ Default bind mounts:
 - `/dev`, `/proc` — standard pseudo-filesystems
 
 Add more `--bind` / `--ro-bind` lines if the project needs access to additional paths (e.g. `$HOME/.config`, a data directory).
+
+### Without bwrap
+
+Skip the wrapper entirely. Point `UV_PYTHON` directly at `${venv}/bin/python`:
+
+```nix
+devShells.${system}.default = pkgs.mkShell {
+  packages = [ venv pkgs.uv pkgs.basedpyright pkgs.ruff ];
+  env = {
+    UV_NO_SYNC             = "1";
+    UV_PYTHON              = "${venv}/bin/python";
+    UV_PYTHON_DOWNLOADS    = "never";
+    UV_PROJECT_ENVIRONMENT = "${venv}";
+  };
+  shellHook = ''unset PYTHONPATH'';
+};
+```
+
+Use this when the project needs unrestricted filesystem access or bwrap causes issues.
 
 ---
 
@@ -405,9 +438,19 @@ for p in packages:
 
 ---
 
-## Pyright / LSP configuration
+## Basedpyright / Ruff / LSP configuration
 
-Pyright picks up the correct Python automatically when the editor respects direnv. No `pyproject.toml` or `pyrightconfig.json` configuration is needed. If you see import errors in the editor, the cause is the editor not loading the direnv environment — fix it at the editor level (e.g. `direnv.vim`, VS Code direnv extension), not in the project config.
+Basedpyright picks up the correct Python automatically when the editor respects direnv. No `pyproject.toml` or `pyrightconfig.json` configuration is needed. If you see import errors in the editor, the cause is the editor not loading the direnv environment — fix it at the editor level (e.g. `direnv.vim`, VS Code direnv extension), not in the project config.
+
+Ruff configuration goes in `pyproject.toml` under `[tool.ruff]`:
+
+```toml
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+```
 
 **Do not** hardcode nix store paths in `pyproject.toml` — they are machine- and rebuild-specific and will break on any other system.
 
@@ -455,10 +498,10 @@ Do not run `uv sync`, `pip install`, or `python -m venv`. The venv is built by N
 - **Don't** use `hatchling` as build backend unless the project has a matching package directory.
 - **Don't** suggest switching to nixpkgs Python packages unless the user explicitly asks — uv2nix is intentional.
 - **Always** `unset PYTHONPATH` in `shellHook` — stale PYTHONPATH leaks break imports.
-- **Always** run `UV_PYTHON="" UV_PYTHON_DOWNLOADS=never uv lock` after changing `pyproject.toml` — never plain `uv lock` or `uv add`, because `UV_PYTHON` points to the bwrap wrapper which cannot be queried outside a live shell and will error.
+- **Always** run `UV_PYTHON="" UV_PYTHON_DOWNLOADS=never uv lock` after changing `pyproject.toml` — never plain `uv lock` or `uv add`, because `UV_PYTHON` points to the bwrap wrapper (if sandboxed) which cannot be queried outside a live shell and will error.
 - **Always** run scripts via `direnv exec <project-dir> <command>` when outside an interactive shell — otherwise the wrong Python is used and imports fail.
 - **Always** bust the nix-direnv cache after a rebuild by running `touch flake.nix` if `direnv exec` is still loading a stale shell (recognizable by the old venv path in `$UV_PROJECT_ENVIRONMENT`).
 - **Always** check for sdist-only deps (especially transitive ones like `multitasking` from yfinance) and add setuptools overrides.
-- **Always** wrap Python in a bwrap sandbox via `writeShellScriptBin` and point `UV_PYTHON` at the wrapper.
-- **Never** hardcode nix store paths in `pyproject.toml` for pyright — they are machine-specific. LSP works automatically when the editor respects direnv. Import errors seen by agents running outside the shell are false positives.
+- **Always** ask the user whether they want bwrap sandboxing before generating the flake — some projects need unrestricted filesystem access.
+- **Never** hardcode nix store paths in `pyproject.toml` for basedpyright — they are machine-specific. LSP works automatically when the editor respects direnv. Import errors seen by agents running outside the shell are false positives.
 - **Never** guess why a build is slow — measure first with `--log-format bar-with-logs -v` and timestamps.
