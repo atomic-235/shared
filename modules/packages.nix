@@ -1,5 +1,17 @@
 { pkgs, ... }:
 
+let
+  tree-sitter-clingo = pkgs.tree-sitter.buildGrammar {
+    language = "clingo";
+    version = "2025-07-04";
+    src = pkgs.fetchFromGitHub {
+      owner = "potassco";
+      repo = "tree-sitter-clingo";
+      rev = "58e062c1c6c2ac0bad54fee054573c5a9e6dd759";
+        hash = "sha256-rygMKByGqO0P0ftNezCJxWkZJVIsZv9j91avaUWQ3Sk=";
+    };
+  };
+in
 {
   home.packages = with pkgs; [
     # Editors
@@ -86,6 +98,7 @@
 
     # Logic programming
     clingo
+    tree-sitter-clingo
 
     # nvim dependencies
     sqlite
@@ -109,4 +122,9 @@
     # with-secrets — sops exec-env wrapper for decrypting secrets at runtime
     (import ../scripts/with-secrets.nix { inherit pkgs; })
   ];
+
+  home.sessionVariables = {
+    TREESITTER_CLINGO_PARSER = "${tree-sitter-clingo}/parser";
+    TREESITTER_CLINGO_QUERIES = "${tree-sitter-clingo}/queries";
+  };
 }

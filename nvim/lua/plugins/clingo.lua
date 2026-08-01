@@ -1,24 +1,34 @@
 -- Clingo/ASP (.lp) support: treesitter highlight + filetype.
--- tree-sitter-clingo by Potassco provides syntax highlighting.
--- Not in nvim-treesitter's bundled registry, so registered manually.
+-- tree-sitter-clingo built via Nix (pkgs.tree-sitter.buildGrammar),
+-- not in nixpkgs. Parser .so + queries loaded from Nix store via env vars.
+-- Degrades gracefully if env vars unset (non-Nix machines).
 return {
   {
     "nvim-treesitter/nvim-treesitter",
     init = function()
-      local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-      parser_config.clingo = {
-        install_info = {
-          url = "https://github.com/potassco/tree-sitter-clingo",
-          files = { "src/parser.c" },
-        },
-        filetype = "clingo",
-      }
       vim.filetype.add({
         extension = {
           lp = "clingo",
           clingo = "clingo",
         },
       })
+
+      local parser_path = vim.env.TREESITTER_CLINGO_PARSER
+      if parser_path and vim.uv.fs_stat(parser_path) then
+        vim.treesitter.language.add("clingo", { path = parser_path })
+
+        local queries_dir = vim.env.TREESITTER_CLINGO_QUERIES
+        if queries_dir then
+          for _, qtype in ipairs({ "highlights", "injections", "indents", "textobjects" }) do
+            local qpath = queries_dir .. "/" .. qtype .. ".scm"
+            local f = io.open(qpath, "r")
+            if f then
+              vim.treesitter.query.set("clingo", qtype, f:read("*a"))
+              f:close()
+            end
+          end
+        end
+      end
     end,
   },
 }
