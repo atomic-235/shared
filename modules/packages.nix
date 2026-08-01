@@ -8,7 +8,7 @@ let
       owner = "potassco";
       repo = "tree-sitter-clingo";
       rev = "58e062c1c6c2ac0bad54fee054573c5a9e6dd759";
-        hash = "sha256-rygMKByGqO0P0ftNezCJxWkZJVIsZv9j91avaUWQ3Sk=";
+      hash = "sha256-rygMKByGqO0P0ftNezCJxWkZJVIsZv9j91avaUWQ3Sk=";
     };
   };
 in
@@ -98,7 +98,6 @@ in
 
     # Logic programming
     clingo
-    tree-sitter-clingo
 
     # nvim dependencies
     sqlite
@@ -123,8 +122,13 @@ in
     (import ../scripts/with-secrets.nix { inherit pkgs; })
   ];
 
-  home.sessionVariables = {
-    TREESITTER_CLINGO_PARSER = "${tree-sitter-clingo}/parser";
-    TREESITTER_CLINGO_QUERIES = "${tree-sitter-clingo}/queries";
+  # tree-sitter-clingo parser + queries for neovim
+  # Placed in stdpath("data")/site — stable path, HM-managed symlinks to nix store
+  xdg.dataFile = {
+    "nvim/site/parser/clingo.so".source = "${tree-sitter-clingo}/parser";
+    "nvim/site/queries/clingo/highlights.scm".source = "${tree-sitter-clingo}/queries/highlights.scm";
+    "nvim/site/queries/clingo/injections.scm".source = "${tree-sitter-clingo}/queries/injections.scm";
+    "nvim/site/queries/clingo/indents.scm".source = "${tree-sitter-clingo}/queries/indents.scm";
+    "nvim/site/queries/clingo/textobjects.scm".source = "${tree-sitter-clingo}/queries/textobjects.scm";
   };
 }
