@@ -84,6 +84,9 @@
     prettier
     lean4
 
+    # Logic programming
+    clingo
+
     # nvim dependencies
     sqlite
     sqlite.out
