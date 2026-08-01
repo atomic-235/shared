@@ -5,7 +5,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    init = function()
+    opts = function(_, opts)
       vim.filetype.add({
         extension = {
           lp = "clingo",
