@@ -1,8 +1,11 @@
+-- clingo_lsp.lua — real in-process LSP server for Clingo/ASP.
+-- Runs via vim.lsp.start with `cmd` as a function (nvim 0.10+); no external
+-- LSP binary. Diagnostics come from tree-sitter + `clingo --text` subprocess
+-- and are pushed via textDocument/publishDiagnostics.
+
 local M = {}
 
-local ns = vim.api.nvim_create_namespace("clingo")
 local timers = {}
-local cmp_done = false
 
 local DIRECTIVES = {
   { label = "#show", snippet = "show ${1:p/n}.\n$0", doc = "Show atoms/terms in output" },
@@ -32,6 +35,10 @@ local BUILTINS = {
   { label = "#false", snippet = "false$0", doc = "Boolean false" },
   { label = "not", snippet = "not $0", doc = "Default negation" },
 }
+
+-------------------------------------------------------------------------------
+-- Tree-sitter helpers
+-------------------------------------------------------------------------------
 
 local function has_clingo()
   return vim.fn.executable("clingo") == 1
@@ -63,6 +70,10 @@ local function get_field_node(node, field_name)
   return nil
 end
 
+-------------------------------------------------------------------------------
+-- Diagnostics
+-------------------------------------------------------------------------------
+
 local function parse_clingo_stderr(stderr)
   local diags = {}
   local pattern = "^(.-):(%d+):(%d+)-(%d+):%s*(%a+):%s*(.+)$"
@@ -87,27 +98,6 @@ local function parse_clingo_stderr(stderr)
     end
   end
   return diags
-end
-
-local function run_clingo(bufnr, ts_diags)
-  if not has_clingo() or not vim.api.nvim_buf_is_valid(bufnr) then return end
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local tmp = os.tmpname()
-  local f = io.open(tmp, "w")
-  if not f then return end
-  f:write(table.concat(lines, "\n"))
-  f:close()
-  vim.system({ "clingo", "--text", tmp }, { stdout = false, stderr = true }, function(obj)
-    os.remove(tmp)
-    vim.schedule(function()
-      if not vim.api.nvim_buf_is_valid(bufnr) then return end
-      local clingo_diags = parse_clingo_stderr(obj.stderr or "")
-      local merged = {}
-      for _, d in ipairs(ts_diags) do table.insert(merged, d) end
-      for _, d in ipairs(clingo_diags) do table.insert(merged, d) end
-      vim.diagnostic.set(ns, bufnr, merged)
-    end)
-  end)
 end
 
 local function walk_ts_errors(node, diags)
@@ -141,7 +131,29 @@ local function ts_diagnostics(bufnr)
   return diags
 end
 
-local function debounce_diagnostics(bufnr)
+-- publish: function(diags) receiving vim-style diagnostic list
+local function run_clingo(bufnr, publish)
+  if not has_clingo() or not vim.api.nvim_buf_is_valid(bufnr) then return end
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local tmp = os.tmpname()
+  local f = io.open(tmp, "w")
+  if not f then return end
+  f:write(table.concat(lines, "\n"))
+  f:close()
+  vim.system({ "clingo", "--text", tmp }, { stdout = false, stderr = true }, function(obj)
+    os.remove(tmp)
+    vim.schedule(function()
+      if not vim.api.nvim_buf_is_valid(bufnr) then return end
+      local clingo_diags = parse_clingo_stderr(obj.stderr or "")
+      -- Re-fetch TS diags now (buffer may have changed since spawn).
+      local merged = ts_diagnostics(bufnr)
+      for _, d in ipairs(clingo_diags) do table.insert(merged, d) end
+      publish(merged)
+    end)
+  end)
+end
+
+local function debounce_diagnostics(bufnr, publish)
   if timers[bufnr] then
     timers[bufnr]:stop()
     timers[bufnr]:close()
@@ -152,12 +164,24 @@ local function debounce_diagnostics(bufnr)
     timers[bufnr] = nil
     if not vim.api.nvim_buf_is_valid(bufnr) then return end
     local diags = ts_diagnostics(bufnr)
-    vim.diagnostic.set(ns, bufnr, diags)
+    publish(diags)
     if has_clingo() then
-      run_clingo(bufnr, diags)
+      run_clingo(bufnr, publish)
     end
   end))
 end
+
+local function stop_diagnostics(bufnr)
+  if timers[bufnr] then
+    timers[bufnr]:stop()
+    timers[bufnr]:close()
+    timers[bufnr] = nil
+  end
+end
+
+-------------------------------------------------------------------------------
+-- Language model
+-------------------------------------------------------------------------------
 
 local function get_predicates(bufnr)
   local parser = get_parser(bufnr)
@@ -239,21 +263,49 @@ local function get_doc_comments(bufnr)
   end
   -- Trailing comments: `fact(...). % description` documents the head predicate.
   -- In the tree these are line_comment siblings following a rule on the same row.
+  -- A comment on its own line directly above a rule also documents it,
+  -- unless it looks like a section separator (% --- x ---, % ====).
   for i = 0, root:named_child_count() - 2 do
     local node = root:named_child(i)
     if node:type() == "rule" then
       local head = get_field_node(node, "head")
-      local atom = head and get_field_node(head, "atom")
-      local name_node = atom and get_field_node(atom, "name")
+      local name_node = head and (function()
+        local atom = get_field_node(head, "atom")
+        if atom then return get_field_node(atom, "name") end
+        -- choice/aggregate heads: use first symbolic_atom descendant
+        local function find_atom(n)
+          if n:type() == "symbolic_atom" then return n end
+          for j = 0, n:named_child_count() - 1 do
+            local f = find_atom(n:named_child(j))
+            if f then return f end
+          end
+        end
+        local sym = find_atom(head)
+        return sym and get_field_node(sym, "name")
+      end)()
       if name_node then
         local name = vim.treesitter.get_node_text(name_node, bufnr)
-        local _, _, erow = node:range()
-        local sib = root:named_child(i + 1)
-        if not docs[name] and sib:type() == "line_comment" then
-          local srow = sib:range()
-          if srow == erow then
-            local desc = vim.treesitter.get_node_text(sib, bufnr):match("^%%%s*(.*)$") or ""
-            docs[name] = { description = desc, args = {} }
+        local srow, _, erow = node:range()
+        if not docs[name] then
+          local sib = root:named_child(i + 1)
+          if sib and sib:type() == "line_comment" then
+            local crow = sib:range()
+            if crow == erow then
+              local desc = vim.treesitter.get_node_text(sib, bufnr):match("^%%%s*(.*)$") or ""
+              docs[name] = { description = desc, args = {} }
+            end
+          end
+        end
+        if not docs[name] and i > 0 then
+          local prev = root:named_child(i - 1)
+          if prev:type() == "line_comment" then
+            local pcrow, _, pcerow = prev:range()
+            if pcrow == pcerow and pcerow == srow - 1 then
+              local desc = vim.treesitter.get_node_text(prev, bufnr):match("^%%%s*(.*)$") or ""
+              if desc ~= "" and not desc:match("^%-") and not desc:match("^=") then
+                docs[name] = { description = desc, args = {} }
+              end
+            end
           end
         end
       end
@@ -284,11 +336,7 @@ local function find_predicate_ref(bufnr, row, col)
   return { name = name, arity = arity }
 end
 
-local function show_hover(bufnr)
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  row = row - 1
-  local ref = find_predicate_ref(bufnr, row, col)
-  if not ref then return end
+local function hover_markdown(bufnr, ref)
   local docs = get_doc_comments(bufnr)
   local doc = docs[ref.name]
   local lines = { "**" .. ref.name .. "/" .. ref.arity .. "**", "" }
@@ -312,37 +360,74 @@ local function show_hover(bufnr)
   else
     table.insert(lines, "No documentation available.")
   end
-  vim.lsp.util.open_floating_preview(lines, "markdown", {
-    border = "rounded",
-    close_events = { "CursorMoved", "BufLeave", "InsertEnter", "FocusLost" },
-  })
+  return table.concat(lines, "\n")
 end
 
-local function goto_definition(bufnr)
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-  row = row - 1
-  local ref = find_predicate_ref(bufnr, row, col)
-  if not ref then return end
-  local name = ref.name
+local function range_of(node)
+  local sr, sc, er, ec = node:range()
+  return { start = { line = sr, character = sc }, ["end"] = { line = er, character = ec } }
+end
+
+local function definition_locations(bufnr, ref, uri)
   local parser = get_parser(bufnr)
-  if not parser then return end
+  if not parser then return {} end
   local root = parser:trees()[1]:root()
   local ok, query = pcall(vim.treesitter.query.parse, "clingo", [[
     (rule head: (literal atom: (symbolic_atom name: (identifier) @head_name)))
   ]])
-  if not ok then return end
+  if not ok then return {} end
+  local locs = {}
   for _, head_node in query:iter_captures(root, bufnr) do
-    if vim.treesitter.get_node_text(head_node, bufnr) == name then
-      local srow, scol = head_node:start()
-      vim.api.nvim_buf_set_mark(bufnr, "'", row + 1, col, {})
-      vim.api.nvim_win_set_cursor(0, { srow + 1, scol })
-      return
+    if vim.treesitter.get_node_text(head_node, bufnr) == ref.name then
+      local atom = head_node:parent()
+      if atom and atom:type() == "symbolic_atom" and get_arity(atom) == ref.arity then
+        table.insert(locs, { uri = uri, range = range_of(head_node) })
+      end
     end
   end
-  vim.notify("No definition found for: " .. name, vim.log.levels.INFO)
+  return locs
 end
 
-local function get_completion_items(bufnr, base)
+local function reference_locations(bufnr, ref, uri, include_declaration)
+  local parser = get_parser(bufnr)
+  if not parser then return {} end
+  local root = parser:trees()[1]:root()
+  local ok, query = pcall(vim.treesitter.query.parse, "clingo", [[
+    [
+      (symbolic_atom name: (identifier) @ref_name)
+      (signature name: (identifier) @ref_name)
+    ]
+  ]])
+  if not ok then return {} end
+  local def_heads = {}
+  if not include_declaration then
+    for _, loc in ipairs(definition_locations(bufnr, ref, uri)) do
+      def_heads[loc.range.start.line .. ":" .. loc.range.start.character] = true
+    end
+  end
+  local locs = {}
+  for _, node in query:iter_captures(root, bufnr) do
+    local parent = node:parent()
+    if parent then
+      local arity
+      if parent:type() == "signature" then
+        local arity_node = get_field_node(parent, "arity")
+        arity = arity_node and tonumber(vim.treesitter.get_node_text(arity_node, bufnr)) or 0
+      else
+        arity = get_arity(parent)
+      end
+      if vim.treesitter.get_node_text(node, bufnr) == ref.name and arity == ref.arity then
+        local range = range_of(node)
+        if include_declaration or not def_heads[range.start.line .. ":" .. range.start.character] then
+          table.insert(locs, { uri = uri, range = range })
+        end
+      end
+    end
+  end
+  return locs
+end
+
+local function get_completion_items(bufnr, base, row)
   local items = {}
   if base:match("^#") then
     for _, kw in ipairs(DIRECTIVES) do
@@ -383,7 +468,6 @@ local function get_completion_items(bufnr, base)
       })
     end
   end
-  local row = vim.fn.line(".") - 1
   for _, var in ipairs(get_variables(bufnr, row)) do
     if var:find(base, 1, true) then
       table.insert(items, {
@@ -396,76 +480,159 @@ local function get_completion_items(bufnr, base)
   return items
 end
 
-M.omnifunc = function(findstart, base)
-  if findstart == 1 then
-    local line = vim.fn.getline(".")
-    local col = vim.fn.col(".") - 1
-    while col > 0 and line:sub(col, col):match("[%w_#]") do
-      col = col - 1
-    end
-    return col
-  else
-    local bufnr = vim.api.nvim_get_current_buf()
-    local items = get_completion_items(bufnr, base)
-    local vim_items = {}
-    for _, item in ipairs(items) do
-      table.insert(vim_items, {
-        word = item.label,
-        menu = item.detail or "",
-        kind = item.kind == 3 and "f" or item.kind == 6 and "v" or "k",
-        icase = 1,
+local function to_lsp_diagnostic(d)
+  return {
+    range = {
+      start = { line = d.lnum, character = d.col },
+      ["end"] = { line = d.end_lnum, character = d.end_col },
+    },
+    severity = d.severity, -- vim.diagnostic.severity matches LSP numbering 1..4
+    source = d.source,
+    message = d.message,
+  }
+end
+
+-------------------------------------------------------------------------------
+-- In-process LSP server
+-------------------------------------------------------------------------------
+
+local function make_server(dispatchers)
+  local closing = false
+  local pending = 0
+  local handlers = {}
+
+  local function publish_for(bufnr)
+    return function(diags)
+      if not vim.api.nvim_buf_is_valid(bufnr) then return end
+      local lsp_diags = {}
+      for _, d in ipairs(diags) do
+        table.insert(lsp_diags, to_lsp_diagnostic(d))
+      end
+      dispatchers.notification("textDocument/publishDiagnostics", {
+        uri = vim.uri_from_bufnr(bufnr),
+        diagnostics = lsp_diags,
       })
     end
-    return vim_items
   end
+
+  handlers["initialize"] = function(_, cb)
+    cb(nil, {
+      capabilities = {
+        hoverProvider = true,
+        definitionProvider = true,
+        referencesProvider = true,
+        completionProvider = { triggerCharacters = { "#" }, resolveProvider = false },
+        textDocumentSync = { openClose = true, change = 1, save = false },
+      },
+      serverInfo = { name = "clingo-lsp" },
+    })
+  end
+
+  handlers["initialized"] = function(_, cb) if cb then cb(nil, nil) end end
+  handlers["shutdown"] = function(_, cb) cb(nil, nil) end
+
+  handlers["textDocument/didOpen"] = function(params)
+    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    debounce_diagnostics(bufnr, publish_for(bufnr))
+  end
+
+  handlers["textDocument/didChange"] = function(params)
+    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    debounce_diagnostics(bufnr, publish_for(bufnr))
+  end
+
+  handlers["textDocument/didClose"] = function(params)
+    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    stop_diagnostics(bufnr)
+    publish_for(bufnr)({})
+  end
+
+  handlers["textDocument/hover"] = function(params, cb)
+    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    local pos = params.position
+    local ref = find_predicate_ref(bufnr, pos.line, pos.character)
+    if not ref then cb(nil, nil) return end
+    cb(nil, { contents = { kind = "markdown", value = hover_markdown(bufnr, ref) } })
+  end
+
+  handlers["textDocument/definition"] = function(params, cb)
+    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    local pos = params.position
+    local ref = find_predicate_ref(bufnr, pos.line, pos.character)
+    if not ref then cb(nil, nil) return end
+    local locs = definition_locations(bufnr, ref, params.textDocument.uri)
+    if #locs == 0 then cb(nil, nil) return end
+    cb(nil, locs)
+  end
+
+  handlers["textDocument/references"] = function(params, cb)
+    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    local pos = params.position
+    local ref = find_predicate_ref(bufnr, pos.line, pos.character)
+    if not ref then cb(nil, nil) return end
+    local include_decl = not params.context or params.context.includeDeclaration ~= false
+    local locs = reference_locations(bufnr, ref, params.textDocument.uri, include_decl)
+    cb(nil, locs)
+  end
+
+  handlers["textDocument/completion"] = function(params, cb)
+    local bufnr = vim.uri_to_bufnr(params.textDocument.uri)
+    local pos = params.position
+    local line = vim.api.nvim_buf_get_lines(bufnr, pos.line, pos.line + 1, false)[1] or ""
+    local base = line:sub(1, pos.character):match("[%w_#]*$") or ""
+    cb(nil, { isIncomplete = false, items = get_completion_items(bufnr, base, pos.line) })
+  end
+
+  local srv = {}
+
+  function srv.request(method, params, callback)
+    local h = handlers[method]
+    if h then
+      local ok, err = pcall(h, params, callback)
+      if not ok then
+        pending = pending - 1
+        callback({ code = -32603, message = tostring(err) }, nil)
+        return false, pending
+      end
+    else
+      callback({ code = -32601, message = "method not found: " .. method }, nil)
+    end
+    return true, pending
+  end
+
+  function srv.notify(method, params)
+    local h = handlers[method]
+    if h then pcall(h, params) end
+    return true
+  end
+
+  function srv.is_closing() return closing end
+  function srv.terminate() closing = true end
+
+  return srv
 end
+
+-------------------------------------------------------------------------------
+-- Public API
+-------------------------------------------------------------------------------
 
 function M.setup(bufnr)
-  local group = vim.api.nvim_create_augroup("ClingoLSP_" .. bufnr, { clear = true })
-  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWritePost" }, {
-    group = group,
-    buffer = bufnr,
-    callback = function() debounce_diagnostics(bufnr) end,
-  })
-  vim.api.nvim_create_autocmd("BufUnload", {
-    group = group,
-    buffer = bufnr,
-    callback = function()
-      if timers[bufnr] then
-        timers[bufnr]:stop()
-        timers[bufnr]:close()
-        timers[bufnr] = nil
-      end
-      vim.diagnostic.reset(ns, bufnr)
+  vim.lsp.start({
+    name = "clingo",
+    cmd = make_server,
+    root_dir = vim.fs.root(bufnr, ".git") or vim.uv.cwd(),
+  }, {
+    bufnr = bufnr,
+    reuse_client = function(client, _)
+      return client.name == "clingo"
     end,
   })
-  debounce_diagnostics(bufnr)
-  vim.bo[bufnr].omnifunc = "v:lua.require('clingo_lsp').omnifunc"
-  if not cmp_done then
-    cmp_done = true
-    local ok, cmp = pcall(require, "cmp")
-    if ok then
-      local source = {}
-      function source:is_available() return true end
-      function source:complete(params, callback)
-        local line = params.context.cursor_line
-        local col = params.context.cursor.col
-        local base = line:sub(col, col):match("[%w_#]") and line:sub(1, col):match("[%w_#]*$") or ""
-        callback(get_completion_items(vim.api.nvim_get_current_buf(), base))
-      end
-      cmp.register_source("clingo", source)
-      cmp.setup.filetype("clingo", {
-        sources = cmp.config.sources({ { name = "clingo" }, { name = "buffer" } }),
-      })
-    end
-  end
-  vim.keymap.set("n", "K", function() show_hover(bufnr) end, { buffer = bufnr, desc = "Clingo hover" })
-  vim.keymap.set("n", "gd", function() goto_definition(bufnr) end, { buffer = bufnr, desc = "Clingo go to definition" })
 end
 
+-- Exported for tests
 M._get_predicates = get_predicates
 M._get_doc_comments = get_doc_comments
-M._show_hover = show_hover
-M._goto_definition = goto_definition
+M._make_server = make_server
+M._find_predicate_ref = find_predicate_ref
 
 return M

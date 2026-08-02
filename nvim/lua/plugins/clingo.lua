@@ -1,7 +1,7 @@
--- Clingo/ASP (.lp) support: treesitter highlight + filetype + LSP features.
+-- Clingo/ASP (.lp) support: treesitter highlight + filetype + real LSP client.
 -- tree-sitter-clingo built via Nix (pkgs.tree-sitter.buildGrammar),
 -- parser + queries placed in stdpath("data")/site by home-manager.
--- LSP features (diagnostics, completion, hover, go-to-def) in lua/clingo_lsp.lua.
+-- LSP: in-process server in lua/clingo_lsp.lua (vim.lsp.start, cmd=function).
 -- Degrades gracefully if parser not found (non-Nix machines).
 return {
   {
