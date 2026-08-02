@@ -102,6 +102,10 @@ end
 
 local function walk_ts_errors(node, diags)
   if not node:has_error() then return end
+  -- Comments are freeform text; grammar ERROR nodes inside them are grammar
+  -- limitations (e.g. Args: sections in %*! doc blocks), not user syntax errors.
+  local t = node:type()
+  if t == "doc_comment" or t == "line_comment" or t == "block_comment" then return end
   if node:type() == "ERROR" then
     local sr, sc, er, ec = node:range()
     table.insert(diags, {
@@ -239,10 +243,49 @@ local function get_doc_comments(bufnr)
   if not parser then return {} end
   local root = parser:trees()[1]:root()
   local docs = {}
+
+  -- %*! block doc comments (Potassco official format) — highest precedence.
+  -- Format: %*!\n predicate(Var1, Var2)\n Description.\n\n Args:\n  Var1: desc\n *%
+  local ok_dc, dc_query = pcall(vim.treesitter.query.parse, "clingo", [[
+    (doc_comment) @doc
+  ]])
+  if ok_dc then
+    for _, node in dc_query:iter_captures(root, bufnr) do
+      local raw = vim.treesitter.get_node_text(node, bufnr)
+      -- Strip %*! wrapper and *% closer
+      local body = raw:gsub("^%%%*!%s*\n", ""):gsub("\n%s*%%%*%%%s*$", "")
+      -- First line = predicate signature; extract name from raw text because
+      -- tree-sitter's doc_predicate mis-parses compound-term arguments
+      -- (e.g. died(month(M)) grabs "month" instead of "died").
+      local sig = body:match("^([^\n]*)") or ""
+      local name = sig:match("^%s*(%a[%w_]*)")
+      if name then
+        -- Skip first line (predicate signature)
+        local nl = body:find("\n")
+        local rest = nl and body:sub(nl + 1) or ""
+        -- Split description from Args: section
+        local desc, args_text = rest, ""
+        local s, e = rest:find("\n%s*Args:%s*\n")
+        if s then
+          desc = rest:sub(1, s - 1)
+          args_text = rest:sub(e + 1)
+        end
+        desc = desc:gsub("^%s+", ""):gsub("%s+$", "")
+        local args = {}
+        for arg_line in args_text:gmatch("[^\n]+") do
+          local an, ad = arg_line:match("^%s*(%a[%w_]*)%s*:%s*(.*)$")
+          if an then table.insert(args, { name = an, desc = ad or "" }) end
+        end
+        docs[name] = { description = desc, args = args }
+      end
+    end
+  end
+
+  -- %! line doc comments
   local ok, query = pcall(vim.treesitter.query.parse, "clingo", [[
     (line_comment) @comment
   ]])
-  if not ok then return {} end
+  if not ok then return docs end
   local current_pred = nil
   for _, node in query:iter_captures(root, bufnr) do
     local text = vim.treesitter.get_node_text(node, bufnr)
@@ -253,7 +296,7 @@ local function get_doc_comments(bufnr)
         if current_pred and docs[current_pred] then
           table.insert(docs[current_pred].args, { name = name, desc = desc })
         end
-      elseif name then
+      elseif name and not docs[name] then
         current_pred = name
         docs[name] = { description = desc, args = {} }
       end

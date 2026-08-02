@@ -45,5 +45,9 @@ vim.api.nvim_create_autocmd("RecordingLeave", {
   end,
 })
 
+-- @comment.documentation is not linked by tokyonight; define it so %*!
+-- docstring blocks read as documentation (muted, like Comment, but bold).
+vim.api.nvim_set_hl(0, "@comment.documentation", { fg = "#636da6", italic = true, bold = true })
+
 
 
