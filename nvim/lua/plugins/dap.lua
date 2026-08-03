@@ -13,6 +13,11 @@ return {
         return os.getenv("UV_PYTHON")
       end
     end,
+    keys = {
+      { "<leader>dn", function() require("dap-python").test_method() end, desc = "Debug Test Method", ft = "python" },
+      { "<leader>df", function() require("dap-python").test_class() end, desc = "Debug Test Class", ft = "python" },
+      { "<leader>ds", function() require("dap-python").debug_selection() end, desc = "Debug Selection", mode = "v", ft = "python" },
+    },
   },
 
   -- Replace LazyVim's dap-ui with dap-view (single full-width window)

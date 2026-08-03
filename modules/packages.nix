@@ -99,6 +99,9 @@ in
     # Logic programming
     clingo
 
+    # SMT solving
+    python312Packages.z3-solver
+
     # nvim dependencies
     sqlite
     sqlite.out

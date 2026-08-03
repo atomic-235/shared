@@ -1,0 +1,50 @@
+*quirks.txt*    Personal cheatsheet of shortcuts and quirks
+
+                                                *quirks* *my-quirks*
+
+Personal notes. Rebuild the tags after editing this file: >
+    :helptags ~/.config/nvim/doc
+<
+
+==============================================================================
+1. Navigation                                                  *my-navigation*
+
+  CTRL-O        jump BACK in jumplist (previous position)
+  CTRL-I        jump FORWARD in jumplist (next position)
+
+==============================================================================
+2. Debugging (DAP)                                             *my-dap*
+
+Python tests (nvim-dap-python, runner auto-detected as pytest from
+pyproject.toml):
+
+  <leader>dn    debug test method under cursor
+  <leader>df    debug test class under cursor
+  <leader>ds    debug visual selection (visual mode)
+
+dap-view:
+
+  <leader>du    toggle dap-view panel
+  <leader>dv    open dap-view panel
+  <leader>de    add watch expression
+  <leader>dw    hover widget (DataFrame-aware float)
+
+dap-view winbar section keys (press while in the panel):
+
+  W  watches   S  scopes   E  exceptions
+  B  breakpoints   T  threads   R  repl
+
+Quirks:
+- Test output (loguru logs, pytest output) goes to the debugpy
+  integrated terminal buffer. If the console view says "No terminal
+  for the current session", run with internalConsole and read the
+  REPL (R) instead: >
+    :lua require('dap-python').test_method({ console = "internalConsole" })
+<
+- debugpy comes from pkgs.debugpy (NixOS), not Mason;
+  adapter binary is `debugpy-adapter` on $PATH.
+- No .venv/VIRTUAL_ENV with uv2nix — python resolved from $UV_PYTHON
+  (see resolve_python override in lua/plugins/dap.lua).
+
+==============================================================================
+ vim:tw=78:ts=8:noet:ft=help:norl:
