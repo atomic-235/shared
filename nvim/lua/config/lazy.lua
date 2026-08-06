@@ -14,9 +14,14 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-vim.api.nvim_create_user_command("terminal", function()
-  vim.notify("Terminal disabled in this config", vim.log.levels.WARN)
-end, { nargs = "*", desc = "terminal (disabled)" })
+-- Disable :terminal — user commands must start with uppercase, so use
+-- VimEnter autocmd to cabbrev :terminal into a no-op.
+vim.api.nvim_create_autocmd("VimEnter", {
+  once = true,
+  callback = function()
+    vim.cmd("cabbrev terminal echo 'Terminal disabled in this config'")
+  end,
+})
 
 require("lazy").setup({
 
