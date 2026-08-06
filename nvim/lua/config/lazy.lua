@@ -14,12 +14,17 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Disable :terminal — user commands must start with uppercase, so use
--- VimEnter autocmd to cabbrev :terminal into a no-op.
-vim.api.nvim_create_autocmd("VimEnter", {
-  once = true,
-  callback = function()
-    vim.cmd("cabbrev terminal echo 'Terminal disabled in this config'")
+-- Disable :terminal and terminal mode. Block any buffer that tries to open
+-- as a terminal, since nvim builtins can't be shadowed by user commands.
+vim.api.nvim_create_autocmd("TermOpen", {
+  group = vim.api.nvim_create_augroup("disable_terminal", { clear = true }),
+  callback = function(ev)
+    vim.schedule(function()
+      if vim.bo[ev.buf].buftype == "terminal" then
+        vim.api.nvim_buf_delete(ev.buf, { force = true })
+        vim.notify("Terminal disabled in this config", vim.log.levels.WARN)
+      end
+    end)
   end,
 })
 
