@@ -14,6 +14,10 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+vim.api.nvim_create_user_command("terminal", function()
+  vim.notify("Terminal disabled in this config", vim.log.levels.WARN)
+end, { nargs = "*", desc = "terminal (disabled)" })
+
 require("lazy").setup({
 
   spec = {

@@ -8,10 +8,5 @@ return {
       { "<c-/>", false },
       { "<c-_>", false },
     },
-    init = function()
-      vim.api.nvim_create_user_command("terminal", function()
-        vim.notify("Terminal disabled in this config", vim.log.levels.WARN)
-      end, { nargs = "*", desc = "terminal (disabled)" })
-    end,
   },
 }
