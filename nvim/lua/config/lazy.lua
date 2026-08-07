@@ -14,11 +14,14 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Auto-exit terminal mode immediately. Terminal buffers still work
--- (debugger output, lazygit, etc.) but user never gets stuck in TERMINAL mode.
+-- Auto-exit terminal mode for plain :terminal (prevents getting stuck),
+-- but allow Snacks-spawned terminals (lazygit, debugger) to keep terminal mode.
 vim.api.nvim_create_autocmd("TermEnter", {
   group = vim.api.nvim_create_augroup("auto_exit_terminal", { clear = true }),
-  callback = function()
+  callback = function(ev)
+    if vim.b[ev.buf].snacks_terminal then
+      return
+    end
     vim.schedule(function()
       if vim.fn.mode() == "t" then
         vim.cmd("stopinsert")
