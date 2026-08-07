@@ -14,6 +14,19 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Auto-exit terminal mode immediately. Terminal buffers still work
+-- (debugger output, lazygit, etc.) but user never gets stuck in TERMINAL mode.
+vim.api.nvim_create_autocmd("TermEnter", {
+  group = vim.api.nvim_create_augroup("auto_exit_terminal", { clear = true }),
+  callback = function()
+    vim.schedule(function()
+      if vim.fn.mode() == "t" then
+        vim.cmd("stopinsert")
+      end
+    end)
+  end,
+})
+
 require("lazy").setup({
 
   spec = {
