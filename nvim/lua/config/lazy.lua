@@ -14,23 +14,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Disable :terminal and terminal mode. Block any buffer that tries to open
--- as a terminal, but whitelist Snacks-spawned terminals (lazygit, etc.).
-vim.api.nvim_create_autocmd("TermOpen", {
-  group = vim.api.nvim_create_augroup("disable_terminal", { clear = true }),
-  callback = function(ev)
-    vim.schedule(function()
-      if vim.bo[ev.buf].buftype == "terminal" then
-        if vim.b[ev.buf].snacks_terminal then
-          return
-        end
-        vim.api.nvim_buf_delete(ev.buf, { force = true })
-        vim.notify("Terminal disabled in this config", vim.log.levels.WARN)
-      end
-    end)
-  end,
-})
-
 require("lazy").setup({
 
   spec = {
