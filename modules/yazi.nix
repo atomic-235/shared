@@ -48,5 +48,35 @@ in
         max_height = 900;
       };
     };
+
+    keymap = {
+      mgr.prepend_keymap = [
+        {
+          on = [ "c" "z" ];
+          run = "shell --block -- tar -cf - %s | zstd -3 -o archive.tar.zst";
+          desc = "Compress to tar.zst";
+        }
+        {
+          on = [ "c" "g" ];
+          run = "shell --block -- tar -czf archive.tar.gz %s";
+          desc = "Compress to tar.gz";
+        }
+        {
+          on = [ "c" "t" ];
+          run = "shell --block -- tar -cf archive.tar %s";
+          desc = "Compress to tar";
+        }
+        {
+          on = [ "c" "l" ];
+          run = "shell --block -- tar -cf - %s | lz4 -1 - archive.tar.lz4";
+          desc = "Compress to tar.lz4";
+        }
+        {
+          on = [ "c" "x" ];
+          run = "shell --block -- tar -cf - %s | xz -0 -T0 - archive.tar.xz";
+          desc = "Compress to tar.xz";
+        }
+      ];
+    };
   };
 }
