@@ -53,27 +53,27 @@ in
       mgr.prepend_keymap = [
         {
           on = [ "c" "z" ];
-          run = "shell --block -- tar -cf - %s | zstd -3 -o archive.tar.zst";
+          run = ''shell --block -- sh -c 'tar -cf - %s | zstd -3 -o archive.tar.zst && echo "Done: archive.tar.zst" || echo "FAILED"; read -r -p "Press Enter to continue..."' '';
           desc = "Compress to tar.zst";
         }
         {
           on = [ "c" "g" ];
-          run = "shell --block -- tar -czf archive.tar.gz %s";
+          run = ''shell --block -- sh -c 'tar -czf archive.tar.gz %s && echo "Done: archive.tar.gz" || echo "FAILED"; read -r -p "Press Enter to continue..."' '';
           desc = "Compress to tar.gz";
         }
         {
           on = [ "c" "t" ];
-          run = "shell --block -- tar -cf archive.tar %s";
+          run = ''shell --block -- sh -c 'tar -cf archive.tar %s && echo "Done: archive.tar" || echo "FAILED"; read -r -p "Press Enter to continue..."' '';
           desc = "Compress to tar";
         }
         {
           on = [ "c" "l" ];
-          run = "shell --block -- tar -cf - %s | lz4 -1 - archive.tar.lz4";
+          run = ''shell --block -- sh -c 'tar -cf - %s | lz4 -1 - archive.tar.lz4 && echo "Done: archive.tar.lz4" || echo "FAILED"; read -r -p "Press Enter to continue..."' '';
           desc = "Compress to tar.lz4";
         }
         {
           on = [ "c" "x" ];
-          run = "shell --block -- tar -cf - %s | xz -0 -T0 - archive.tar.xz";
+          run = ''shell --block -- sh -c 'tar -cf - %s | xz -0 -T0 - archive.tar.xz && echo "Done: archive.tar.xz" || echo "FAILED"; read -r -p "Press Enter to continue..."' '';
           desc = "Compress to tar.xz";
         }
       ];
