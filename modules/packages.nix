@@ -43,6 +43,7 @@ in
     figlet
     toilet
     fastfetch
+    lz4
 
     # AI coding agent
     opencode
