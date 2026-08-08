@@ -6,22 +6,10 @@ local binary = require("utils.binary")
 return {
   {
     "folke/snacks.nvim",
-    keys = {
-      { "<leader><space>", function() Snacks.picker.recent() end, desc = "Recent Files" },
-    },
     opts = {
       picker = {
         sources = {
-          recent = {
-          filter = {
-            paths = {
-              [vim.fn.stdpath("data")] = false,
-              [vim.fn.stdpath("cache")] = false,
-              [vim.fn.stdpath("state")] = false,
-            },
-          },
-        },
-        files = {
+          files = {
             exclude = {
               ".Trash", ".Trash-1000", ".playwright", ".playwright-mcp", ".direnv",
               ".venv", ".ruff_cache", ".pytest_cache", ".mypy_cache", "__pycache__",
