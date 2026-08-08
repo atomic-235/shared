@@ -17,8 +17,8 @@
 
       git = {
         autoFetch = false;
-        pagers = [
-          { pager = "delta --side-by-side --paging=never"; }
+        diffRenderers = [
+          { command = "delta --side-by-side --paging=never"; }
         ];
       };
     };
