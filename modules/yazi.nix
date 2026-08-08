@@ -7,6 +7,13 @@ let
     rev = "8e6296f14daff24151c736ebd0b9b6cd89b02b03";
     hash = "sha256-LArhRteD7OQRBguV1n13gb5jkl90sOxShkDzgEf3PA0=";
   };
+
+  ouch-yazi = pkgs.fetchFromGitHub {
+    owner = "ndtoan96";
+    repo = "ouch.yazi";
+    rev = "406ce6c13ec3a18d4872b8f64b62f4a530759b2c";
+    hash = "sha256-14x/bD0aD9hXONaqQD8Dt7rLBCMq7bkVLH6uCPOQ0C8=";
+  };
 in
 {
   programs.yazi = {
@@ -23,6 +30,12 @@ in
         dark = "tokyo-night";
         light = "tokyo-night";
       };
+    };
+
+    extraPackages = with pkgs; [ ouch ];
+
+    plugins = {
+      ouch = ouch-yazi;
     };
 
     settings = {
@@ -52,29 +65,9 @@ in
     keymap = {
       mgr.prepend_keymap = [
         {
-          on = [ "c" "z" ];
-          run = ''shell --block -- sh -c 'out="archive.tar.zst"; tar -cf - %s | zstd -3 -fo "$out" && echo "Done: $out" || echo "FAILED"; read -r -p "Press Enter..."' '';
-          desc = "Compress to tar.zst";
-        }
-        {
-          on = [ "c" "g" ];
-          run = ''shell --block -- sh -c 'out="archive.tar.gz"; tar -czf "$out" %s && echo "Done: $out" || echo "FAILED"; read -r -p "Press Enter..."' '';
-          desc = "Compress to tar.gz";
-        }
-        {
-          on = [ "c" "t" ];
-          run = ''shell --block -- sh -c 'out="archive.tar"; tar -cf "$out" %s && echo "Done: $out" || echo "FAILED"; read -r -p "Press Enter..."' '';
-          desc = "Compress to tar";
-        }
-        {
-          on = [ "c" "l" ];
-          run = ''shell --block -- sh -c 'out="archive.tar.lz4"; tar -cf - %s | lz4 -1 -f - "$out" && echo "Done: $out" || echo "FAILED"; read -r -p "Press Enter..."' '';
-          desc = "Compress to tar.lz4";
-        }
-        {
-          on = [ "c" "x" ];
-          run = ''shell --block -- sh -c 'out="archive.tar.xz"; tar -cf - %s | xz -0 -T0 -f - > "$out" && echo "Done: $out" || echo "FAILED"; read -r -p "Press Enter..."' '';
-          desc = "Compress to tar.xz";
+          on = [ "C" ];
+          run = "plugin ouch";
+          desc = "Compress with ouch (interactive)";
         }
       ];
     };
