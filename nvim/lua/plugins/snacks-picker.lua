@@ -1,7 +1,13 @@
 return {
   "folke/snacks.nvim",
   keys = {
-    { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
+    {
+      "<leader><space>",
+      function()
+        Snacks.picker.smart({ filter = { cwd = true } })
+      end,
+      desc = "Smart Find Files (cwd)",
+    },
   },
   opts = {
     picker = {
