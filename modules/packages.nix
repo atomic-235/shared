@@ -99,6 +99,9 @@ in
     # Logic programming
     clingo
 
+    # SMT solving
+    python312Packages.z3-solver
+
     # nvim dependencies
     sqlite
     sqlite.out
@@ -109,20 +112,12 @@ in
     # Scripts
     (pkgs.writeShellApplication {
       name = "tmux-sessionizer";
-      runtimeInputs = [
-        pkgs.fzf
-        pkgs.tmux
-      ];
+      runtimeInputs = [ pkgs.fzf pkgs.tmux ];
       text = builtins.readFile ../scripts/tmux-sessionizer.sh;
     })
     (pkgs.writeShellApplication {
       name = "ai-commit";
-      runtimeInputs = [
-        pkgs.gum
-        pkgs.jq
-        pkgs.git
-        pkgs.iproute2
-      ];
+      runtimeInputs = [ pkgs.gum pkgs.jq pkgs.git pkgs.iproute2 ];
       text = builtins.readFile ../scripts/ai-commit.sh;
     })
 
