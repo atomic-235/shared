@@ -67,7 +67,27 @@ in
         {
           on = [ "C" ];
           run = "plugin ouch";
-          desc = "Compress with ouch (interactive)";
+          desc = "Compress (zip default)";
+        }
+        {
+          on = [ "c" "z" ];
+          run = "plugin ouch tar.zst";
+          desc = "Compress to tar.zst";
+        }
+        {
+          on = [ "c" "g" ];
+          run = "plugin ouch tar.gz";
+          desc = "Compress to tar.gz";
+        }
+        {
+          on = [ "c" "x" ];
+          run = "plugin ouch tar.xz";
+          desc = "Compress to tar.xz";
+        }
+        {
+          on = [ "c" "7" ];
+          run = "plugin ouch 7z";
+          desc = "Compress to 7z";
         }
       ];
     };
