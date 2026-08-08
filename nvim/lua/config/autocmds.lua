@@ -49,5 +49,21 @@ vim.api.nvim_create_autocmd("RecordingLeave", {
 -- docstring blocks read as documentation (muted, like Comment, but bold).
 vim.api.nvim_set_hl(0, "@comment.documentation", { fg = "#636da6", italic = true, bold = true })
 
-
+-- Force LSP document resync on :e reload for YAML files.
+-- yaml-language-server caches parsed documents by version (YamlDocuments
+-- class in yaml-documents.ts). Version only bumps on textDocument/didChange.
+-- On :e reload, TextChanged does not fire, so the server keeps stale symbols.
+-- Firing TextChanged manually makes neovim's LSP client detect the content
+-- change and send didChange, invalidating the server's cache.
+vim.api.nvim_create_autocmd("BufReadPost", {
+  group = vim.api.nvim_create_augroup("yaml_lsp_resync", { clear = true }),
+  pattern = { "*.yaml", "*.yml" },
+  callback = function()
+    vim.schedule(function()
+      if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
+        vim.cmd("doautocmd TextChanged")
+      end
+    end)
+  end,
+})
 
