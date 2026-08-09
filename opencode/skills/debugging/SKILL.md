@@ -1,3 +1,8 @@
+---
+name: debugging
+description: Use when fixing bugs, troubleshooting production issues, or diagnosing unexpected behavior. Systematic hypothesis-driven approach: reproduce, isolate, hypothesize, test, fix, verify. ALWAYS reproduces before hypothesizing, and ALWAYS verifies before concluding.
+---
+
 # Systematic Debugging Framework
 
 Use this framework when fixing bugs, troubleshooting production issues, or diagnosing unexpected behavior.
