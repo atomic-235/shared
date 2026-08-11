@@ -10,7 +10,7 @@ return {
       local dap_python = require("dap-python")
       dap_python.setup("debugpy-adapter")
       dap_python.resolve_python = function()
-        return os.getenv("UV_PYTHON")
+        return os.getenv("UV_PYTHON") or vim.fn.exepath("python3")
       end
     end,
     keys = {
