@@ -12,6 +12,5 @@
     "history_previous": "none",
     "history_next": "none",
     "session_parent": "<leader>up"
-  },
-  "mouse": false
+  }
 }
