@@ -33,7 +33,8 @@
       bind-key -T copy-mode-vi v send-keys -X begin-selection
       bind-key -T copy-mode-vi V send-keys -X select-line
       bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
-      bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+      # Yank: pipe to system clipboard if available (WSL, Wayland), else tmux buffer
+      bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "if command -v clip.exe >/dev/null 2>&1; then clip.exe; elif command -v wl-copy >/dev/null 2>&1 && [ -n \"$WAYLAND_DISPLAY\" ]; then wl-copy; fi"
       bind-key -T copy-mode-vi Escape send-keys -X cancel
 
       # Disable status bar

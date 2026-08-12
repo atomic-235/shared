@@ -19,19 +19,29 @@ vim.g.netrw_browse_split = 4 -- open files in previous window
 vim.g.netrw_altv = 1         -- open splits to the right
 vim.g.netrw_winsize = 25
 
--- Force usage of wl-clipboard
-vim.g.clipboard = {
-  name = 'wl-clipboard',
-  copy = {
-    ['+'] = 'wl-copy',
-    ['*'] = 'wl-copy',
-  },
-  paste = {
-    ['+'] = 'wl-paste --no-newline',
-    ['*'] = 'wl-paste --no-newline',
-  },
-  cache_enabled = 0,
-}
+-- Clipboard provider: detect environment (WSL, Wayland, tmux)
+if vim.fn.executable("clip.exe") == 1 then
+  vim.g.clipboard = {
+    name = 'WSL',
+    copy = { ['+'] = 'clip.exe', ['*'] = 'clip.exe' },
+    paste = { ['+'] = 'powershell.exe -noprofile -command Get-Clipboard', ['*'] = 'powershell.exe -noprofile -command Get-Clipboard' },
+    cache_enabled = 0,
+  }
+elseif vim.fn.executable("wl-copy") == 1 and vim.env.WAYLAND_DISPLAY then
+  vim.g.clipboard = {
+    name = 'wl-clipboard',
+    copy = { ['+'] = 'wl-copy', ['*'] = 'wl-copy' },
+    paste = { ['+'] = 'wl-paste --no-newline', ['*'] = 'wl-paste --no-newline' },
+    cache_enabled = 0,
+  }
+elseif vim.env.TMUX then
+  vim.g.clipboard = {
+    name = 'tmux',
+    copy = { ['+'] = 'tmux load-buffer -', ['*'] = 'tmux load-buffer -' },
+    paste = { ['+'] = 'tmux save-buffer -', ['*'] = 'tmux save-buffer -' },
+    cache_enabled = 0,
+  }
+end
 
 -- Sync system clipboard
 vim.opt.clipboard = "unnamedplus"
