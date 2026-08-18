@@ -17,7 +17,7 @@ for d in "${dirs[@]}"; do
 done
 
 # MRU sorting: history items first, then remaining entries
-MRU_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-sessionizer-mru"
+MRU_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-sessionizer-mru-$(echo "$search_dir" | tr '/ ' '__')"
 declare -A seen
 sorted_entries=()
 if [[ -f "$MRU_FILE" ]]; then
@@ -47,7 +47,7 @@ if [[ $key == "ctrl-n" ]] || { [[ -z $selected ]] && [[ -n $query ]]; }; then
 fi
 
 # Update MRU history: prepend selected, dedup, cap at 50
-MRU_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-sessionizer-mru"
+MRU_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-sessionizer-mru-$(echo "$search_dir" | tr '/ ' '__')"
 mkdir -p "$(dirname "$MRU_FILE")"
 tmp=$(mktemp)
 echo "$selected" > "$tmp"
