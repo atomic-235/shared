@@ -96,6 +96,8 @@ in
     stylua
     prettier
     lean4
+    nim
+    nimlangserver
 
     # Logic programming
     clingo

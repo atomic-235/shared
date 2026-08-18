@@ -54,6 +54,10 @@ return {
           mason = false,
           cmd = { "texlab" },
         },
+        nim_langserver = {
+          mason = false,
+          cmd = { "nimlangserver" },
+        },
       },
     },
   },
