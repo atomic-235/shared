@@ -11,6 +11,30 @@ return {
   },
   opts = {
     picker = {
+      win = {
+        input = {
+          keys = {
+            ["<C-h>"] = { "focus_list", mode = { "n", "i" } },
+            ["<C-l>"] = { "focus_preview", mode = { "n", "i" } },
+          },
+        },
+        list = {
+          keys = {
+            ["<C-h>"] = "focus_input",
+            ["<C-k>"] = "focus_input",
+            ["<C-l>"] = "focus_preview",
+            ["<C-j>"] = "focus_preview",
+          },
+        },
+        preview = {
+          keys = {
+            ["<C-h>"] = "focus_list",
+            ["<C-l>"] = "focus_input",
+            ["<C-k>"] = "focus_input",
+            ["<C-j>"] = "focus_list",
+          },
+        },
+      },
       sources = {
         files = {
           hidden = true,
