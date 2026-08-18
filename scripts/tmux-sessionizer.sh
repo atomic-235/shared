@@ -15,7 +15,24 @@ for d in "${dirs[@]}"; do
         done < <(awk '/path = /{print $3}' "$d/.gitmodules")
     fi
 done
-selected=$(printf '%s\n' "${entries[@]}" | fzf --print-query --expect=ctrl-n)
+
+# MRU sorting: history items first, then remaining entries
+MRU_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-sessionizer-mru"
+declare -A seen
+sorted_entries=()
+if [[ -f "$MRU_FILE" ]]; then
+    while IFS= read -r mru_entry; do
+        [[ -n "$mru_entry" ]] && [[ -d "$mru_entry" ]] && [[ -z "${seen[$mru_entry]:-}" ]] && {
+            sorted_entries+=("$mru_entry")
+            seen[$mru_entry]=1
+        }
+    done < "$MRU_FILE"
+fi
+for entry in "${entries[@]}"; do
+    [[ -z "${seen[$entry]:-}" ]] && sorted_entries+=("$entry")
+done
+
+selected=$(printf '%s\n' "${sorted_entries[@]}" | fzf --no-sort --print-query --expect=ctrl-n)
 query=$(echo "$selected" | head -1)
 key=$(echo "$selected" | sed -n '2p')
 selected=$(echo "$selected" | sed -n '3p')
@@ -28,6 +45,15 @@ if [[ $key == "ctrl-n" ]] || { [[ -z $selected ]] && [[ -n $query ]]; }; then
     selected="$search_dir/$query"
     mkdir -p "$selected"
 fi
+
+# Update MRU history: prepend selected, dedup, cap at 50
+MRU_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-sessionizer-mru"
+mkdir -p "$(dirname "$MRU_FILE")"
+tmp=$(mktemp)
+echo "$selected" > "$tmp"
+[[ -f "$MRU_FILE" ]] && grep -vxF "$selected" "$MRU_FILE" >> "$tmp"
+tail -50 "$tmp" > "$MRU_FILE"
+rm "$tmp"
 
 selected_name=$(basename "$selected" | tr . _)
 tmux_running=$(pgrep tmux)
