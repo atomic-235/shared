@@ -98,6 +98,7 @@ in
     lean4
     nim
     nimlangserver
+    openscad-lsp
 
     # Logic programming
     clingo

@@ -58,6 +58,10 @@ return {
           mason = false,
           cmd = { "nimlangserver" },
         },
+        openscad_lsp = {
+          mason = false,
+          cmd = { "openscad-lsp", "--stdio" },
+        },
       },
     },
   },
