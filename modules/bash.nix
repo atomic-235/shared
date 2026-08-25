@@ -1,7 +1,13 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   cfg = config.programs.bash.aiModels;
+  proxyCfg = config.programs.bash.proxy;
 in
 {
   options.programs.bash.aiModels = lib.mkOption {
@@ -13,12 +19,21 @@ in
     '';
   };
 
+  options.programs.bash.proxy = {
+    port = lib.mkOption {
+      type = lib.types.port;
+      default = 20172;
+      description = "Local HTTP proxy port (v2rayA rule port — routing rules apply)";
+    };
+  };
+
   config = {
     home.sessionVariables = lib.mkMerge [
       {
         EDITOR = "nvim";
         VISUAL = "nvim";
         LIBSQLITE = "${pkgs.sqlite.out}/lib/libsqlite3.so";
+        PROXY_PORT = toString proxyCfg.port;
       }
       (lib.mapAttrs' (tier: model: lib.nameValuePair "AI_MODEL_${lib.toUpper tier}" model) cfg)
     ];
@@ -26,76 +41,79 @@ in
     # AI model tiers — sourceable XDG config file for non-interactive shells
     # (lazygit tmux popup).
     xdg.configFile."ai/models" = lib.mkIf (cfg != { }) {
-      text = lib.concatStringsSep "\n" (
-        lib.mapAttrsToList (tier: model: "AI_MODEL_${lib.toUpper tier}=\"${model}\"") cfg
-      ) + "\n";
+      text =
+        lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (tier: model: "AI_MODEL_${lib.toUpper tier}=\"${model}\"") cfg
+        )
+        + "\n";
     };
 
     programs.bash = {
-    enable = true;
+      enable = true;
 
-    historyControl = [
-      "ignoredups"
-      "erasedups"
-    ];
-    historyIgnore = [
-      "*BEGIN*PRIVATE*KEY*"
-      "*END*PRIVATE*KEY*"
-      "*secret*=*"
-      "*SECRET*=*"
-      "*password*=*"
-      "*PASSWORD*=*"
-      "*token*=*"
-      "*TOKEN*=*"
-      "*api_key*=*"
-      "*API_KEY*=*"
-    ];
+      historyControl = [
+        "ignoredups"
+        "erasedups"
+      ];
+      historyIgnore = [
+        "*BEGIN*PRIVATE*KEY*"
+        "*END*PRIVATE*KEY*"
+        "*secret*=*"
+        "*SECRET*=*"
+        "*password*=*"
+        "*PASSWORD*=*"
+        "*token*=*"
+        "*TOKEN*=*"
+        "*api_key*=*"
+        "*API_KEY*=*"
+      ];
 
-    shellOptions = [
-      "histappend"
-      "checkwinsize"
-      "extglob"
-      "globstar"
-      "huponexit"
-    ];
+      shellOptions = [
+        "histappend"
+        "checkwinsize"
+        "extglob"
+        "globstar"
+        "huponexit"
+      ];
 
-    sessionVariables = {
-      PATH = "$HOME/.local/bin:$PATH";
-      SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent.socket";
-      GPG_TTY = "$(tty)";
-    };
+      sessionVariables = {
+        PATH = "$HOME/.local/bin:$PATH";
+        SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent.socket";
+        GPG_TTY = "$(tty)";
+        PROXY_PORT = toString proxyCfg.port;
+      };
 
-    shellAliases = {
-      ls = "eza -lh --group-directories-first --icons=always";
-    };
+      shellAliases = {
+        ls = "eza -lh --group-directories-first --icons=always";
+      };
 
-    initExtra = ''
-      # Source nix profile if inside nix-user-chroot (rootless nix portable)
-      # On NixOS this never triggers (IN_NIX_USER_CHROOT never set)
-      if [ -n "$IN_NIX_USER_CHROOT" ] && [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
-        . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-      fi
+      initExtra = ''
+        # Source nix profile if inside nix-user-chroot (rootless nix portable)
+        # On NixOS this never triggers (IN_NIX_USER_CHROOT never set)
+        if [ -n "$IN_NIX_USER_CHROOT" ] && [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+        fi
 
-      # Vi mode
-      set -o vi
+        # Vi mode
+        set -o vi
 
-      # Source custom scripts from .bashrc.d/
-      if [[ -d ~/.bashrc.d ]]; then
-        for script in ~/.bashrc.d/*.sh; do
-          [[ -f "$script" ]] && source "$script"
-        done
-      fi
+        # Source custom scripts from .bashrc.d/
+        if [[ -d ~/.bashrc.d ]]; then
+          for script in ~/.bashrc.d/*.sh; do
+            [[ -f "$script" ]] && source "$script"
+          done
+        fi
 
-      # tmux functions - create or attach to session (defaults to "tmux")
-      tm() {
-        local name="''${1:-tmux}"
-        tmux new-session -A -s "$name" 2>/dev/null || tmux attach -t "$name"
-      }
-      tms() {
-        local name="''${1:-tmux}"
-        tmux -L share new-session -A -s "$name" 2>/dev/null || tmux -L share attach -t "$name"
-      }
-    '';
+        # tmux functions - create or attach to session (defaults to "tmux")
+        tm() {
+          local name="''${1:-tmux}"
+          tmux new-session -A -s "$name" 2>/dev/null || tmux attach -t "$name"
+        }
+        tms() {
+          local name="''${1:-tmux}"
+          tmux -L share new-session -A -s "$name" 2>/dev/null || tmux -L share attach -t "$name"
+        }
+      '';
     };
   };
 }

@@ -97,16 +97,17 @@ def main() -> None:
         sys.exit(1)
 
     # Smart proxy detection
+    proxy_port = os.environ.get("PROXY_PORT", "20172")
     try:
         result = subprocess.run(
-            ["ss", "-tlnH", "sport = :12334"],
+            ["ss", "-tlnH", f"sport = :{proxy_port}"],
             capture_output=True,
             text=True,
             timeout=5,
         )
         if result.stdout.strip():
-            os.environ["http_proxy"] = "http://127.0.0.1:12334"
-            os.environ["https_proxy"] = "http://127.0.0.1:12334"
+            os.environ["http_proxy"] = f"http://127.0.0.1:{proxy_port}"
+            os.environ["https_proxy"] = f"http://127.0.0.1:{proxy_port}"
     except (OSError, subprocess.TimeoutExpired):
         pass
 

@@ -31,10 +31,11 @@ else
   MODEL_ARG=()
 fi
 
-# Smart proxy detection: if proxy is running on port 12334, route through it
-if ss -tlnH 'sport = :12334' 2>/dev/null | grep -q .; then
-  export http_proxy=http://127.0.0.1:12334
-  export https_proxy=http://127.0.0.1:12334
+# Smart proxy detection: if proxy is running on $PROXY_PORT (default 20172), route through it
+PROXY_PORT="${PROXY_PORT:-20172}"
+if ss -tlnH "sport = :${PROXY_PORT}" 2>/dev/null | grep -q .; then
+  export http_proxy="http://127.0.0.1:${PROXY_PORT}"
+  export https_proxy="http://127.0.0.1:${PROXY_PORT}"
 fi
 
 gum spin --spinner dot --title "Generating..." -- \
