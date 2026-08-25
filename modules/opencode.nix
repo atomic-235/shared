@@ -89,10 +89,20 @@ let
           personal = builtins.fromJSON (builtins.readFile personalPath);
           mergedLsp = (personal.lsp or {}) // sharedLsp.lsp;
           merged = personal // { lsp = mergedLsp; subagent_depth = personal.subagent_depth or 2; };
+          merged' =
+            if config.opencode.model != null
+            then merged // { model = config.opencode.model; }
+            else merged;
         in
-          builtins.toFile "opencode.json" (builtins.toJSON merged);
+          builtins.toFile "opencode.json" (builtins.toJSON merged');
 in
 {
+  options.opencode.model = lib.mkOption {
+    type = lib.types.nullOr lib.types.str;
+    default = null;
+    description = "Default model for opencode. Overrides the `model` key in personal opencode.json when set.";
+  };
+
   options.opencode.variants = lib.mkOption {
     type = lib.types.attrsOf lib.types.str;
     default = {};
