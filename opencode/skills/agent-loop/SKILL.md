@@ -361,11 +361,11 @@ appropriate agent, parse the structured output, and map it to ledger entities.
 
 | Phase type | MUST delegate to | What comes back |
 |-----------|-----|-----------------|
-| `research` (evidence gathering, framing) | `research-investigation-fast` or `research-investigation` | Sources + verified facts |
-| `ach` (competing hypotheses) | `research-ach-fast` or `research-ach` | Hypothesis matrix |
-| `red_team` (attack proposal) | `research-red-team-fast` or `research-red-team` | Attack paths + findings |
-| `premortem` (failure modes) | `research-premortem-fast` or `research-premortem` | Failure modes + findings |
-| `verify` (cross-check sources) | `research-investigation-fast` or `research-investigation` | Source corroboration |
+| `research` (evidence gathering, framing) | `research-investigation-medium` or `research-investigation` | Sources + verified facts |
+| `ach` (competing hypotheses) | `research-ach-medium` or `research-ach` | Hypothesis matrix |
+| `red_team` (attack proposal) | `research-red-team-medium` or `research-red-team` | Attack paths + findings |
+| `premortem` (failure modes) | `research-premortem-medium` or `research-premortem` | Failure modes + findings |
+| `verify` (cross-check sources) | `research-investigation-medium` or `research-investigation` | Source corroboration |
 
 The phase does the work itself ONLY for: framing (no evidence yet),
 synthesize (combine verified findings into output), output (present
@@ -377,7 +377,7 @@ final assessment).
 
 1. Delegate via `task`:
    ```
-   task(subagent="research-investigation-fast",
+   task(subagent="research-investigation-medium",
         prompt="Investigate: <specific question>. Return URL, quote, "
                "claim text, source type.")
    ```
@@ -400,7 +400,7 @@ final assessment).
 
 1. Delegate:
    ```
-   task(subagent="research-ach-fast",
+   task(subagent="research-ach-medium",
         prompt="Evaluate these hypotheses for: <question>. H1=..., H2=..., H3=...")
    ```
 2. Map agent's hypothesis matrix to ledger:
@@ -415,7 +415,7 @@ final assessment).
 
 1. Delegate:
    ```
-   task(subagent="research-red-team-fast",
+   task(subagent="research-red-team-medium",
         prompt="Attack the proposal: <PR-N>. Find assumptions, weak links.")
    ```
 2. Map findings to obligations:

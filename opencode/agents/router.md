@@ -51,12 +51,12 @@ Multiple agents catch blind spots that a single framework misses. Multiple model
 | Suffix | Model | Use When |
 |--------|-------|----------|
 | (none) | parent model | Standard — balanced reasoning |
-| `-fast` | minimax-m3 | Quick triage, speed > depth |
+| `-medium` | minimax-m3 | Quick triage, speed > depth |
 | `-vision` | kimi-2.6 | Visual input (images, diagrams, screenshots) |
 
 All variants load the same skill — identical framework, different inference model.
 
-**Parent-model collision:** If parent IS minimax-m3, `-fast` is NOT a different model. If parent IS kimi-2.6, `-vision` is NOT different. If all variants resolve to same model, do NOT claim model diversity in synthesis. Report confidence as model-dependent and LOW.
+**Parent-model collision:** If parent IS minimax-m3, `-medium` is NOT a different model. If parent IS kimi-2.6, `-vision` is NOT different. If all variants resolve to same model, do NOT claim model diversity in synthesis. Report confidence as model-dependent and LOW.
 
 # Step 0: Pre-Classification Gate
 
@@ -178,12 +178,12 @@ If the request contains multiple distinct questions or tasks:
 
 | Situation | Strategy |
 |-----------|----------|
-| Quick triage / low stakes | `-fast` variants only |
+| Quick triage / low stakes | `-medium` variants only |
 | Standard analysis | Base (default model) agents |
-| High stakes / irreversible | Base + `-fast` for same skill, compare |
+| High stakes / irreversible | Base + `-medium` for same skill, compare |
 | Visual input | `-vision` variants |
-| Uncertain which framework fits | 2 different skills, both `-fast`, compare |
-| Need speed then depth | `-fast` first, then base on most promising angle |
+| Uncertain which framework fits | 2 different skills, both `-medium`, compare |
+| Need speed then depth | `-medium` first, then base on most promising angle |
 
 ## When to Compare Same Skill Across Models
 
@@ -192,7 +192,7 @@ If the request contains multiple distinct questions or tasks:
 - **Novel problem:** no established framework clearly fits
 - **User explicitly asks for verification**
 
-Dispatch `research-X` (default) AND `research-X-fast` (minimax-m3) with identical prompts. But first check parent-model collision (see Model Variants section above).
+Dispatch `research-X` (default) AND `research-X-medium` (minimax-m3) with identical prompts. But first check parent-model collision (see Model Variants section above).
 
 ## Common Multi-Agent Combinations (sanity check only — NOT default selection)
 
@@ -209,7 +209,7 @@ Dispatch `research-X` (default) AND `research-X-fast` (minimax-m3) with identica
 | "Game theory / strategy" | `research-strategic-interaction` | `research-alternative-futures` | `research-negotiate` | Equilibrium + scenarios + stakeholders |
 | "Compare X vs Y" | `research-investigation` | `research-first-principles` | — | Facts + fundamental constraints |
 | "Explain how X works" | `research-first-principles` | `research-systems-thinking` | — | Decompose + system structure |
-| High-stakes verification | `research-red-team` + `-fast` variant | `research-inversion` + `-fast` variant | — | Same skill, different models |
+| High-stakes verification | `research-red-team` + `-medium` variant | `research-inversion` + `-medium` variant | — | Same skill, different models |
 
 **Coverage-audit note:** If `research-coverage-audit` recommends frameworks not in the routing table, note as gap in synthesis. Do NOT dispatch non-existent agents. Suggest user request addition.
 
@@ -233,7 +233,7 @@ If the request doesn't clearly map to any agents:
 
 Include in each Task call: "Return a concise summary (max 500 tokens) of key findings, evidence, and sources. No full reasoning chains." If total output exceeds ~6000 tokens, summarize each to 300 tokens before synthesizing.
 
-If an agent returns an error/empty/timeout: (1) retry once with same agent. (2) If retry fails, substitute `-fast` variant of same skill. (3) If substitution fails, proceed with available results, note missing agent in synthesis. (4) Max confidence with missing agent = MEDIUM.
+If an agent returns an error/empty/timeout: (1) retry once with same agent. (2) If retry fails, substitute `-medium` variant of same skill. (3) If substitution fails, proceed with available results, note missing agent in synthesis. (4) Max confidence with missing agent = MEDIUM.
 
 ## Task Call Template
 
