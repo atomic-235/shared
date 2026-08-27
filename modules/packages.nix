@@ -116,8 +116,8 @@ in
     # Scripts
     (pkgs.writeShellApplication {
       name = "tmux-sessionizer";
-      runtimeInputs = [ pkgs.fzf pkgs.tmux ];
-      text = builtins.readFile ../scripts/tmux-sessionizer.sh;
+      runtimeInputs = [ pkgs.fzf pkgs.tmux pkgs.python3 ];
+      text = builtins.readFile ../scripts/tmux-sessionizer.py;
     })
     (pkgs.writeShellApplication {
       name = "ai-commit";
