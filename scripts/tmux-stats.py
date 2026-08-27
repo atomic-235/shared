@@ -145,25 +145,42 @@ def main():
     def cpu_fmt(delta):
         return f"{delta / cpu_col * 100:5.1f}%"
 
-    print("\t".join(header))
-    for row in rows:
-        if args.level == "sessions":
-            name, np, ram, cd = row
-            print(f"{name}\t{np}\t{fmt_ram(ram)}\t{cpu_fmt(cd)}")
-        elif args.level == "windows":
-            key, wname, np, ram, cd = row
-            print(f"{key}\t{wname}\t{np}\t{fmt_ram(ram)}\t{cpu_fmt(cd)}")
-        else:
-            pane, cmd, pid, ram, cd = row
-            print(f"{pane}\t{cmd}\t{pid}\t{fmt_ram(ram)}\t{cpu_fmt(cd)}")
     if args.level == "sessions":
-        print(f"{total[0]}\t{total[1]}\t{fmt_ram(total[2])}"
-              f"\t{cpu_fmt(total[3])}")
+        table = [[name, str(np), fmt_ram(ram), cpu_fmt(cd)]
+                 for name, np, ram, cd in rows]
+        total_row = ["TOTAL", str(total[1]), fmt_ram(total[2]),
+                     cpu_fmt(total[3])]
     elif args.level == "windows":
-        print(f"{total[0]}\t\t{total[2]}\t{fmt_ram(total[3])}"
-              f"\t{cpu_fmt(total[4])}")
+        table = [[key, wname, str(np), fmt_ram(ram), cpu_fmt(cd)]
+                 for key, wname, np, ram, cd in rows]
+        total_row = ["TOTAL", "", str(total[2]), fmt_ram(total[3]),
+                     cpu_fmt(total[4])]
     else:
-        print(f"{total[0]}\t\t\t{fmt_ram(total[3])}\t{cpu_fmt(total[4])}")
+        table = [[pane, cmd, str(pid), fmt_ram(ram), cpu_fmt(cd)]
+                 for pane, cmd, pid, ram, cd in rows]
+        total_row = ["TOTAL", "", "", fmt_ram(total[3]),
+                     cpu_fmt(total[4])]
+
+    table.append(total_row)
+    n_left = len(header) - 3
+
+    def print_table():
+        widths = [len(h) for h in header]
+        for row in table:
+            for i, cell in enumerate(row):
+                widths[i] = max(widths[i], len(cell))
+        out = []
+        for row in [list(header)] + table:
+            cells = []
+            for i, cell in enumerate(row):
+                if i < n_left:
+                    cells.append(cell.ljust(widths[i]))
+                else:
+                    cells.append(cell.rjust(widths[i]))
+            out.append("  ".join(cells).rstrip())
+        print("\n".join(out))
+
+    print_table()
 
 
 if __name__ == "__main__":
