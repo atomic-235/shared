@@ -121,8 +121,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="tmux session/window/pane RAM and CPU usage across "
                     "all tmux servers. CPU percent is relative to one "
-                    "core. Add --orphans for processes not under any "
-                    "tmux server.")
+                    "core. Add --orphans to show orphaned tmux processes "
+                    "(tmux process trees not under any reachable "
+                    "server).")
     parser.add_argument("level", nargs="?", default="sessions",
                         choices=["sessions", "windows", "panes"])
     parser.add_argument("-i", "--interval", type=float, default=0.5,
@@ -130,11 +131,7 @@ def main():
     parser.add_argument("-s", "--sort", default="ram",
                         choices=["ram", "cpu", "name"])
     parser.add_argument("--orphans", action="store_true",
-                        help="show orphan processes not under any tmux "
-                             "server")
-    parser.add_argument("-t", "--tmux-orphans", action="store_true",
-                        help="orphans section shows only tmux processes "
-                             "(orphaned tmux servers)")
+                        help="show orphaned tmux processes")
     args = parser.parse_args()
 
     panes = []
@@ -220,7 +217,7 @@ def main():
                       cpu_fmt(total_cpu)])
         print_table(header, table, len(header) - 3)
 
-    if not args.orphans and not args.tmux_orphans:
+    if not args.orphans:
         return
 
     covered = set()
@@ -237,15 +234,17 @@ def main():
 
     orphan_rows = []
     for root in roots:
-        ram, cd = tree_sums(root, rss2, cpu2, cpu1, children)
+        sub = subtree(root, children)
+        if not any("tmux: server" in comm2.get(p, "") for p in sub):
+            continue
+        ram = sum(rss2.get(p, 0) for p in sub)
+        cd = sum(cpu2.get(p, 0) - cpu1.get(p, 0) for p in sub)
         orphan_rows.append((root, comm2.get(root, "?"), ram, cd))
-    if args.tmux_orphans:
-        orphan_rows = [r for r in orphan_rows
-                       if "tmux" in r[1].lower()]
     orphan_rows.sort(key=lambda r: -r[2])
 
     print()
-    print("ORPHANS (not under any tmux server)")
+    print("TMUX ORPHANS (tmux process trees not under any reachable "
+          "server)")
     o_header = ("PID", "COMMAND", "RAM", "CPU")
     o_table = []
     for pid, cmd, ram, cd in orphan_rows:
