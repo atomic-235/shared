@@ -130,6 +130,9 @@ def main():
                         choices=["ram", "cpu", "name"])
     parser.add_argument("--no-orphans", action="store_true",
                         help="hide the orphans section")
+    parser.add_argument("-t", "--tmux-orphans", action="store_true",
+                        help="orphans section shows only tmux processes "
+                             "(orphaned tmux servers)")
     args = parser.parse_args()
 
     panes = []
@@ -234,6 +237,9 @@ def main():
     for root in roots:
         ram, cd = tree_sums(root, rss2, cpu2, cpu1, children)
         orphan_rows.append((root, comm2.get(root, "?"), ram, cd))
+    if args.tmux_orphans:
+        orphan_rows = [r for r in orphan_rows
+                       if "tmux" in r[1].lower()]
     orphan_rows.sort(key=lambda r: -r[2])
 
     print()
