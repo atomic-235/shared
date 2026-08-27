@@ -10,49 +10,6 @@ def run(cmd, **kw):
                           check=False, **kw)
 
 
-def proc_table():
-    page = os.sysconf("SC_PAGE_SIZE")
-    rss, ppid = {}, {}
-    for entry in Path("/proc").iterdir():
-        if not entry.name.isdigit():
-            continue
-        try:
-            stat = (entry / "stat").read_text()
-            fields = stat[stat.rindex(")") + 2:].split()
-            pid = int(entry.name)
-            ppid[pid] = int(fields[1])
-            statm = (entry / "statm").read_text()
-            rss[pid] = int(statm.split()[1]) * page
-        except (FileNotFoundError, ProcessLookupError, IndexError,
-                ValueError, PermissionError):
-            continue
-    return rss, ppid
-
-
-def tree_rss(root, rss, ppid):
-    children = {}
-    for pid, parent in ppid.items():
-        children.setdefault(parent, []).append(pid)
-    seen, stack, total = set(), [root], 0
-    while stack:
-        pid = stack.pop()
-        if pid in seen:
-            continue
-        seen.add(pid)
-        total += rss.get(pid, 0)
-        stack.extend(children.get(pid, []))
-    return total
-
-
-def session_ram(name):
-    res = run(["tmux", "list-panes", "-s", "-t", name, "-F", "#{pane_pid}"])
-    if res.returncode != 0:
-        return 0
-    rss, ppid = proc_table()
-    return sum(tree_rss(int(p), rss, ppid)
-               for p in res.stdout.split() if p.isdigit())
-
-
 def has_session(name):
     return run(["tmux", "has-session", "-t=" + name]).returncode == 0
 
@@ -83,14 +40,7 @@ def main():
     sorted_entries = [e for e in mru if os.path.isdir(e)]
     sorted_entries += [e for e in entries if e not in seen]
 
-    display = []
-    for entry in sorted_entries:
-        sname = os.path.basename(entry).replace(".", "_")
-        if has_session(sname):
-            ram = session_ram(sname) // (1024 * 1024)
-            display.append(f"{entry} ({ram}M)")
-        else:
-            display.append(entry)
+    display = sorted_entries
 
     res = run(["fzf", "--no-sort", "--print-query", "--expect=ctrl-n"],
               input="\n".join(display))
@@ -98,7 +48,6 @@ def main():
     query = lines[0] if lines else ""
     key = lines[1] if len(lines) > 1 else ""
     selected = lines[2] if len(lines) > 2 else ""
-    selected = re.sub(r" \(\d+M\)$", "", selected)
 
     if not selected and not query:
         return
