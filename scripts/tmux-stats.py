@@ -120,16 +120,18 @@ def server_label(sock):
 def main():
     parser = argparse.ArgumentParser(
         description="tmux session/window/pane RAM and CPU usage across "
-                    "all tmux servers, plus orphan processes not under "
-                    "any server. CPU percent is relative to one core.")
+                    "all tmux servers. CPU percent is relative to one "
+                    "core. Add --orphans for processes not under any "
+                    "tmux server.")
     parser.add_argument("level", nargs="?", default="sessions",
                         choices=["sessions", "windows", "panes"])
     parser.add_argument("-i", "--interval", type=float, default=0.5,
                         help="CPU sampling interval in seconds")
     parser.add_argument("-s", "--sort", default="ram",
                         choices=["ram", "cpu", "name"])
-    parser.add_argument("--no-orphans", action="store_true",
-                        help="hide the orphans section")
+    parser.add_argument("--orphans", action="store_true",
+                        help="show orphan processes not under any tmux "
+                             "server")
     parser.add_argument("-t", "--tmux-orphans", action="store_true",
                         help="orphans section shows only tmux processes "
                              "(orphaned tmux servers)")
@@ -218,7 +220,7 @@ def main():
                       cpu_fmt(total_cpu)])
         print_table(header, table, len(header) - 3)
 
-    if args.no_orphans:
+    if not args.orphans and not args.tmux_orphans:
         return
 
     covered = set()
