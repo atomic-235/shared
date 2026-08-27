@@ -114,11 +114,8 @@ in
     graphviz
 
     # Scripts
-    (pkgs.writeShellApplication {
-      name = "tmux-sessionizer";
-      runtimeInputs = [ pkgs.fzf pkgs.tmux pkgs.python3 ];
-      text = builtins.readFile ../scripts/tmux-sessionizer.py;
-    })
+    (pkgs.writers.writePython3Bin "tmux-sessionizer" { }
+      (builtins.readFile ../scripts/tmux-sessionizer.py))
     (pkgs.writeShellApplication {
       name = "ai-commit";
       runtimeInputs = [ pkgs.gum pkgs.jq pkgs.git pkgs.iproute2 ];

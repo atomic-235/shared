@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import re
 import subprocess
@@ -7,7 +6,8 @@ from pathlib import Path
 
 
 def run(cmd, **kw):
-    return subprocess.run(cmd, capture_output=True, text=True, check=False, **kw)
+    return subprocess.run(cmd, capture_output=True, text=True,
+                          check=False, **kw)
 
 
 def proc_table():
@@ -21,8 +21,10 @@ def proc_table():
             fields = stat[stat.rindex(")") + 2:].split()
             pid = int(entry.name)
             ppid[pid] = int(fields[1])
-            rss[pid] = int((entry / "statm").read_text().split()[1]) * page
-        except (FileNotFoundError, ProcessLookupError, IndexError, ValueError, PermissionError):
+            statm = (entry / "statm").read_text()
+            rss[pid] = int(statm.split()[1]) * page
+        except (FileNotFoundError, ProcessLookupError, IndexError,
+                ValueError, PermissionError):
             continue
     return rss, ppid
 
@@ -47,7 +49,8 @@ def session_ram(name):
     if res.returncode != 0:
         return 0
     rss, ppid = proc_table()
-    return sum(tree_rss(int(p), rss, ppid) for p in res.stdout.split() if p.isdigit())
+    return sum(tree_rss(int(p), rss, ppid)
+               for p in res.stdout.split() if p.isdigit())
 
 
 def has_session(name):
@@ -55,7 +58,8 @@ def has_session(name):
 
 
 def main():
-    search_dir = os.path.expanduser(sys.argv[1] if len(sys.argv) > 1 else "~/projects").rstrip("/")
+    default_dir = sys.argv[1] if len(sys.argv) > 1 else "~/projects"
+    search_dir = os.path.expanduser(default_dir).rstrip("/")
 
     entries = []
     for d in sorted(Path(search_dir).glob("*")):
@@ -69,12 +73,12 @@ def main():
                 if m and (d / m.group(1)).is_dir():
                     entries.append(str(d / m.group(1)))
 
-    mru_file = Path(os.environ.get("XDG_CACHE_HOME", "~/.cache")).expanduser() / (
-        "tmux-sessionizer-mru-" + re.sub(r"[ /]", "__", search_dir)
-    )
+    cache = Path(os.environ.get("XDG_CACHE_HOME", "~/.cache")).expanduser()
+    mru_file = cache / ("tmux-sessionizer-mru-"
+                        + re.sub(r"[ /]", "__", search_dir))
     mru = []
     if mru_file.exists():
-        mru = [l for l in mru_file.read_text().splitlines() if l]
+        mru = [line for line in mru_file.read_text().splitlines() if line]
     seen = set(mru)
     sorted_entries = [e for e in mru if os.path.isdir(e)]
     sorted_entries += [e for e in entries if e not in seen]
@@ -83,7 +87,8 @@ def main():
     for entry in sorted_entries:
         sname = os.path.basename(entry).replace(".", "_")
         if has_session(sname):
-            display.append(f"{entry} ({session_ram(sname) // (1024 * 1024)}M)")
+            ram = session_ram(sname) // (1024 * 1024)
+            display.append(f"{entry} ({ram}M)")
         else:
             display.append(entry)
 
@@ -102,7 +107,7 @@ def main():
         selected = f"{search_dir}/{query}"
         os.makedirs(selected, exist_ok=True)
 
-    mru_new = [selected] + [l for l in mru if l != selected]
+    mru_new = [selected] + [line for line in mru if line != selected]
     mru_file.parent.mkdir(parents=True, exist_ok=True)
     mru_file.write_text("\n".join(mru_new[:50]) + "\n")
 
@@ -115,27 +120,34 @@ def main():
         return
 
     if not has_session(selected_name):
-        run(["tmux", "new-session", "-ds", selected_name, "-n", "bash", "-c", selected])
-        run(["tmux", "new-window", "-t", selected_name, "-n", "nvim", "-c", selected])
+        run(["tmux", "new-session", "-ds", selected_name,
+             "-n", "bash", "-c", selected])
+        run(["tmux", "new-window", "-t", selected_name,
+             "-n", "nvim", "-c", selected])
 
         if os.path.isfile(os.path.join(selected, ".envrc")):
-            nvim_cmd = f"direnv exec . nvim . || nvim ."
+            nvim_cmd = "direnv exec . nvim . || nvim ."
         elif os.path.isdir(os.path.join(selected, ".venv")):
             nvim_cmd = f"source {selected}/.venv/bin/activate && nvim ."
         else:
             nvim_cmd = "nvim ."
-        run(["tmux", "send-keys", "-t", f"{selected_name}:nvim", nvim_cmd, "C-m"])
+        run(["tmux", "send-keys", "-t", f"{selected_name}:nvim",
+             nvim_cmd, "C-m"])
 
-        run(["tmux", "new-window", "-t", selected_name, "-n", "ai", "-c", selected])
+        run(["tmux", "new-window", "-t", selected_name,
+             "-n", "ai", "-c", selected])
         if "/share," in os.environ.get("TMUX", ""):
-            ai_cmd = os.environ.get("SESSIONIZER_AI_CMD_WORK", "work-opencode")
+            ai_cmd = os.environ.get("SESSIONIZER_AI_CMD_WORK",
+                                    "work-opencode")
         else:
             ai_cmd = os.environ.get("SESSIONIZER_AI_CMD", "opencode")
-        run(["tmux", "send-keys", "-t", f"{selected_name}:ai", ai_cmd, "C-m"])
+        run(["tmux", "send-keys", "-t", f"{selected_name}:ai",
+             ai_cmd, "C-m"])
 
         run(["tmux", "select-window", "-t", f"{selected_name}:bash"])
         if os.path.isfile(os.path.join(selected, ".tmux")):
-            run(["tmux", "set-environment", "-t", selected_name, "PROJECT_ROOT", selected])
+            run(["tmux", "set-environment", "-t", selected_name,
+                 "PROJECT_ROOT", selected])
             run(["tmux", "source-file", os.path.join(selected, ".tmux")])
 
     run(["tmux", "switch-client", "-t", selected_name])
