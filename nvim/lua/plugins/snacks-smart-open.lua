@@ -16,7 +16,7 @@ return {
               ".eggs", "*.egg-info",
               ".databricks", ".dbx", ".dagster", ".airflow", ".dlt",
               ".buildozer", ".angular", ".vite",
-              ".claude", ".opencode", ".agent_loop", ".generated",
+              ".claude", ".opencode", ".generated",
               ".obsidian", ".idea", ".vscode",
               ".aws-sam", ".circleci", ".azuredevops", ".gitlab",
               ".husky", ".tx", ".devcontainer", ".git-crypt",
