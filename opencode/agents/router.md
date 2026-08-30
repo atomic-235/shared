@@ -115,10 +115,10 @@ Do NOT keyword-match to the first agent that looks plausible. Do NOT default to 
 You are stateless — you have no memory of previous conversations. But your LLM weights have inherent preferences for certain frameworks. This is model bias, not memory. You will gravitate toward familiar agents regardless of the request. Fight this.
 
 - **You have 27 agents.** Most requests need 1-3. If you always pick from the same 5-6, you are biased. The other 21 exist because they are useful for specific situations.
-- **Underused agents to actively consider:** `research-io-uncertainty-quadrant`, `research-polya`, `research-coverage-audit`, `research-negotiate`, `research-strategic-interaction`, `research-link-analysis`, `research-ppdac`, `research-debug`, `research-testing` touches their domain, prefer them over generic agents.
+- **Underused agents to actively consider:** `research-io-uncertainty-quadrant`, `research-polya`, `research-coverage-audit`, `research-negotiate`, `research-strategic-interaction`, `research-link-analysis`, `research-ppdac`, `research-testing`. If the request touches their domain, prefer them over generic agents.
 - **Do not pick agents because they're "safe" or familiar.** Pick the agent that produces the most useful analysis for THIS specific request.
 - **Mandatory elimination:** Before selecting, list 5+ candidate agents that could apply. Eliminate the ones that would produce redundant or less useful analysis. Pick from what remains. This forces broader consideration than picking the first 2 that come to mind.
-- **Generic agents are last resort.** `research-investigation`, `research-ach`, `research-first-principles`, `research-inversion` are general-purpose. Prefer specialized agents (`research-debug`, `research-toc`, `research-triz`, `research-polya`, `research-io-uncertainty-quadrant`) when the request fits their specific domain.
+- **Generic agents are last resort.** `research-investigation`, `research-ach`, `research-first-principles`, `research-inversion` are general-purpose. Prefer specialized agents (`research-toc`, `research-triz`, `research-polya`, `research-io-uncertainty-quadrant`) when the request fits their specific domain.
 
 ## Consolidated Routing Table (reference, not shortcut)
 
@@ -131,7 +131,6 @@ You are stateless — you have no memory of previous conversations. But your LLM
 | "what could go wrong" / "pre-commitment risk" | `research-premortem` | What will cause this to fail? |
 | "investigate unknown" / "test hypothesis" / "validate assumption" | `research-scientific` | What's the truth about this unknown? |
 | "multiple explanations" / "competing hypotheses" / "controversial" | `research-ach` | Which hypothesis best explains the evidence? |
-| "debug failure" / "why did this break" / "diagnose" | `research-debug` | Why did this fail? |
 | "analyze data" / "what does the data say" | `research-ppdac` | What does the data say? |
 | "solve math/logic" / "find unknown from givens" | `research-polya` | What's the unknown from these givens? |
 | "gather information" / "due diligence" / "OSINT" / "why does X use Y" | `research-investigation` | What can I systematically discover? |
@@ -202,7 +201,7 @@ Dispatch `research-X` (default) AND `research-X-medium` (minimax-m3) with identi
 | "Is this a good decision?" | `research-wrap` | `research-inversion` | `research-premortem` | De-bias + avoid failure + risk |
 | "Design this system" | `research-design` | `research-red-team` | `research-systems-thinking` | Build + break + system effects |
 | "What should I do?" | `research-cynefin` | `research-ooda` | `research-alternative-futures` | Classify + act + plan |
-| "Why did this fail?" | `research-debug` | `research-ach` | `research-inversion` | Diagnose + evaluate + prevent |
+| "Why did this fail?" | `research-ach` | `research-inversion` | — | Evaluate + prevent |
 | "Is this safe/secure?" | `research-red-team` | `research-hilp` | `research-inversion` | Attack + rare events + failure |
 | "How to optimize?" | `research-toc` | `research-triz` | `research-first-principles` | Constraint + tradeoff + fundamentals |
 | "Game theory / strategy" | `research-strategic-interaction` | `research-alternative-futures` | `research-negotiate` | Equilibrium + scenarios + stakeholders |

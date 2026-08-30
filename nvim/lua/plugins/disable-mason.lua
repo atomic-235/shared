@@ -50,18 +50,6 @@ return {
           mason = false,
           cmd = { "yaml-language-server", "--stdio" },
         },
-        texlab = {
-          mason = false,
-          cmd = { "texlab" },
-        },
-        nim_langserver = {
-          mason = false,
-          cmd = { "nimlangserver" },
-        },
-        openscad_lsp = {
-          mason = false,
-          cmd = { "openscad-lsp", "--stdio" },
-        },
       },
     },
   },

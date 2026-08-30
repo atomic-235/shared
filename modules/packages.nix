@@ -17,7 +17,6 @@ in
     # Editors
     neovim
     btop
-    moor
     lnav
 
     # CLI tools
@@ -51,7 +50,6 @@ in
     # Typesetting
     typst
     tinymist
-    texlab
     neovim-remote
 
     # Build tools (needed by nvim-treesitter to compile parsers)
@@ -88,7 +86,6 @@ in
     lua-language-server
     nixd
     yaml-language-server
-    texlab
     nixfmt
     ruff
     python313Packages.debugpy
@@ -96,15 +93,9 @@ in
     stylua
     prettier
     lean4
-    nim
-    nimlangserver
-    openscad-lsp
 
     # Logic programming
     clingo
-
-    # SMT solving
-    python312Packages.z3-solver
 
     # nvim dependencies
     sqlite
