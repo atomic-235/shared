@@ -78,7 +78,7 @@ in
     rclone
 
     # File sharing
-    qrcp
+    cliqr
 
     # Containers
     podman-compose
