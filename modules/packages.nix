@@ -77,6 +77,9 @@ in
     cryptomator-cli
     rclone
 
+    # File sharing
+    qrcp
+
     # Containers
     podman-compose
 
