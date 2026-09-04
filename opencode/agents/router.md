@@ -11,6 +11,7 @@ permission:
   task:
     "*": deny
     "research-*": allow
+    "research-debug*": deny
     "general": allow
     "explore": allow
   question: allow
