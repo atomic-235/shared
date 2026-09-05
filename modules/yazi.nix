@@ -90,14 +90,24 @@ in
           desc = "Compress to 7z";
         }
         {
-          on = [ "g" "w" ];
+          on = [ "g" "p" "p" ];
+          run = "cd ~/projects/personal";
+          desc = "Go to personal projects";
+        }
+        {
+          on = [ "g" "p" "w" ];
           run = "cd ~/projects/work";
           desc = "Go to work projects";
         }
         {
-          on = [ "g" "p" ];
-          run = "cd ~/projects/personal";
-          desc = "Go to personal projects";
+          on = [ "g" "d" "p" ];
+          run = "cd ~/Downloads/personal";
+          desc = "Go to personal downloads";
+        }
+        {
+          on = [ "g" "d" "w" ];
+          run = "cd ~/Downloads/work";
+          desc = "Go to work downloads";
         }
       ];
     };
