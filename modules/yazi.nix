@@ -89,6 +89,16 @@ in
           run = "plugin ouch 7z";
           desc = "Compress to 7z";
         }
+        {
+          on = [ "g" "w" ];
+          run = "cd ~/projects/work";
+          desc = "Go to work projects";
+        }
+        {
+          on = [ "g" "p" ];
+          run = "cd ~/projects/personal";
+          desc = "Go to personal projects";
+        }
       ];
     };
   };
