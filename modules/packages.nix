@@ -117,6 +117,11 @@ in
       runtimeInputs = [ pkgs.gum pkgs.jq pkgs.git pkgs.iproute2 ];
       text = builtins.readFile ../scripts/ai-commit.sh;
     })
+    (pkgs.writeShellApplication {
+      name = "qr-secure";
+      runtimeInputs = [ pkgs.cliqr ];
+      text = builtins.readFile ../scripts/qr-secure.sh;
+    })
 
     # with-secrets — sops exec-env wrapper for decrypting secrets at runtime
     (import ../scripts/with-secrets.nix { inherit pkgs; })
