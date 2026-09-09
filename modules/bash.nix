@@ -90,6 +90,12 @@ in
       };
 
       initExtra = ''
+        # EDITOR/VISUAL must be exported here (in .bashrc) not in sessionVariables
+        # (.profile), because non-login interactive shells (foot windows) only
+        # source .bashrc — sessionVariables would be missing.
+        export EDITOR="nvim"
+        export VISUAL="nvim"
+
         # Source nix profile if inside nix-user-chroot (rootless nix portable)
         # On NixOS this never triggers (IN_NIX_USER_CHROOT never set)
         if [ -n "$IN_NIX_USER_CHROOT" ] && [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
