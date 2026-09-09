@@ -81,6 +81,8 @@ in
         SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent.socket";
         GPG_TTY = "$(tty)";
         PROXY_PORT = toString proxyCfg.port;
+        EDITOR = "nvim";
+        VISUAL = "nvim";
       };
 
       shellAliases = {
