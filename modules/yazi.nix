@@ -60,6 +60,12 @@ in
         max_width = 600;
         max_height = 900;
       };
+
+      open = {
+        prepend_rules = [
+          { mime = "audio/*"; use = "termusic"; }
+        ];
+      };
     };
 
     keymap = {
