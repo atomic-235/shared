@@ -61,9 +61,20 @@ in
         max_height = 900;
       };
 
+      opener = {
+        termusic = [
+          {
+            run = ''termusic "$@"'';
+            block = true;
+            desc = "Termusic";
+            for = "unix";
+          }
+        ];
+      };
+
       open = {
         prepend_rules = [
-          { mime = "audio/*"; use = "termusic"; }
+          { mime = "audio/*"; use = [ "termusic" ]; }
         ];
       };
     };
