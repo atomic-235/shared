@@ -78,7 +78,7 @@ in
         ];
 
         append_rules = [
-          { url = "file://*/"; use = [ "termusic" ]; }
+          { url = "*/"; use = [ "termusic" ]; }
         ];
       };
     };
