@@ -24,6 +24,7 @@
         delta = import ./modules/delta.nix;
         packages = import ./modules/packages.nix;
         tmux = import ./modules/tmux.nix;
+        termusic = import ./modules/termusic.nix;
       };
 
       overlays = {
