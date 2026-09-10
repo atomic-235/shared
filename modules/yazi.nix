@@ -75,10 +75,7 @@ in
       open = {
         prepend_rules = [
           { mime = "audio/*"; use = [ "termusic" ]; }
-        ];
-
-        append_rules = [
-          { url = "*/"; use = [ "termusic" ]; }
+          { url = "*/"; use = [ "edit" "termusic" ]; }
         ];
       };
     };
