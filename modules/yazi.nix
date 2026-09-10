@@ -126,6 +126,11 @@ in
           run = "cd ~/Downloads/work";
           desc = "Go to work downloads";
         }
+        {
+          on = [ "m" ];
+          run = "shell -- termusic %s";
+          desc = "Open directory in Termusic";
+        }
       ];
     };
   };
