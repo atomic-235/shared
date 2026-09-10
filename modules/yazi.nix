@@ -76,6 +76,10 @@ in
         prepend_rules = [
           { mime = "audio/*"; use = [ "termusic" ]; }
         ];
+
+        append_rules = [
+          { is_dir = true; use = [ "termusic" ]; }
+        ];
       };
     };
 
@@ -125,11 +129,6 @@ in
           on = [ "g" "d" "w" ];
           run = "cd ~/Downloads/work";
           desc = "Go to work downloads";
-        }
-        {
-          on = [ "m" ];
-          run = "shell -- termusic %s";
-          desc = "Open directory in Termusic";
         }
       ];
     };
