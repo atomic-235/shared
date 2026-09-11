@@ -21,7 +21,7 @@ fi
 DIFF_FILE=$(mktemp)
 git diff --cached > "$DIFF_FILE"
 
-gum confirm "Touch YubiKey to decrypt?" || exit 1
+TERM_PROGRAM=Apple_Terminal gum confirm "Touch YubiKey to decrypt?" || exit 1
 
 OUT_FILE=$(mktemp)
 
@@ -38,7 +38,7 @@ if ss -tlnH "sport = :${PROXY_PORT}" 2>/dev/null | grep -q .; then
   export https_proxy="http://127.0.0.1:${PROXY_PORT}"
 fi
 
-gum spin --spinner dot --title "Generating..." -- \
+TERM_PROGRAM=Apple_Terminal gum spin --spinner dot --title "Generating..." -- \
   bash -c "with-secrets ai opencode run ${MODEL_ARG[*]:-} --format json 'Generate a single concise conventional commit message for this diff. Output ONLY the commit message, nothing else:' -f '$DIFF_FILE' 2>/dev/null > '$OUT_FILE'"
 
 MSG=$(cat "$OUT_FILE" | grep '"type":"text"' | jq -r '.part.text' | tr '\n' ' ' | sed 's/[[:space:]]*$//')
