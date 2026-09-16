@@ -32,6 +32,18 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Wrap prose in markdown; render-markdown.nvim's pipe_table.wrap keeps
+-- tables aligned via virtual lines
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("markdown_wrap", { clear = true }),
+  pattern = "markdown",
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+    vim.opt_local.breakindent = true
+  end,
+})
+
 -- Disable auto-pairs during macro recording
 vim.api.nvim_create_autocmd("RecordingEnter", {
   callback = function()

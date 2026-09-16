@@ -11,6 +11,9 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
     ft = { "markdown", "codecompanion" },
     opts = {
+      latex = {
+        enabled = false,
+      },
       code = {
         sign = false,
         width = "block",
@@ -22,6 +25,9 @@ return {
       },
       checkbox = {
         enabled = true,
+      },
+      pipe_table = {
+        wrap = true,
       },
     },
   },
