@@ -8,7 +8,10 @@ return {
   -- render-markdown.nvim: faster, only renders visible range
   {
     "MeanderingProgrammer/render-markdown.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
     ft = { "markdown", "codecompanion" },
     opts = {
       latex = {
@@ -29,6 +32,13 @@ return {
       pipe_table = {
         wrap = true,
       },
+    },
+  },
+  -- Auto-install mermaid parser (syntax highlighting for fenced blocks)
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = {
+      ensure_installed = { "mermaid" },
     },
   },
 }
