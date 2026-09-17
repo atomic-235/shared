@@ -67,6 +67,7 @@ return {
         },
         prettier = {
           command = "prettier",
+          prepend_args = { "--ignore-path", "/dev/null" },
         },
         nixfmt = {
           command = "nixfmt",
