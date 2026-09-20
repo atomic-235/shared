@@ -98,10 +98,6 @@ in
     shfmt
     stylua
     prettier
-    lean4
-
-    # Logic programming
-    clingo
 
     # nvim dependencies
     sqlite
@@ -111,13 +107,18 @@ in
     graphviz
 
     # Scripts
-    (pkgs.writers.writePython3Bin "tmux-sessionizer" { }
-      (builtins.readFile ../scripts/tmux-sessionizer.py))
-    (pkgs.writers.writePython3Bin "tmux-stats" { }
-      (builtins.readFile ../scripts/tmux-stats.py))
+    (pkgs.writers.writePython3Bin "tmux-sessionizer" { } (
+      builtins.readFile ../scripts/tmux-sessionizer.py
+    ))
+    (pkgs.writers.writePython3Bin "tmux-stats" { } (builtins.readFile ../scripts/tmux-stats.py))
     (pkgs.writeShellApplication {
       name = "ai-commit";
-      runtimeInputs = [ pkgs.gum pkgs.jq pkgs.git pkgs.iproute2 ];
+      runtimeInputs = [
+        pkgs.gum
+        pkgs.jq
+        pkgs.git
+        pkgs.iproute2
+      ];
       text = builtins.readFile ../scripts/ai-commit.sh;
     })
     (pkgs.writeShellApplication {
