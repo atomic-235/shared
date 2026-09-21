@@ -65,8 +65,9 @@
       # Popup border style (Tokyo Night)
       set -g popup-border-style "fg=#7aa2f7"
 
-      # Auto-source .tmux file if it exists in current directory
-      if-shell "[ -f .tmux ]" "source-file .tmux"
+      # Source project .tmux manually (prefix T). Never auto-source: a
+      # foreign repo's .tmux would execute unsandboxed code server-side.
+      bind-key T run-shell 'tmux source-file "#{pane_current_path}/.tmux"'
     '';
   };
 }

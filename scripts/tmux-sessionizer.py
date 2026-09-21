@@ -94,10 +94,11 @@ def main():
              ai_cmd, "C-m"])
 
         run(["tmux", "select-window", "-t", f"{selected_name}:bash"])
-        if os.path.isfile(os.path.join(selected, ".tmux")):
-            run(["tmux", "set-environment", "-t", selected_name,
-                 "PROJECT_ROOT", selected])
-            run(["tmux", "source-file", os.path.join(selected, ".tmux")])
+        # PROJECT_ROOT is consumed by project .tmux files when the user
+        # sources them manually (prefix T) — never auto-source: a foreign
+        # repo's .tmux would execute unsandboxed code server-side.
+        run(["tmux", "set-environment", "-t", selected_name,
+             "PROJECT_ROOT", selected])
 
     run(["tmux", "switch-client", "-t", selected_name])
 
