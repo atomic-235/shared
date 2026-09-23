@@ -64,7 +64,7 @@ in
       opener = {
         termusic = [
           {
-            run = ''termusic "$@"'';
+            run = ''termusic %s'';
             block = true;
             desc = "Termusic";
             for = "unix";
