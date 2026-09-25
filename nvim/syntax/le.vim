@@ -35,8 +35,15 @@ syn match leVariable "\<[A-Z][A-Z0-9_]*\>"
 syn match leTemplateWord "\<\%(between\|within\|under\|from\|that\|over\|than\|with\|into\|were\|and\|are\|the\|was\|for\|an\|is\|in\|by\|to\|at\|on\|or\|of\|as\|a\)\>"
 syn match leTemplateWord "\<\%(have\|that\|were\|been\|says\|does\|did\|was\|has\|had\|are\|the\|an\|is\|do\|a\)\>"
 
-" --- variable phrases: article/each/which [qualifier] word -------------
-syn match leVariable "\<\%(which\|some\|what\|each\|the\|an\|a\)\>[ \t]\+\%(\<\%(previous\|original\|current\|seventh\|another\|second\|fourth\|eighth\|single\|given\|other\|third\|ninth\|sixth\|fifth\|tenth\|first\|next\|same\|last\|new\)\>[ \t]\+\)\?[0-9A-Za-z_]\+"
+" --- variable phrases: article/each/which [qualifier] word(s) ----------
+" Local deviation from the Monaco tokenizer: upstream colours only the
+" article + head word, so multi-word names read as half-highlighted and a
+" preposition inside one ("the shipment *to* payment timeline") falls to
+" the standalone-prep rule and looks like a keyword. Here the phrase
+" continues through any word that is not a copula or a relation verb (the
+" STOP list below), up to punctuation or the next article — bounded so a
+" missed verb cannot swallow a whole sentence.
+syn match leVariable "\<\%(which\|some\|what\|each\|the\|an\|a\)\>[ \t]\+\%(\<\%(previous\|original\|current\|seventh\|another\|second\|fourth\|eighth\|single\|given\|other\|third\|ninth\|sixth\|fifth\|tenth\|first\|next\|same\|last\|new\)\>[ \t]\+\)\?[0-9A-Za-z_']\+\%([ \t]\+\%(\%(are\|was\|were\|been\|being\|had\|have\|does\|did\|can\|could\|will\|would\|shall\|should\|may\|might\|must\|if\|that\|which\|when\|then\|where\|because\|unless\|answers\|avoids\|belongs\|builds\|checks\|concerns\|covers\|demands\|depends\|draws\|drives\|enables\|enforces\|executes\|expires\|exposes\|feeds\|has\|holds\|identifies\|includes\|introduces\|is\|lacks\|lags\|leverages\|lives\|logs\|maps\|names\|needs\|nets\|offers\|organizes\|owns\|powers\|presents\|provides\|records\|refreshes\|relies\|reports\|requires\|rests\|retains\|runs\|serves\|shows\|sources\|spans\|touches\|triggers\|uses\|validates\|waits\|the\|an\|a\)\>\)\@!\<[0-9A-Za-z_']\+\)\{0,6\}"
 
 " --- copula followed by a preposition: "is a", "was of", ... -----------
 syn match leTemplateWord "\<\%(have\|that\|were\|been\|says\|does\|did\|was\|has\|had\|are\|the\|an\|is\|do\|a\)\>[ \t]\+\<\%(between\|within\|under\|from\|that\|over\|than\|with\|into\|were\|and\|are\|the\|was\|for\|an\|is\|in\|by\|to\|at\|on\|or\|of\|as\|a\)\>"
