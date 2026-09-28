@@ -1,3 +1,11 @@
+-- le2 infoview (lean.nvim-style floating pane). It shells out to the le2
+-- engine itself (not le2-lsp), so it is guarded on le2 and must run before
+-- the le2-lsp early return below; in practice both binaries come from the
+-- same logical_english devShell anyway.
+if vim.fn.executable("le2") == 1 then
+  require("le_infoview").attach(0)
+end
+
 -- Logical English 2.0 language server. The le2-lsp binary is provided by the
 -- logical_english project's Nix flake (its devShell puts it on PATH via
 -- direnv), so attach only when it is actually available.
