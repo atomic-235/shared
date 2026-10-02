@@ -39,6 +39,7 @@ in
     git
     gh
     gittop
+    git-quick-stats
     eza
     bat
     fd
