@@ -11,6 +11,22 @@ let
       hash = "sha256-rygMKByGqO0P0ftNezCJxWkZJVIsZv9j91avaUWQ3Sk=";
     };
   };
+
+  # Prebuilt release binary (the Go module proxy fetch fails on some networks).
+  gittop = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
+    pname = "gittop";
+    version = "0.4.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/hjr265/gittop/releases/download/v${finalAttrs.version}/gittop_${finalAttrs.version}_linux_amd64.tar.gz";
+      hash = "sha256-FhGZMxgXh4mGVzEPEYqL00Z7utJ3pb8WlN2jXR5eKDs=";
+    };
+    sourceRoot = ".";
+    installPhase = ''
+      mkdir -p $out/bin
+      install -m755 gittop $out/bin/gittop
+    '';
+    meta.mainProgram = "gittop";
+  });
 in
 {
   home.packages = with pkgs; [
@@ -22,6 +38,7 @@ in
     # CLI tools
     git
     gh
+    gittop
     eza
     bat
     fd
@@ -125,6 +142,17 @@ in
       name = "qr-secure";
       runtimeInputs = [ pkgs.cliqr ];
       text = builtins.readFile ../scripts/qr-secure.sh;
+    })
+    (pkgs.writeShellApplication {
+      name = "gittop-all";
+      runtimeInputs = [
+        pkgs.git
+        pkgs.python3
+        gittop
+      ];
+      text = ''
+        exec python3 ${../scripts/gittop_all.py} "$@"
+      '';
     })
 
     # with-secrets — sops exec-env wrapper for decrypting secrets at runtime
