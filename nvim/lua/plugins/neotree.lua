@@ -86,10 +86,7 @@ return {
         ["<space>"] = "none", -- disable space to avoid conflict with leader
         ["<cr>"] = "smart_open",
         ["gx"] = function(state)
-          local node = state.tree:get_node()
-          if node and node.path then
-            vim.ui.open(node.path)
-          end
+          require("lazy.util").open(state.tree:get_node().path, { system = true })
         end,
       },
     },
