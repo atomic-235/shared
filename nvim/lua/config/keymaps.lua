@@ -105,6 +105,14 @@ vim.keymap.set({ "n", "v" }, "D", [["xD]], { desc = "Delete to EOL to x register
 vim.keymap.set({ "n", "v" }, "c", [["xc]], { desc = "Change to x register" })
 vim.keymap.set({ "n", "v" }, "C", [["xC]], { desc = "Change to EOL to x register" })
 
+-- Open current file with system application (same as O in neo-tree)
+vim.keymap.set("n", "gX", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  if vim.fn.filereadable(file) == 1 then
+    require("lazy.util").open(file, { system = true })
+  end
+end, { desc = "Open file with system application" })
+
 -- Grep with prefilled glob filter in input
 vim.keymap.set("n", "<leader>sg", function()
   Snacks.picker.grep({
