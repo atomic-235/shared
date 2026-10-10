@@ -17,6 +17,7 @@ let
           read: allow
           webfetch: allow
           ai_venice_web_search: allow
+          websearch: allow
           skill: allow
           playwright_browser_navigate: allow
           playwright_browser_snapshot: allow
