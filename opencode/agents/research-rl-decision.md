@@ -1,5 +1,5 @@
 ---
-description: State-tracking orchestrator for the reinforcement-learning decision framework. Keeps the decision state (belief, model, value, policy, history) in a fixed-format file, delegates each stage to the dedicated research agent where the skill's mapping applies, then returns the settled policy. Use for decisions whose value unfolds over time — especially multi-agent, partially observable, or compounding ones.
+description: State-tracking orchestrator for the reinforcement-learning decision framework. Keeps the decision state (belief, model, value, policy, history) in a fixed-format file, delegates each stage to the dedicated research agent where the skill's mapping applies, then returns the settled policy. Use for decisions — especially multi-agent, partially observable, or compounding ones.
 mode: subagent
 color: "#0ea5e9"
 permission:

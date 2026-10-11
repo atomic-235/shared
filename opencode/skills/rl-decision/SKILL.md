@@ -1,13 +1,13 @@
 ---
 name: rl-decision
-description: Human-readable, human-executable reinforcement-learning decision framework for decisions whose value unfolds over time. Treats the setting as multi-agent, partially observable, and model-uncertain, and walks the RL loop (value estimation, the recursion, policy improvement, exploration, learning, ruin) as plain questions. Not a pros/cons list.
+description: Human-readable, human-executable reinforcement-learning decision framework for decisions. Treats the setting as multi-agent, partially observable, and model-uncertain, and walks the RL loop (value estimation, the recursion, policy improvement, exploration, learning, ruin) as plain questions. Not a pros/cons list.
 ---
 
 # RL Decision Framework (Human-Readable)
 
 ## The setting
 
-Use this for any decision whose value unfolds over time. The general setting is **multi-agent,
+Use this for any decision. The general setting is **multi-agent,
 partially observable, and model-uncertain** — not the fully-known single-agent MDP textbooks start
 from. Read the decision as a tuple:
 
