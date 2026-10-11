@@ -99,7 +99,8 @@ and update from the agent's return as a sample (temporal difference):
 ```
 repeat:
     delegate the prompt π_k to `executor`        → outcome
-    delegate (objective, outcome) to `estimator` → {"completion": c, "rationale": ...}
+    derive ground-truth checks from the objective (tests, builds, exit codes, required files), if any
+    delegate (objective, outcome, checks) to `estimator` → {"completion": c, "checks": [...], ...}
     steps = the executor's step count (from its result)
     reward r = c − λ · steps
     observe s′ = the updated belief/model after the run
@@ -112,6 +113,10 @@ until |ΔV| < ε  or  cycle ≥ budget  or  completion = 1
 - **Prior** = `value.prior` (your guess). **Each cycle is one TD sample.** No terminal needed: with
   `γ < 1` the fixed point converges from any prior.
 - **Reward** comes from the `estimator`; the `− λ·steps` term is what makes minimal steps matter.
+- **Anchor the reward to ground truth.** Pass the estimator any objective checks you can derive (a test
+  command, a build, a required file); the estimator must run them and its score may not exceed what
+  they support. A lenient judge is the failure mode — the loop will optimize whatever it credits, so
+  keep it evidence-bound and independent of the executor's self-report.
 - If the executor reports the prompt is missing something, put it in the next prompt — that is the
   improvement step.
 
