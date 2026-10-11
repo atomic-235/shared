@@ -136,7 +136,7 @@ flowchart TD
 
 | Phase | What you do | Stages |
 |---|---|---|
-| **EVALUATE** | revise how much each situation/option is worth | STATE, OBSERVATION, REWARD, UTILITY, RETURN, VALUE, DISCOUNT, MODEL, OTHER-AGENT MODEL, EQUILIBRIUM, HORIZON, RECURSION, RISK |
+| **EVALUATE** | revise how much each situation/option is worth | OBJECTIVE (constructs REWARD), STATE, OBSERVATION, REWARD, UTILITY, RETURN, VALUE, DISCOUNT, MODEL, OTHER-AGENT MODEL, EQUILIBRIUM, HORIZON, RECURSION, RISK |
 | **IMPROVE** | change the rule toward higher-value options | POLICY; GPI |
 | **ACT** | follow the rule | ACTION; ACTION DISCOVERY; TEMPO; EXPLORE/EXPLOIT; SAMPLING; gates: RUIN, MULTIPLICATIVE |
 | **OBSERVE** | see the result | OBSERVATION, REWARD, STATE |
@@ -158,7 +158,7 @@ let search and experience grow it. *"What can I even do — that I haven't thoug
 **ACTION DISCOVERY** — finding actions that aren't in your list yet: asking how others solved this,
 looking for the option everyone overlooks, noticing that "waiting", "doing nothing", or "changing the
 question" is also an action. The best move is often one you hadn't conceived. *"What options exist
-outside my current list?"*
+outside my current list?"* **→ `triz`, `wrap`**
 
 **REWARD** — the immediate payoff of an action — what you actually **consume** (experience), valued
 through **utility**, not the raw number. *"What does it pay, now?"*
@@ -179,32 +179,33 @@ consequences count?"*
 
 **MODEL** — your belief about how the world works: what leads to what (transitions), what pays
 (rewards), and what observations to expect. For N > 1 it also carries the **OTHER-AGENT MODEL**.
-*"What do I believe about how this works?"*
+*"What do I believe about how this works?"* **→ `systems-thinking`, `first-principles`, `io-uncertainty-quadrant`**
 
 **OTHER-AGENT MODEL** — your belief about the other decision-makers: their objectives, their rules,
 and how they'll respond to you. A second belief, alongside the state belief. *"What are they trying
-to do, and what will they do back?"*
+to do, and what will they do back?"* **→ `negotiate`, `red-team`, `ooda-loop`**
 
 **BELIEF UPDATE (BAYES)** — after each observation, reweigh the pictures of the world: those that
 predicted what you saw gain weight, those that didn't lose it. *"What does this sighting change?"*
+**→ `scientific-method`, `ach`, `research-ppdac`, `structured-investigation`, `link-analysis`, `alternative-futures`**
 
 **HORIZON / EPISODE** — whether it ends (finite: a goal/terminal state) or continues (infinite:
 ongoing). *"Is there an end?"*
 
-**POLICY** ($\pi$) — your rule mapping situations to actions. *"What's my standing rule?"*
+**POLICY** ($\pi$) — your rule mapping situations to actions. *"What's my standing rule?"* **→ `cynefin`, `decision-record`**
 
 **EQUILIBRIUM** — the multi-agent analogue of "optimal": your **best response** given the others'
 policies (minimax in zero-sum, Nash in general-sum). With N > 1 there is no unique optimal policy —
-only best responses and equilibria. *"What's my best move, given their best move?"*
+only best responses and equilibria. *"What's my best move, given their best move?"* **→ `negotiate`, `red-team`**
 
 **TEMPO** — the rate at which you complete decision/learning cycles relative to others. When the
 environment is adversarial and adaptive, the faster loop wins — more policy-improvement steps per
-unit time. *"Who adapts faster?"* (This is the core of OODA-style adversarial play.)
+unit time. *"Who adapts faster?"* **→ `ooda-loop`**
 
 **GPI (Generalized Policy Iteration)** — the loop that alternates two steps: **POLICY EVALUATION**
 (compute the value of the current rule, via the recursion) and **POLICY IMPROVEMENT** (change the
 rule toward higher-value actions) — repeated until the rule stops changing. *"Revise values ⇄ improve
-the rule, until it settles."*
+the rule, until it settles."* **→ `theory-of-constraints`**
 
 **EXPLORE vs EXPLOIT** — use what you know is good (**exploit**), or try something untested to learn
 (**explore**). With N > 1 you are also probing the *others'* strategies. *"Known, or untested?"*
@@ -219,30 +220,32 @@ real experience. *"Can I test it cheaply / simulate?"*
 $value(now) \leftarrow reward + \gamma\cdot value(next)$. *"Update from what happened."*
 
 **CREDIT ASSIGNMENT** — working out which past decision actually caused a (delayed) outcome.
-*"Which of my choices caused this?"*
+*"Which of my choices caused this?"* **→ `premortem`**
 
 **REGRET** — the gap between what you got and the best alternative you could have taken. *"How does
 this compare to my best option?"*
 
 **RISK** — the *distribution* of outcomes, not just the average. *"What's the range, especially the
-bad tail?"*
+bad tail?"* **→ `inversion`, `high-impact-low-probability`**
 
 **RUIN / TERMINAL / ABSORBING** — outcomes you can't recover from (the game ends). With N > 1 it can
-be **imposed** by someone else, not only self-inflicted. *"Can this end the game?"*
+be **imposed** by someone else, not only self-inflicted. *"Can this end the game?"* **→ `inversion`, `high-impact-low-probability`**
 
 **OBJECTIVE** — the global target: **Merton's expected utility of consumption** — the discounted
 utility of what you consume/experience over your life (plus any terminal value), not raw reward or
-wealth. The binding failure is getting this wrong, not computing it poorly. *"Am I maximizing the
-right thing?"*
+wealth. This is where the **reward function is constructed** — what counts as payoff, shaped by
+**UTILITY** — and stored in MODEL as "what pays"; the signal is then *observed* at OBSERVE and
+*valued* at EVALUATE. The binding failure is getting this wrong, not computing it poorly. *"Am I
+maximizing the right thing?"* **→ `wrap`**
 
 **MULTIPLICATIVE / ERGODIC** — when outcomes compound, a loss shrinks the base for everything after;
 judge the **typical** path you'll live, not the average over imaginary lives. *"Does it compound?"*
 
 **NON-STATIONARITY** — the rules of the world drift, so the model must be revised. With N > 1 this is
-structural: other agents adapt, so the model is always moving. *"Has the world changed?"*
+structural: other agents adapt, so the model is always moving. *"Has the world changed?"* **→ `systems-thinking`**
 
 **AMBIGUITY / ROBUSTNESS** — you may not even know the right model; prefer choices that survive being
-wrong. *"What if my model is wrong?"*
+wrong. *"What if my model is wrong?"* **→ `io-uncertainty-quadrant`**
 
 **UNKNOWN UNKNOWNS** — factors your model doesn't even name; you can't price what you can't conceive.
 You can't list them in advance — leave margin, probe cheaply, and read every surprise as evidence of a
