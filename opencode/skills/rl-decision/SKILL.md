@@ -339,6 +339,28 @@ The output is the **settled policy** — a standing rule (*"in situation X, do Y
 action. Report it as a rule so it generalizes beyond the single case in front of you. With N > 1,
 state it as a **best response**: *"given what they do, I do Y."*
 
+## Running it (the agent loop)
+
+The framework is executed by an **orchestrator** over a thin **executor** and a reward **estimator**:
+
+- **Populate the prior.** Subagents fill the state (belief, model, rewards, gates). This is the
+  **prior** — the initial value `V₀` and the first prompt `π₀`.
+- **The policy is the prompt.** The orchestrator's output is not a bare action — it is a *prompt* rich
+  enough that a thin, all-tools executor reaches the objective in minimal steps.
+- **Execute.** Hand `π` to the executor; it acts and reports the outcome and step count.
+- **Estimate the reward.** An estimator agent scores how completely the objective was met
+  (`completion ∈ [0,1]`); the reward is `r = completion − λ·steps`.
+- **Update (TD, no terminal).** There is no known end, so the recursion is the **infinite-horizon fixed
+  point**, updated from the agent's return as a sample:
+
+  > `V(s) ← V(s) + α · [ r + γ · V(s′) − V(s) ]`
+
+  where `s′` is the state after the run. Iterate `π → execute → estimate → update` until `V` stabilises
+  (`|ΔV| < ε`), the budget is spent, or the objective is met.
+
+Borrowed from RL: the **objective**, the **gates**, the **value recursion**, and a **minimal-step
+reward** — not a solver. The learnable artifact is the **prompt**.
+
 ## Source Integrity Rules
 - Use `ai_venice_web_search` when the decision depends on external facts.
 - If `ai_venice_web_search` is rate-limited (429) or unavailable, immediately use `websearch` (Exa) instead — do not retry.
