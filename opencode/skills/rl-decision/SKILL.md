@@ -86,7 +86,12 @@ flowchart TD
 
         subgraph EVAL["EVALUATE"]
             direction TB
+            SPEC{"specified?"}
+            FRAME(["FRAME / SPECIFY"])
             OBJ{"OBJECTIVE · UTILITY"}
+            SPEC -->|no| FRAME
+            FRAME --> OBJ
+            SPEC -->|yes| OBJ
             ST["STATE to BELIEF"]
             OBSV["OBSERVATION"]
             MOD["MODEL + OTHER-AGENT MODEL"]
@@ -132,11 +137,31 @@ flowchart TD
     BB -.-> CYCLE
 ```
 
+### State storage
+
+One file **per decision** — not per project — so concurrent decisions never clobber each other. It is
+saved in a **fixed format** so it survives across stages and delegated agents: **YAML with locked
+keys**, at `.opencode/rl-decision/<id>.yaml`, where `<id>` is a short kebab-case slug of the objective
+(falling back to a timestamp). Keys are never renamed, reordered, or added; `history` gains exactly one
+entry per cycle. The orchestrator writes it after every stage; delegated agents read it.
+
+```yaml
+spec:    { decision: "", by: "", when: "", clear: true }
+objective: ""
+belief:  { state: "", uncertainty: "" }
+model:   { transitions: "", rewards: "", observations: "", other_agents: null }
+value:   { estimates: "", risk: "" }
+policy:  ""
+gates:   { ruin: "", multiplicative: "" }
+history: []
+```
+
 ## Which stages live in which phase
 
 | Phase | What you do | Stages |
 |---|---|---|
-| **EVALUATE** | revise how much each situation/option is worth | OBJECTIVE (constructs REWARD), STATE, OBSERVATION, REWARD, UTILITY, RETURN, VALUE, DISCOUNT, MODEL, OTHER-AGENT MODEL, EQUILIBRIUM, HORIZON, RECURSION, RISK |
+| **SPECIFY** | frame the decision; resolve anything unclear | AGENTS, STATE, ACTION, REWARD, MODEL, OBSERVATION, DISCOUNT, HORIZON |
+| **EVALUATE** | revise how much each situation/option is worth | OBJECTIVE (constructs REWARD), STATE (specifies state), OBSERVATION, REWARD, UTILITY, RETURN, VALUE, DISCOUNT, MODEL, OTHER-AGENT MODEL, EQUILIBRIUM, HORIZON, RECURSION, RISK |
 | **IMPROVE** | change the rule toward higher-value options | POLICY; GPI |
 | **ACT** | follow the rule | ACTION; ACTION DISCOVERY; TEMPO; EXPLORE/EXPLOIT; SAMPLING; gates: RUIN, MULTIPLICATIVE |
 | **OBSERVE** | see the result | OBSERVATION, REWARD, STATE |
@@ -145,8 +170,18 @@ flowchart TD
 
 ## Stages, defined
 
-**STATE** — the situation you're in (resources, position, constraints). You rarely observe it fully,
-so you act on a **BELIEF** — a picture of your state plus its uncertainty. *"Where am I?"*
+**SPECIFY** — before the loop, frame the decision: *what* is being decided, *by whom*, and *by when* —
+and check the tuple is complete: **AGENTS** (who else acts), **STATE** (which variables), **ACTION**
+(what's available), **REWARD** (what's maximized), **MODEL**, **OBSERVATION**, **DISCOUNT**,
+**HORIZON**. If anything is unclear or missing, resolve it first — **ask the user** when only they
+know, otherwise research or decompose; if everything is already clear, go straight on. *"Is the problem
+fully specified — do I know what I'm deciding?"* **→ `decision-record`**
+
+**STATE** — the situation you're in. You specify it here, in two parts: the **state space** — name the
+variables that define the situation (resources, position, constraints; with N > 1, the others' state
+too) — and the **current state**, which you never observe fully, so you act on a **BELIEF** — a
+picture of the state's current values plus their uncertainty. Its *dynamics* live in MODEL.
+*"Where am I?"*
 
 **OBSERVATION** — what you actually get to see: partial, noisy, sometimes delayed — a signal *about*
 the state, never the state itself. *"What do I actually see?"*
