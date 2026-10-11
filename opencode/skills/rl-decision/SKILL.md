@@ -347,16 +347,18 @@ The framework is executed by an **orchestrator** over a thin **executor** and a 
   **prior** — the initial value `V₀` and the first prompt `π₀`.
 - **The policy is the prompt.** The orchestrator's output is not a bare action — it is a *prompt* rich
   enough that a thin, all-tools executor reaches the objective in minimal steps.
-- **Execute.** Hand `π` to the executor; it acts and reports the outcome and step count.
+- **Execute.** Hand `π` to the executor; it acts **over many turns** with tools and reports its
+  trajectory (turn-by-turn steps) and outcome.
 - **Estimate the reward.** An estimator agent scores how completely the objective was met
-  (`completion ∈ [0,1]`); the reward is `r = completion − λ·steps`.
-- **Update (TD, no terminal).** There is no known end, so the recursion is the **infinite-horizon fixed
-  point**, updated from the agent's return as a sample:
+  (`completion ∈ [0,1]`); the reward is `r = completion − λ·turns`.
+- **Update (TD, no terminal).** The executor is **multi-turn**, so the trajectory has genuine
+  intermediate states — this is an **MDP, not a bandit**, and bootstrapping is not vacuous. There is no
+  known end, so the recursion is the **infinite-horizon fixed point**, bootstrapped across turns:
 
-  > `V(s) ← V(s) + α · [ r + γ · V(s′) − V(s) ]`
+  > `V(s_t) ← V(s_t) + α · [ r_t + γ · V(s_{t+1}) − V(s_t) ]`   (and across cycles from `s′`)
 
-  where `s′` is the state after the run. Iterate `π → execute → estimate → update` until `V` stabilises
-  (`|ΔV| < ε`), the budget is spent, or the objective is met.
+  Iterate `π → execute → estimate → update` until `V` stabilises (`|ΔV| < ε`), the budget is spent, or
+  the objective is met.
 
 Borrowed from RL: the **objective**, the **gates**, the **value recursion**, and a **minimal-step
 reward** — not a solver. The learnable artifact is the **prompt**.

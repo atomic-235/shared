@@ -91,28 +91,33 @@ The prompt must carry enough that the executor needs **zero discovery**: the obj
 actions/steps, the context (files, commands, constraints), and the gates (what not to do). It is rich
 on purpose — a rich prompt is what lets the executor reach the objective in minimal steps.
 
-## 3 — Iterate (Bellman fixed point, model-free)
+## 3 — Iterate (Bellman fixed point over the multi-turn trajectory)
 
-There is no known terminal state, so do **not** work backward. Use the **infinite-horizon fixed point**
-and update from the agent's return as a sample (temporal difference):
+The episode is the executor's **multi-turn trajectory**: it acts over many turns with tools, so there
+are genuine intermediate states — this is an **MDP, not a bandit**, and TD bootstrapping is not
+vacuous. There is no known terminal state, so do **not** work backward; use the **infinite-horizon
+fixed point** and bootstrap across turns.
 
 ```
 repeat:
-    delegate the prompt π_k to `executor`        → outcome
+    delegate the prompt π_k to `executor`   → outcome + turn-by-turn trajectory
     derive ground-truth checks from the objective (tests, builds, exit codes, required files), if any
-    delegate (objective, outcome, checks) to `estimator` → {"completion": c, "checks": [...], ...}
-    steps = the executor's step count (from its result)
-    reward r = c − λ · steps
-    observe s′ = the updated belief/model after the run
-    V(s) ← V(s) + α · [ r + γ · V(s′) − V(s) ]        # TD update
+    delegate (objective, trajectory, checks) to `estimator` → {"completion": c, "checks": [...], ...}
+    terminal reward r = c − λ · (number of turns)
+    # TD over the trajectory — bootstrap each turn from the next turn's value
+    for each turn t:   V(s_t) ← V(s_t) + α · [ r_t + γ · V(s_{t+1}) − V(s_t) ]
+    # and across cycles — the state after the run is s′
+    V(s) ← V(s) + α · [ r + γ · V(s′) − V(s) ]
     rewrite the prompt toward higher value (fold r and the estimator's `missing` into π_{k+1})
     append a history entry; increment cycle
 until |ΔV| < ε  or  cycle ≥ budget  or  completion = 1
 ```
 
-- **Prior** = `value.prior` (your guess). **Each cycle is one TD sample.** No terminal needed: with
-  `γ < 1` the fixed point converges from any prior.
-- **Reward** comes from the `estimator`; the `− λ·steps` term is what makes minimal steps matter.
+- **The multi-turn trajectory is the MDP.** States = the state after each turn; actions = tool calls;
+  the estimator supplies the reward. Credit assignment across turns is the estimator's (or a
+  process-reward model's) job — this is why TD is meaningful here.
+- **Prior** = `value.prior` (your guess). Each turn is one TD sample; each cycle is one episode.
+- **Reward** comes from the `estimator`; the `− λ·turns` term is what makes minimal steps matter.
 - **Anchor the reward to ground truth.** Pass the estimator any objective checks you can derive (a test
   command, a build, a required file); the estimator must run them and its score may not exceed what
   they support. A lenient judge is the failure mode — the loop will optimize whatever it credits, so

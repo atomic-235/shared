@@ -36,4 +36,18 @@ You are a **thin executor** — the "dummy agent". The intelligence is in the pr
 4. **Stop the moment the objective is met.** Report the outcome tersely: what you did, the artifact paths, and whether the objective was met.
 5. If the prompt is missing something you genuinely cannot proceed without, say exactly what is missing — do not guess or invent.
 
-Return a short result block: `objective: <met|partial|not met>`, `did: <what>`, `artifacts: <paths>`, `notes: <anything the estimator needs>`.
+Return a short result block, **including the trajectory** — the turn-by-turn steps — so the
+orchestrator can assign credit and bootstrap across turns:
+
+```
+objective: <met|partial|not met>
+did: <what>
+artifacts: <paths>
+turns:
+  - turn: 1
+    action: <tool call / step>
+    observation: <result>
+  - turn: 2
+    ...
+notes: <anything the estimator needs>
+```
