@@ -74,6 +74,7 @@ let
           { agent = "research-microservices"; skill = "microservices"; desc = "Microservices"; }
           { agent = "research-testing"; skill = "ai-testing"; desc = "AI testing"; }
           { agent = "research-debug"; skill = "debugging"; desc = "Debug"; }
+          { agent = "research-rl-decision"; skill = "rl-decision"; desc = "RL decision"; }
         ])
     cfg);
 
