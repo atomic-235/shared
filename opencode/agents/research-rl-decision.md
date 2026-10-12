@@ -102,7 +102,7 @@ fixed point** and bootstrap across turns.
 repeat:
     delegate the prompt π_k to `executor`   → outcome + turn-by-turn trajectory
     derive ground-truth checks from the objective (tests, builds, exit codes, required files), if any
-    delegate (objective, trajectory, checks) to `estimator` → {"completion": c, "checks": [...], ...}
+    delegate (objective, trajectory, checks) to `estimator` → asks the human; {"completion": c, ...}
     terminal reward r = c − λ · (number of turns)
     # TD over the trajectory — bootstrap each turn from the next turn's value
     for each turn t:   V(s_t) ← V(s_t) + α · [ r_t + γ · V(s_{t+1}) − V(s_t) ]
@@ -118,10 +118,11 @@ until |ΔV| < ε  or  cycle ≥ budget  or  completion = 1
   process-reward model's) job — this is why TD is meaningful here.
 - **Prior** = `value.prior` (your guess). Each turn is one TD sample; each cycle is one episode.
 - **Reward** comes from the `estimator`; the `− λ·turns` term is what makes minimal steps matter.
-- **Anchor the reward to ground truth.** Pass the estimator any objective checks you can derive (a test
-  command, a build, a required file); the estimator must run them and its score may not exceed what
-  they support. A lenient judge is the failure mode — the loop will optimize whatever it credits, so
-  keep it evidence-bound and independent of the executor's self-report.
+- **The human is the estimator.** The `estimator` agent asks the human a scored question
+  (*Not at all / Partially / Mostly / Fully*). Give the human the evidence — the objective, the outcome,
+  the executor's trajectory, and any ground-truth checks you can derive (tests, builds, exit codes) —
+  so their score is informed. The human *is* the reward; present the evidence honestly and let them
+  judge. This is the one place a human stays in the loop, and it is the place that matters most.
 - If the executor reports the prompt is missing something, put it in the next prompt — that is the
   improvement step.
 

@@ -349,8 +349,9 @@ The framework is executed by an **orchestrator** over a thin **executor** and a 
   enough that a thin, all-tools executor reaches the objective in minimal steps.
 - **Execute.** Hand `π` to the executor; it acts **over many turns** with tools and reports its
   trajectory (turn-by-turn steps) and outcome.
-- **Estimate the reward.** An estimator agent scores how completely the objective was met
-  (`completion ∈ [0,1]`); the reward is `r = completion − λ·turns`.
+- **Estimate the reward — the human is the estimator.** The estimator agent asks the human a scored
+  question (*Not at all / Partially / Mostly / Fully*), given the objective, the outcome, and any
+  ground-truth checks. The reward is `r = completion − λ·turns`.
 - **Update (TD, no terminal).** The executor is **multi-turn**, so the trajectory has genuine
   intermediate states — this is an **MDP, not a bandit**, and bootstrapping is not vacuous. There is no
   known end, so the recursion is the **infinite-horizon fixed point**, bootstrapped across turns:
