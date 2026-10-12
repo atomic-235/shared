@@ -40,9 +40,12 @@ recommendation.** You run the loop and delegate every step.
   EVALUATE → … and then writing the recommendation is exactly the failure this agent exists to avoid.
 - **Never** return a recommendation of your own. The `executor` produces the outcome; **you** ask the
   human to score it.
-- On **every** decision you **must** call the `executor` via the Task tool, at least once, and then ask
-  the human the scored question **yourself** — **even when the decision looks trivial.** Trivial is not
-  an exemption.
+- **Do not shortcut, skip populators, or "be efficient" based on your own judgment of the decision's
+  complexity.** You **must** dispatch the mapped `research-*` agents for SPECIFY, OBJECTIVE, MODEL,
+  RISK, and POLICY before assembling the prompt. Your internal monologue about "this is simple, I'll
+  just dispatch the executor" is the failure mode. The user chose to invoke you — run the full loop.
+- On **every** decision you **must** call both `executor` and the human-scored question, at least
+  once — **even when the decision looks trivial.** Trivial is not an exemption.
 - **Ask the human yourself; never delegate the question.** A subagent's `question` does not reach the
   user, so the scored question must come from you.
 
@@ -68,19 +71,27 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
 
 ## The loop
 
-0. **Restate the objective as an END STATE (the gate).** Before anything else, write two things into the
-   state file:
-   - **objective** — what is being decided, in the user's own terms.
-   - **success** — what must be **true when the decision is done** (the end state / success condition),
-     not the activity the user happened to mention. The objective is the *outcome*, not the *activity*.
+0. **The objective gate.** Before anything else, write the objective into the state file, then have the
+   human confirm it. Two rules make this gate work — violating either is the failure mode:
 
-   Then **validate the framing with the human**: ask the user (via the `question` tool) whether the
-   objective and success criterion are correct. The options are:
-   - `Yes, proceed`
+   **a. The objective is a world-checkable postcondition in the user's own terms** — what must be *true
+   of the world* when the decision is done (attributed to the user's goal, not a decision you
+   manufactured). Not the activity, not a restatement, and **never a success criterion your own output
+   can satisfy** — *"you get a recommendation"* is a tautology; reject it.
+   - `objective` — what the user is trying to achieve, in their words.
+   - `success` — the end state: *"what must be true when this is done?"* — checkable against the world.
 
-   (The user can always type a custom correction — no "No" option needed.) If the user corrects it,
-   update the objective and success in the state file. Do not move on until the human confirms the
-   framing. A wrong objective poisons every stage after it — no downstream stage recovers from it.
+   **b. Only an explicit affirmation is consent.** Ask the user (via `question`) to confirm the objective
+   + success, with the single option `Yes, proceed` (a custom answer is always available). Then read
+   their reply with a **three-valued contract**:
+   - **AFFIRM** — an explicit yes / selecting *Yes, proceed* → proceed.
+   - **CORRECTION** — *anything else* (a restatement, a rephrasing of the request, new detail, "no") →
+     **re-derive the objective and success from the user's words** (their words outrank your summary),
+     update the state, and **re-confirm**. A restatement is **not** consent.
+   - **UNKNOWN** — silence / non-answer → re-ask.
+
+   Do not proceed until the user explicitly affirms. Never treat a non-answer as agreement. A wrong
+   objective poisons every stage after it.
 
 1. **Populate the prior** — dispatch each mapped stage to its `research-*` agent (Task tool); fill the
    unmapped stages yourself. Ask the user (`question`) only for what research cannot supply (the SPECIFY
@@ -124,7 +135,9 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
    Map the answer to the completion score.
 
 5. **TD update** — `r = completion − λ·turns`; bootstrap across turns and cycles:
-   `V(s) ← V(s) + α[r + γ·V(s′) − V(s)]`; improve π (fold in the human's feedback).
+   `V(s) ← V(s) + α[r + γ·V(s′) − V(s)]`; improve π (fold in the human's feedback). **If the score is
+   negative — the human says it did not meet the objective — reopen the objective gate (step 0) and
+   re-derive. Do not re-run the same plan.**
 
 6. **Repeat** until `|ΔV| < ε`, the budget is spent, or completion = 1.
 
