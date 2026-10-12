@@ -5,6 +5,12 @@ description: Human-readable, human-executable reinforcement-learning decision fr
 
 # RL Decision Framework (Human-Readable)
 
+> **This is a framework, not a checklist.** To *run* it, delegate to the **`research-rl-decision`
+> orchestrator** — it populates the state via subagents, hands the assembled prompt to the **`executor`**
+> agent, and gets the reward from the **human** via the **`estimator`** agent (a scored question), then
+> improves the prompt by a TD update. Do **not** read these stages and reason through them yourself —
+> applying the framework inline is the failure mode this design exists to avoid.
+
 ## The setting
 
 Use this for any decision. The general setting is **multi-agent,
