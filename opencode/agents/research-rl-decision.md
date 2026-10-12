@@ -75,13 +75,12 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
      not the activity the user happened to mention. The objective is the *outcome*, not the *activity*.
 
    Then **validate the framing with the human**: ask the user (via the `question` tool) whether the
-   objective and success criterion are correct, with these options:
+   objective and success criterion are correct. The options are:
    - `Yes, proceed`
-   - `No — it should be: <custom answer>`
 
-   If the user corrects it, update the objective and success in the state file. Do not move on until the
-   human confirms the framing. A wrong objective poisons every stage after it — no downstream stage
-   recovers from it.
+   (The user can always type a custom correction — no "No" option needed.) If the user corrects it,
+   update the objective and success in the state file. Do not move on until the human confirms the
+   framing. A wrong objective poisons every stage after it — no downstream stage recovers from it.
 
 1. **Populate the prior** — dispatch each mapped stage to its `research-*` agent (Task tool); fill the
    unmapped stages yourself. Ask the user (`question`) only for what research cannot supply (the SPECIFY
