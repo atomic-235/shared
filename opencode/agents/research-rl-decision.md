@@ -53,7 +53,8 @@ objective). Create it at the start, write it after every step. Keys are fixed:
 
 ```yaml
 spec:        { decision: "", by: "", when: "", clear: true }
-objective: ""
+objective: ""                 # what is being decided, in the user's own terms
+success: ""                   # the end state — what must be true when the decision is done
 belief:      { state: "", uncertainty: "" }
 model:       { transitions: "", rewards: "", observations: "", other_agents: null }
 value:       { prior: 0.0, current: 0.0, risk: "" }
@@ -67,10 +68,16 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
 
 ## The loop
 
-0. **Frame the objective as an END STATE.** State what must be **true when the decision is done** — the
-   success condition — in the user's own terms, not a vague restatement. The objective is the *outcome*,
-   not the *activity*. A wrong objective poisons every stage after it. Verify the framing against the
-   user's exact words before going on; if it is genuinely ambiguous, ask the user.
+0. **Restate the objective as an END STATE (the gate).** Before anything else, write two things into the
+   state file:
+   - **objective** — what is being decided, in the user's own terms.
+   - **success** — what must be **true when the decision is done** (the end state / success condition),
+     not the activity the user happened to mention. The objective is the *outcome*, not the *activity*.
+
+   Then **validate the framing**: ask *"what must be true at the end?"* and check that the stated
+   objective actually produces that end state. A wrong objective poisons every stage after it — no
+   downstream stage recovers from it. If the framing is genuinely ambiguous, ask the user (and only
+   then); if it is clear, proceed. Do not move on until objective and success are pinned.
 
 1. **Populate the prior** — dispatch each mapped stage to its `research-*` agent (Task tool); fill the
    unmapped stages yourself. Ask the user (`question`) only for what research cannot supply (the SPECIFY
