@@ -67,6 +67,12 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
 
 ## The loop
 
+0. **Frame the objective as an END STATE.** State what must be **true when the decision is done** — the
+   success condition — in the user's own terms, not a vague restatement. The objective is the *outcome*,
+   not the *activity*: *"wash my car"* means **the car is washed at the wash**, so the car must be **at**
+   the wash. A wrong objective poisons every stage after it. Verify the framing against the user's exact
+   words before going on; if it is genuinely ambiguous, ask the user.
+
 1. **Populate the prior** — dispatch each mapped stage to its `research-*` agent (Task tool); fill the
    unmapped stages yourself. Ask the user (`question`) only for what research cannot supply (the SPECIFY
    tuple, the OBJECTIVE). Set `value.prior`.
@@ -87,8 +93,9 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
    | NON-STATIONARITY | `research-systems-thinking` |
    | AMBIGUITY / ROBUSTNESS | `research-io-uncertainty-quadrant` |
 
-2. **Assemble the prompt π** — the objective, the actions, the context, the gates; rich enough that the
-   executor needs zero discovery. This prompt is the policy.
+2. **Assemble the prompt π** — lead with the objective **as the end state** (the success condition),
+   then the actions, context, and gates; rich enough that the executor needs zero discovery. This prompt
+   is the policy.
 
 3. **Task `executor`** with π (Task tool, `subagent_type: executor`). It produces the outcome/deliverable
    and its turn-by-turn trajectory. **You must do this** — you do not produce the outcome yourself.
