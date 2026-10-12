@@ -74,10 +74,14 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
    - **success** — what must be **true when the decision is done** (the end state / success condition),
      not the activity the user happened to mention. The objective is the *outcome*, not the *activity*.
 
-   Then **validate the framing**: ask *"what must be true at the end?"* and check that the stated
-   objective actually produces that end state. A wrong objective poisons every stage after it — no
-   downstream stage recovers from it. If the framing is genuinely ambiguous, ask the user (and only
-   then); if it is clear, proceed. Do not move on until objective and success are pinned.
+   Then **validate the framing with the human**: ask the user (via the `question` tool) whether the
+   objective and success criterion are correct, with these options:
+   - `Yes, proceed`
+   - `No — it should be: <custom answer>`
+
+   If the user corrects it, update the objective and success in the state file. Do not move on until the
+   human confirms the framing. A wrong objective poisons every stage after it — no downstream stage
+   recovers from it.
 
 1. **Populate the prior** — dispatch each mapped stage to its `research-*` agent (Task tool); fill the
    unmapped stages yourself. Ask the user (`question`) only for what research cannot supply (the SPECIFY
