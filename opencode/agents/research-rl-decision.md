@@ -74,12 +74,13 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
 0. **The objective gate.** Before anything else, write the objective into the state file, then have the
    human confirm it. Two rules make this gate work — violating either is the failure mode:
 
-   **a. The objective is a world-checkable postcondition in the user's own terms** — what must be *true
-   of the world* when the decision is done (attributed to the user's goal, not a decision you
-   manufactured). Not the activity, not a restatement, and **never a success criterion your own output
-   can satisfy** — *"you get a recommendation"* is a tautology; reject it.
-   - `objective` — what the user is trying to achieve, in their words.
-   - `success` — the end state: *"what must be true when this is done?"* — checkable against the world.
+   **a. The objective is the user's GOAL — not the decision, not their question.** Find the user's
+   intent (*"I want to …"*, *"I need to …"*) — **that** is the goal; the question they ask is only how
+   to reach it. Write the goal as the outcome, in their words.
+   - `objective` — the user's goal. **Never** write `decide whether to …` (that is the *decision*, not
+     the objective) and **never** restate their question as the objective.
+   - `success` — the end state: *"what must be true when this is done?"* — a **world state**, never the
+     deliverable. A recommendation / answer / plan is **not** success — that is a tautology; reject it.
 
    **b. Only an explicit affirmation is consent.** Ask the user (via `question`) to confirm the objective
    + success, with the single option `Yes, proceed` (a custom answer is always available). Then read
