@@ -133,12 +133,13 @@ in
         (builtins.attrNames (builtins.readDir "${opencodeDir}/commands")))
 
       # plugins/*.ts (loaded at startup by opencode; deterministic hooks)
-      (map
-        (name: {
-          name = "opencode/plugins/${name}";
-          value = { source = "${opencodeDir}/plugins/${name}"; };
-        })
-        (builtins.attrNames (builtins.readDir "${opencodeDir}/plugins")))
+      (lib.optionals (builtins.pathExists "${opencodeDir}/plugins")
+        (map
+          (name: {
+            name = "opencode/plugins/${name}";
+            value = { source = "${opencodeDir}/plugins/${name}"; };
+          })
+          (builtins.attrNames (builtins.readDir "${opencodeDir}/plugins"))))
 
       # agents/research-*.md (base agents from filesystem)
       (map
