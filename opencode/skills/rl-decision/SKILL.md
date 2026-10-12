@@ -178,12 +178,11 @@ history: []
 
 **SPECIFY** — before the loop, frame the decision: *what* is being decided, *by whom*, and *by when* —
 and **state the objective as the desired END STATE** (the success condition: what must be true when the
-decision is done), not the activity. *"Wash my car"* means *the car is washed at the wash* — the car
-must be **at** the wash. Then check the tuple is complete: **AGENTS** (who else acts), **STATE** (which
-variables), **ACTION** (what's available), **REWARD** (what's maximized), **MODEL**, **OBSERVATION**,
-**DISCOUNT**, **HORIZON**. If anything is unclear or missing, resolve it first — **ask the user** when
-only they know, otherwise research or decompose; if everything is already clear, go straight on. *"Is
-the problem fully specified — do I know what I'm deciding?"* **→ `decision-record`**
+decision is done), not the activity. Then check the tuple is complete: **AGENTS** (who else acts),
+**STATE** (which variables), **ACTION** (what's available), **REWARD** (what's maximized), **MODEL**,
+**OBSERVATION**, **DISCOUNT**, **HORIZON**. If anything is unclear or missing, resolve it first — **ask
+the user** when only they know, otherwise research or decompose; if everything is already clear, go
+straight on. *"Is the problem fully specified — do I know what I'm deciding?"* **→ `decision-record`**
 
 **STATE** — the situation you're in. You specify it here, in two parts: the **state space** — name the
 variables that define the situation (resources, position, constraints; with N > 1, the others' state

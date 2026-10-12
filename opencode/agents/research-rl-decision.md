@@ -69,9 +69,8 @@ history: []                   # one entry per cycle: {cycle, prompt, completion,
 
 0. **Frame the objective as an END STATE.** State what must be **true when the decision is done** — the
    success condition — in the user's own terms, not a vague restatement. The objective is the *outcome*,
-   not the *activity*: *"wash my car"* means **the car is washed at the wash**, so the car must be **at**
-   the wash. A wrong objective poisons every stage after it. Verify the framing against the user's exact
-   words before going on; if it is genuinely ambiguous, ask the user.
+   not the *activity*. A wrong objective poisons every stage after it. Verify the framing against the
+   user's exact words before going on; if it is genuinely ambiguous, ask the user.
 
 1. **Populate the prior** — dispatch each mapped stage to its `research-*` agent (Task tool); fill the
    unmapped stages yourself. Ask the user (`question`) only for what research cannot supply (the SPECIFY
