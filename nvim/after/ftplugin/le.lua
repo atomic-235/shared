@@ -2,9 +2,11 @@
 -- engine itself (not le2-lsp), so it is guarded on le2 and must run before
 -- the le2-lsp early return below; in practice both binaries come from the
 -- same logical_english devShell anyway.
-if vim.fn.executable("le2") == 1 then
-  require("le_infoview").attach(0)
-end
+-- Disabled: the le_infoview pane is turned off, le2-lsp still attaches below.
+-- Re-enable by restoring:
+-- if vim.fn.executable("le2") == 1 then
+--   require("le_infoview").attach(0)
+-- end
 
 -- Logical English 2.0 language server. The le2-lsp binary is provided by the
 -- logical_english project's Nix flake (its devShell puts it on PATH via
