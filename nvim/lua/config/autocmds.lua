@@ -27,7 +27,11 @@ vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("wrap_spell_noset", { clear = true }),
   pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
-  callback = function()
+  callback = function(args)
+    -- floating docs (LSP hover rendered as markdown) are not prose
+    if vim.bo[args.buf].buftype ~= "" then
+      return
+    end
     vim.opt_local.spell = true
   end,
 })
@@ -41,6 +45,25 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
     vim.opt_local.breakindent = true
+  end,
+})
+
+-- LSP hover/signature docs open in a noice float (filetype "noice",
+-- buftype "nofile"). Noice only syntax-highlights the markdown, leaving markers
+-- like "###" visible. Switch the buffer to the markdown filetype once noice has
+-- filled it in so render-markdown.nvim renders it (headings, code blocks, ...).
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("noice_markdown_docs", { clear = true }),
+  pattern = "noice",
+  callback = function(args)
+    if vim.bo[args.buf].buftype ~= "nofile" then
+      return
+    end
+    vim.defer_fn(function()
+      if vim.api.nvim_buf_is_valid(args.buf) and vim.bo[args.buf].filetype == "noice" then
+        vim.bo[args.buf].filetype = "markdown"
+      end
+    end, 10)
   end,
 })
 
