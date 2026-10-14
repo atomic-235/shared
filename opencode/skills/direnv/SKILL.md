@@ -43,6 +43,12 @@ Rules:
 - Put banner output in a shell function or emit it unconditionally as the last
   block of `.envrc` (direnv only prints output when the env changes or on
   `direnv reload`, so it won't spam every prompt).
+- **Guard the banner with `[ -t 2 ]`** so it prints only when direnv runs
+  against a real terminal. direnv attaches the terminal to stderr (stdout is
+  captured), so `-t 2` is true for an interactive `cd` and false when the
+  `.envrc` is evaluated non-interactively (agents, tooling, CI). Emitting ANSI
+  escapes in the latter case leaks raw control sequences into the caller's
+  terminal and corrupts TUIs such as opencode.
 
 ## Multiple commands
 
@@ -56,11 +62,18 @@ banner() {
   echo -e "\e[1;33m  ▶ Dev server: \e[1;32mpnpm dev\e[0m"
   echo -e "\e[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
 }
-banner
+
+if [ -t 2 ]; then
+  banner
+fi
 ```
 
 ## Things to avoid
 
+- Do not emit the banner unguarded. Without the `[ -t 2 ]` check the ANSI
+  escapes are written whenever the `.envrc` is evaluated — including
+  non-interactive runs by agents/tooling — where they leak into the caller's
+  terminal and corrupt TUIs such as opencode.
 - Do not print secrets, tokens, or env var values in the banner. Print
   `[set]`/`[missing]` status for required vars instead.
 - Do not run anything slow or with side effects at banner time — the banner
