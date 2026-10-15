@@ -12,6 +12,19 @@ let
     };
   };
 
+  # openCypher grammar — highlights .cypher files and Cypher injected into
+  # Python strings (see nvim after/queries/python/injections.scm).
+  tree-sitter-cypher = pkgs.tree-sitter.buildGrammar {
+    language = "cypher";
+    version = "2026-10-15";
+    src = pkgs.fetchFromGitHub {
+      owner = "simplificare-org";
+      repo = "tree-sitter-cypher";
+      rev = "775717a2de6ca76a5a75e8076b411dbc1ae4c281";
+      hash = "sha256-kO6pryiKKCNxg7Gx1neUf4Zw+i7J6OsJkCTi0o9MZZw=";
+    };
+  };
+
   # Prebuilt release binary (the Go module proxy fetch fails on some networks).
   gittop = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "gittop";
@@ -160,13 +173,15 @@ in
     (import ../scripts/with-secrets.nix { inherit pkgs; })
   ];
 
-  # tree-sitter-clingo parser + queries for neovim
+  # tree-sitter-clingo + tree-sitter-cypher parsers for neovim
   # Placed in stdpath("data")/site — stable path, HM-managed symlinks to nix store
+  # (cypher highlights live in the nvim config repo: queries/cypher/highlights.scm)
   xdg.dataFile = {
     "nvim/site/parser/clingo.so".source = "${tree-sitter-clingo}/parser";
     "nvim/site/queries/clingo/highlights.scm".source = "${tree-sitter-clingo}/queries/highlights.scm";
     "nvim/site/queries/clingo/injections.scm".source = "${tree-sitter-clingo}/queries/injections.scm";
     "nvim/site/queries/clingo/indents.scm".source = "${tree-sitter-clingo}/queries/indents.scm";
     "nvim/site/queries/clingo/textobjects.scm".source = "${tree-sitter-clingo}/queries/textobjects.scm";
+    "nvim/site/parser/cypher.so".source = "${tree-sitter-cypher}/parser";
   };
 }
