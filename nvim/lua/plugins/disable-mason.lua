@@ -50,6 +50,10 @@ return {
           mason = false,
           cmd = { "yaml-language-server", "--stdio" },
         },
+        cypher_ls = {
+          mason = false,
+          cmd = { "cypher-language-server", "--stdio" },
+        },
       },
     },
   },
