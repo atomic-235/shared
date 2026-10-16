@@ -125,12 +125,13 @@ in
       }]
 
       # commands/*.md
-      (map
-        (name: {
-          name = "opencode/commands/${name}";
-          value = { source = "${opencodeDir}/commands/${name}"; };
-        })
-        (builtins.attrNames (builtins.readDir "${opencodeDir}/commands")))
+      (lib.optionals (builtins.pathExists "${opencodeDir}/commands")
+        (map
+          (name: {
+            name = "opencode/commands/${name}";
+            value = { source = "${opencodeDir}/commands/${name}"; };
+          })
+          (builtins.attrNames (builtins.readDir "${opencodeDir}/commands"))))
 
       # plugins/*.ts (loaded at startup by opencode; deterministic hooks)
       (lib.optionals (builtins.pathExists "${opencodeDir}/plugins")
