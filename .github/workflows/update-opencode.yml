@@ -39,9 +39,51 @@ jobs:
         run: |
           x64="$(curl -fsSL "https://registry.npmjs.org/@opencode/cli-linux-x64/${VERSION}" | jq -r .dist.integrity)"
           arm64="$(curl -fsSL "https://registry.npmjs.org/@opencode/cli-linux-arm64/${VERSION}" | jq -r .dist.integrity)"
-          jq -n --arg v "$VERSION" --arg x "$x64" --arg a "$arm64" \
-            '{version: $v, packages: {"x86_64-linux": $x, "aarch64-linux": $a}}' \
-            > overlays/opencode/version.json
+
+          # The CLI embeds an opencode-pty daemon. Read its version and checksum out
+          # of the compiled binary so the pinned daemon always matches the protocol
+          # the client speaks.
+          tarball="$(curl -fsSL "https://registry.npmjs.org/@opencode/cli-linux-x64/${VERSION}" | jq -r .dist.tarball)"
+          curl -fsSL "$tarball" | tar -xzO package/bin/opencode > "$RUNNER_TEMP/opencode"
+          strings -n 8 "$RUNNER_TEMP/opencode" > "$RUNNER_TEMP/opencode.strings"
+
+          line="$(grep -n '/\$bunfs/root/opencode-pty-' "$RUNNER_TEMP/opencode.strings" | head -1 | cut -d: -f1)"
+          if [ -z "$line" ]; then
+            echo "Could not locate the embedded opencode-pty binary in opencode ${VERSION}" >&2
+            exit 1
+          fi
+          pty_sha="$(sed -n "$((line + 1))p" "$RUNNER_TEMP/opencode.strings")"
+          if ! printf '%s' "$pty_sha" | grep -qE '^[a-f0-9]{64}$'; then
+            echo "Unexpected embedded opencode-pty checksum: ${pty_sha}" >&2
+            exit 1
+          fi
+
+          offset="$(grep -aob "$pty_sha" "$RUNNER_TEMP/opencode" | head -1 | cut -d: -f1)"
+          pty_version="$(dd if="$RUNNER_TEMP/opencode" bs=1 skip=$((offset - 300)) count=600 2>/dev/null \
+            | strings -n 3 | grep -xE '[0-9]+\.[0-9]+\.[0-9]+' | tail -1)"
+          if [ -z "$pty_version" ]; then
+            echo "Could not determine the embedded opencode-pty version" >&2
+            exit 1
+          fi
+
+          pty_x64="$(curl -fsSL "https://registry.npmjs.org/@opencode-ai/pty-linux-x64-gnu/${pty_version}" | jq -r .dist.integrity)"
+          pty_arm64="$(curl -fsSL "https://registry.npmjs.org/@opencode-ai/pty-linux-arm64-gnu/${pty_version}" | jq -r .dist.integrity)"
+
+          downloaded_sha="$(curl -fsSL "https://registry.npmjs.org/@opencode-ai/pty-linux-x64-gnu/-/pty-linux-x64-gnu-${pty_version}.tgz" \
+            | tar -xzO package/bin/opencode-pty | sha256sum | cut -d' ' -f1)"
+          if [ "$downloaded_sha" != "$pty_sha" ]; then
+            echo "opencode-pty ${pty_version} does not match the embedded daemon (${downloaded_sha} != ${pty_sha})" >&2
+            exit 1
+          fi
+
+          jq -n \
+            --arg v "$VERSION" --arg x "$x64" --arg a "$arm64" \
+            --arg pv "$pty_version" --arg px "$pty_x64" --arg pa "$pty_arm64" \
+            '{
+              version: $v,
+              packages: {"x86_64-linux": $x, "aarch64-linux": $a},
+              pty: {version: $pv, packages: {"x86_64-linux": $px, "aarch64-linux": $pa}}
+            }' > overlays/opencode/version.json
 
       - name: Build
         run: nix build --no-link .#packages.x86_64-linux.opencode
