@@ -239,18 +239,15 @@ in
     description = "Path to the user's personal opencode.json. Shared LSP stanzas from opencode-lsp.json will be deep-merged into its `lsp` key (personal LSP entries win on conflict).";
   };
 
+  config.home.activation.opencodeCli = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run install -Dm600 ${opencodeDir}/cli.json $HOME/.config/opencode/cli.json
+  '';
+
   config.xdg.configFile = builtins.listToAttrs (
     builtins.concatLists [
-      # cli.json (v2 theme + keybindings; tui.json is legacy and ignored once this exists)
-      [
-        {
-          name = "opencode/cli.json";
-          value = {
-            source = "${opencodeDir}/cli.json";
-            force = true;
-          };
-        }
-      ]
+      # cli.json is written by activation instead of linked: opencode rewrites
+      # this file at runtime, and a store symlink gets replaced by that write.
+      # tui.json is legacy (v1) and ignored once cli.json exists.
 
       # commands/*.md
       (lib.optionals (builtins.pathExists "${opencodeDir}/commands") (
