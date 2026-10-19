@@ -7,6 +7,8 @@
     "messages_line_up": "ctrl+alt+y,super+k",
     "messages_half_page_down": "ctrl+alt+d,alt+d",
     "messages_half_page_up": "ctrl+alt+u,alt+u",
-    "tool_details": "<leader>d"
+    "tool_details": "<leader>d",
+    "history_previous": "alt+up",
+    "history_next": "alt+down"
   }
 }
