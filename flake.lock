@@ -1,5 +1,20 @@
 {
   "nodes": {
+    "crane": {
+      "locked": {
+        "lastModified": 1780532242,
+        "narHash": "sha256-D+BsdpxmtUwtqGoY0IXPhHgTlmqgcZKCEo1oMyn7ep0=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "59a82a1222dd3b2080b5cc52a1a2e8d5f1b77f37",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1792094642,
@@ -16,9 +31,100 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1780847006,
+        "narHash": "sha256-4tfkywHx5nrWrfT+zKZ2BbiqblKRKptPYvgun1ysIRk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f465d10905fe77cd980cba0155a6dd1c33835375",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "swls": "swls",
+        "venice-mcp-server": "venice-mcp-server"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "swls",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780802404,
+        "narHash": "sha256-bGtIUeLb0yChX4h6hB40OOCwcYhcpQZHXSDvZGdWgeM=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "8e596a8430f2ce54d55c742198187d6945a5501e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "swls": {
+      "inputs": {
+        "crane": "crane",
+        "nixpkgs": "nixpkgs_2",
+        "rust-overlay": "rust-overlay",
+        "systems": "systems"
+      },
+      "locked": {
+        "lastModified": 1783416059,
+        "narHash": "sha256-K6sDypCLHMqV/I3D/roYkBJn+XPAkckGBP8EUmPyU88=",
+        "owner": "SemanticWebLanguageServer",
+        "repo": "swls",
+        "rev": "b5c3a82f8cf84992f103c9e8b8b01a5303d6b92d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "SemanticWebLanguageServer",
+        "repo": "swls",
+        "rev": "b5c3a82f8cf84992f103c9e8b8b01a5303d6b92d",
+        "type": "github"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "venice-mcp-server": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792106953,
+        "narHash": "sha256-bOJlxPPikKlvrkXJYurKv9HCSfDMFe7mI3nkQJOjWXM=",
+        "owner": "veniceai",
+        "repo": "venice-mcp-server",
+        "rev": "e995a387650c63b60277970cb1dfe653ed7e2507",
+        "type": "github"
+      },
+      "original": {
+        "owner": "veniceai",
+        "repo": "venice-mcp-server",
+        "type": "github"
       }
     }
   },

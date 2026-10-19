@@ -1,0 +1,10 @@
+--- a/src/main.c
++++ b/src/main.c
+@@ -271,7 +271,7 @@
+ ) {
+     struct seat *seat = data;
+     xkb_state_update_mask(
+-        seat->xkb_state, mods_depressed, mods_latched, mods_locked, 0, 0, group
++        seat->xkb_state, mods_depressed, mods_latched, mods_locked, 0, 0, 0
+     );
+ }
