@@ -12,17 +12,25 @@ import sys
 import tempfile
 from pathlib import Path
 
-IDENTITY = ["-c", "user.name=all-branches", "-c", "user.email=all-branches@local"]
+IDENTITY = [
+    "-c",
+    "user.name=all-branches",
+    "-c",
+    "user.email=all-branches@local",
+]
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", *args], check=check, capture_output=True, text=True)
+    return subprocess.run(
+        ["git", *args], check=check, capture_output=True, text=True
+    )
 
 
 def main() -> int:
     if shutil.which("gittop") is None:
         print(
-            "error: gittop not found (load the devShell with direnv)", file=sys.stderr
+            "error: gittop not found (load the devShell with direnv)",
+            file=sys.stderr,
         )
         return 1
 
@@ -71,7 +79,9 @@ def main() -> int:
         git("-C", str(clone), "update-ref", "refs/heads/all", octopus)
         git("-C", str(clone), "symbolic-ref", "HEAD", "refs/heads/all")
 
-        total = git("-C", str(clone), "rev-list", "--count", "HEAD").stdout.strip()
+        total = git(
+            "-C", str(clone), "rev-list", "--count", "HEAD"
+        ).stdout.strip()
         print(
             f"branches: {len(refs)}, reachable commits: {total} (1 synthetic snapshot commit)"
         )

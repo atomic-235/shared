@@ -141,7 +141,9 @@ in
     (pkgs.writers.writePython3Bin "tmux-sessionizer" { } (
       builtins.readFile ../scripts/tmux-sessionizer.py
     ))
-    (pkgs.writers.writePython3Bin "tmux-stats" { } (builtins.readFile ../scripts/tmux-stats.py))
+    (pkgs.writers.writePython3Bin "tmux-stats" {
+      flakeIgnore = [ "E203" ];
+    } (builtins.readFile ../scripts/tmux-stats.py))
     (pkgs.writeShellApplication {
       name = "ai-commit";
       runtimeInputs = [

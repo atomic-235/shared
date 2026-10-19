@@ -137,7 +137,10 @@ def main():
         "server)."
     )
     parser.add_argument(
-        "level", nargs="?", default="sessions", choices=["sessions", "windows", "panes"]
+        "level",
+        nargs="?",
+        default="sessions",
+        choices=["sessions", "windows", "panes"],
     )
     parser.add_argument(
         "-i",
@@ -146,7 +149,9 @@ def main():
         default=0.5,
         help="CPU sampling interval in seconds",
     )
-    parser.add_argument("-s", "--sort", default="ram", choices=["ram", "cpu", "name"])
+    parser.add_argument(
+        "-s", "--sort", default="ram", choices=["ram", "cpu", "name"]
+    )
     parser.add_argument(
         "--orphans", action="store_true", help="show orphaned tmux processes"
     )
@@ -191,7 +196,9 @@ def main():
             g[0] += 1
             g[1] += ram
             g[2] += cd
-        rows = [(srv, name, v[0], v[1], v[2]) for (srv, name), v in groups.items()]
+        rows = [
+            (srv, name, v[0], v[1], v[2]) for (srv, name), v in groups.items()
+        ]
 
     elif args.level == "windows":
         header = ("SERVER", "SESSION:WIN", "NAME", "PANES", "RAM", "CPU")
@@ -204,7 +211,9 @@ def main():
             g[0] += 1
             g[1] += ram
             g[2] += cd
-        rows = [(k[0], k[1], k[2], v[0], v[1], v[2]) for k, v in groups.items()]
+        rows = [
+            (k[0], k[1], k[2], v[0], v[1], v[2]) for k, v in groups.items()
+        ]
 
     else:
         header = ("SERVER", "PANE", "COMMAND", "PID", "RAM", "CPU")
@@ -231,7 +240,9 @@ def main():
         total_ram = sum(r[-2] for r in rows)
         total_cpu = sum(r[-1] for r in rows)
         filler = [""] * (len(header) - 4)
-        table.append(["TOTAL", *filler, fmt_ram(total_ram), cpu_fmt(total_cpu)])
+        table.append(
+            ["TOTAL", *filler, fmt_ram(total_ram), cpu_fmt(total_cpu)]
+        )
         print_table(header, table, len(header) - 3)
 
     if not args.orphans:

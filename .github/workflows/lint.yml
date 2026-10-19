@@ -26,6 +26,11 @@ jobs:
           mapfile -t files < <(find scripts -name '*.sh' -not -path '*/.git/*')
           nix run nixpkgs#shellcheck -- -S warning "${files[@]}"
 
+      - name: ruff
+        run: |
+          nix run nixpkgs#ruff -- check scripts
+          nix run nixpkgs#ruff -- format --check scripts
+
       - name: nixfmt
         run: |
           mapfile -t files < <(find . -name '*.nix' -not -path './.git/*')
