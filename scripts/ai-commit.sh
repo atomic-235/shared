@@ -36,6 +36,8 @@ PROXY_PORT="${PROXY_PORT:-20172}"
 if ss -tlnH "sport = :${PROXY_PORT}" 2>/dev/null | grep -q .; then
   export http_proxy="http://127.0.0.1:${PROXY_PORT}"
   export https_proxy="http://127.0.0.1:${PROXY_PORT}"
+  export no_proxy="127.0.0.1,localhost,::1"
+  export NO_PROXY="127.0.0.1,localhost,::1"
 fi
 
 TERM_PROGRAM=Apple_Terminal gum spin --spinner dot --title "Generating..." -- \
