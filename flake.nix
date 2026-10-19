@@ -3,13 +3,9 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    opencode-upstream = {
-      url = "github:anomalyco/opencode";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, opencode-upstream, ... }:
+  outputs = { self, nixpkgs, ... }:
     let
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
@@ -42,9 +38,14 @@
           with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
         };
         opencode = final: prev: {
-          opencode = opencode-upstream.packages.${prev.stdenv.hostPlatform.system}.opencode;
+          opencode = import ./overlays/opencode { pkgs = prev; };
         };
       };
+
+      packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
+        opencode = import ./overlays/opencode { pkgs = nixpkgs.legacyPackages.${system}; };
+        default = self.packages.${system}.opencode;
+      });
 
       # Combined overlay for convenience
       defaultOverlay = final: prev: {
