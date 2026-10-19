@@ -5,7 +5,6 @@
   },
   "keybinds": {
     "leader": "ctrl+o",
-    "session.parent": "<leader>up",
     "session.line.up": "ctrl+alt+y,super+k",
     "session.line.down": "ctrl+alt+e,super+j",
     "session.half.page.up": "ctrl+alt+u,alt+u",
@@ -14,7 +13,6 @@
     "input.move.down": "down",
     "prompt.history.previous": "alt+up",
     "prompt.history.next": "alt+down",
-    "session.child.first": "<leader>down",
     "composer.subagent.up": "up",
     "composer.subagent.down": "down",
     "composer.shell.up": "up",
