@@ -241,12 +241,13 @@ in
 
   config.xdg.configFile = builtins.listToAttrs (
     builtins.concatLists [
-      # tui.json (theme + keybindings)
+      # cli.json (v2 theme + keybindings; tui.json is legacy and ignored once this exists)
       [
         {
-          name = "opencode/tui.json";
+          name = "opencode/cli.json";
           value = {
-            source = "${opencodeDir}/tui.json";
+            source = "${opencodeDir}/cli.json";
+            force = true;
           };
         }
       ]
