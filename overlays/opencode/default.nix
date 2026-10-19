@@ -1,12 +1,12 @@
-{ pkgs, version, hash }:
+{ pkgs }:
 
-pkgs.stdenv.mkDerivation {
+pkgs.stdenv.mkDerivation rec {
   pname = "opencode";
-  inherit version;
+  version = "2.0.32";
 
   src = pkgs.fetchurl {
     url = "https://registry.npmjs.org/@opencode/cli-linux-x64/-/cli-linux-x64-${version}.tgz";
-    inherit hash;
+    hash = "sha256-ZKH0s4HC0u/BjI12ss45kUF3i0IbVMmLlL6OgIA2Btw=";
   };
 
   nativeBuildInputs = [ pkgs.autoPatchelfHook ];
