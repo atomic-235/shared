@@ -3,9 +3,13 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    opencode-upstream = {
+      url = "github:anomalyco/opencode";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, ... }:
+  outputs = { self, nixpkgs, opencode-upstream, ... }:
     let
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
@@ -36,6 +40,9 @@
         };
         with-secrets = final: prev: {
           with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
+        };
+        opencode = final: prev: {
+          opencode = opencode-upstream.packages.${prev.stdenv.hostPlatform.system}.opencode;
         };
       };
 
