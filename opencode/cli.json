@@ -7,8 +7,8 @@
     "leader": "ctrl+o",
     "session.line.up": "ctrl+alt+y,super+k",
     "session.line.down": "ctrl+alt+e,super+j",
-    "session.half.page.up": "ctrl+alt+u,alt+u",
-    "session.half.page.down": "ctrl+alt+d,alt+d",
+    "session.half.page.up": "ctrl+alt+u,ctrl+k",
+    "session.half.page.down": "ctrl+alt+d,ctrl+j",
     "input.move.up": "up",
     "input.move.down": "down",
     "prompt.history.previous": "alt+up",
@@ -18,7 +18,9 @@
     "composer.shell.up": "up",
     "composer.shell.down": "down",
     "composer.terminal.up": "up,k",
-    "composer.terminal.down": "down,j"
+    "composer.terminal.down": "down,j",
+    "input.newline": "shift+return,ctrl+return,alt+return",
+    "input.delete.to.line.end": "none"
   },
   "diffs": {
     "wrap": "word",
