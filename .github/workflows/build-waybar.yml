@@ -1,6 +1,8 @@
 name: Build waybar
 
 on:
+  schedule:
+    - cron: "0 3 * * *"
   push:
     paths:
       - "overlays/waybar/**"
@@ -9,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -24,5 +26,21 @@ jobs:
           name: atomic-235
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
+      - name: Update nixpkgs
+        if: github.event_name == 'schedule'
+        run: nix flake update nixpkgs
+
       - name: Build
         run: nix build --no-link .#packages.x86_64-linux.waybar
+
+      - name: Commit lock
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add flake.lock
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: update nixpkgs"
+          git push
