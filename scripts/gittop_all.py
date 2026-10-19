@@ -21,7 +21,9 @@ def git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
 
 def main() -> int:
     if shutil.which("gittop") is None:
-        print("error: gittop not found (load the devShell with direnv)", file=sys.stderr)
+        print(
+            "error: gittop not found (load the devShell with direnv)", file=sys.stderr
+        )
         return 1
 
     repo = Path(git("rev-parse", "--show-toplevel").stdout.strip())
@@ -30,9 +32,23 @@ def main() -> int:
     clone = tmp / "repo"
     try:
         git("clone", "--no-checkout", "--quiet", str(repo), str(clone))
-        git("-C", str(clone), "fetch", "--quiet", "origin", "+refs/remotes/origin/*:refs/remotes/origin/*", check=False)
+        git(
+            "-C",
+            str(clone),
+            "fetch",
+            "--quiet",
+            "origin",
+            "+refs/remotes/origin/*:refs/remotes/origin/*",
+            check=False,
+        )
 
-        refs = git("-C", str(clone), "for-each-ref", "--format=%(refname:short)", "refs/remotes/origin").stdout.splitlines()
+        refs = git(
+            "-C",
+            str(clone),
+            "for-each-ref",
+            "--format=%(refname:short)",
+            "refs/remotes/origin",
+        ).stdout.splitlines()
         refs = [ref for ref in refs if not ref.endswith("/HEAD")]
 
         parents: list[str] = []
@@ -56,7 +72,9 @@ def main() -> int:
         git("-C", str(clone), "symbolic-ref", "HEAD", "refs/heads/all")
 
         total = git("-C", str(clone), "rev-list", "--count", "HEAD").stdout.strip()
-        print(f"branches: {len(refs)}, reachable commits: {total} (1 synthetic snapshot commit)")
+        print(
+            f"branches: {len(refs)}, reachable commits: {total} (1 synthetic snapshot commit)"
+        )
         print("launching gittop...")
         subprocess.run(["gittop", str(clone)], check=False)
     finally:

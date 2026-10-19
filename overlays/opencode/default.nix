@@ -3,10 +3,12 @@
 let
   data = builtins.fromJSON (builtins.readFile ./version.json);
   system = pkgs.stdenv.hostPlatform.system;
-  packageName = {
-    x86_64-linux = "cli-linux-x64";
-    aarch64-linux = "cli-linux-arm64";
-  }.${system} or (throw "opencode: unsupported system ${system}");
+  packageName =
+    {
+      x86_64-linux = "cli-linux-x64";
+      aarch64-linux = "cli-linux-arm64";
+    }
+    .${system} or (throw "opencode: unsupported system ${system}");
 in
 pkgs.stdenv.mkDerivation {
   pname = "opencode";
@@ -34,7 +36,10 @@ pkgs.stdenv.mkDerivation {
     description = "OpenCode CLI (official npm prebuilt binary)";
     homepage = "https://opencode.ai";
     license = licenses.mit;
-    platforms = [ "x86_64-linux" "aarch64-linux" ];
+    platforms = [
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
     maintainers = [ ];
   };
 }

@@ -5,9 +5,15 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, ... }:
+  outputs =
+    { self, nixpkgs, ... }:
     let
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     in
     {
@@ -40,14 +46,10 @@
         opencode = final: prev: {
           opencode = import ./overlays/opencode { pkgs = prev; };
         };
-        waybar = final: prev: {
-          waybar = import ./overlays/waybar { pkgs = prev; };
-        };
       };
 
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
         opencode = import ./overlays/opencode { pkgs = nixpkgs.legacyPackages.${system}; };
-        waybar = import ./overlays/waybar { pkgs = nixpkgs.legacyPackages.${system}; };
         default = self.packages.${system}.opencode;
       });
 

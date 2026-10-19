@@ -6,8 +6,7 @@ from pathlib import Path
 
 
 def run(cmd, **kw):
-    return subprocess.run(cmd, capture_output=True, text=True,
-                          check=False, **kw)
+    return subprocess.run(cmd, capture_output=True, text=True, check=False, **kw)
 
 
 def has_session(name):
@@ -31,8 +30,7 @@ def main():
                     entries.append(str(d / m.group(1)))
 
     cache = Path(os.environ.get("XDG_CACHE_HOME", "~/.cache")).expanduser()
-    mru_file = cache / ("tmux-sessionizer-mru-"
-                        + re.sub(r"[ /]", "__", search_dir))
+    mru_file = cache / ("tmux-sessionizer-mru-" + re.sub(r"[ /]", "__", search_dir))
     mru = []
     if mru_file.exists():
         mru = [line for line in mru_file.read_text().splitlines() if line]
@@ -42,8 +40,10 @@ def main():
 
     display = sorted_entries
 
-    res = run(["fzf", "--no-sort", "--print-query", "--expect=ctrl-n"],
-              input="\n".join(display))
+    res = run(
+        ["fzf", "--no-sort", "--print-query", "--expect=ctrl-n"],
+        input="\n".join(display),
+    )
     lines = res.stdout.splitlines()
     query = lines[0] if lines else ""
     key = lines[1] if len(lines) > 1 else ""
@@ -69,10 +69,8 @@ def main():
         return
 
     if not has_session(selected_name):
-        run(["tmux", "new-session", "-ds", selected_name,
-             "-n", "bash", "-c", selected])
-        run(["tmux", "new-window", "-t", selected_name,
-             "-n", "nvim", "-c", selected])
+        run(["tmux", "new-session", "-ds", selected_name, "-n", "bash", "-c", selected])
+        run(["tmux", "new-window", "-t", selected_name, "-n", "nvim", "-c", selected])
 
         if os.path.isfile(os.path.join(selected, ".envrc")):
             nvim_cmd = "direnv exec . nvim . || nvim ."
@@ -80,25 +78,20 @@ def main():
             nvim_cmd = f"source {selected}/.venv/bin/activate && nvim ."
         else:
             nvim_cmd = "nvim ."
-        run(["tmux", "send-keys", "-t", f"{selected_name}:nvim",
-             nvim_cmd, "C-m"])
+        run(["tmux", "send-keys", "-t", f"{selected_name}:nvim", nvim_cmd, "C-m"])
 
-        run(["tmux", "new-window", "-t", selected_name,
-             "-n", "ai", "-c", selected])
+        run(["tmux", "new-window", "-t", selected_name, "-n", "ai", "-c", selected])
         if "/share," in os.environ.get("TMUX", ""):
-            ai_cmd = os.environ.get("SESSIONIZER_AI_CMD_WORK",
-                                    "work-opencode")
+            ai_cmd = os.environ.get("SESSIONIZER_AI_CMD_WORK", "work-opencode")
         else:
             ai_cmd = os.environ.get("SESSIONIZER_AI_CMD", "opencode")
-        run(["tmux", "send-keys", "-t", f"{selected_name}:ai",
-             ai_cmd, "C-m"])
+        run(["tmux", "send-keys", "-t", f"{selected_name}:ai", ai_cmd, "C-m"])
 
         run(["tmux", "select-window", "-t", f"{selected_name}:bash"])
         # PROJECT_ROOT is consumed by project .tmux files when the user
         # sources them manually (prefix T) — never auto-source: a foreign
         # repo's .tmux would execute unsandboxed code server-side.
-        run(["tmux", "set-environment", "-t", selected_name,
-             "PROJECT_ROOT", selected])
+        run(["tmux", "set-environment", "-t", selected_name, "PROJECT_ROOT", selected])
 
     run(["tmux", "switch-client", "-t", selected_name])
 

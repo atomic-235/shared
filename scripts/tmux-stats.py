@@ -7,8 +7,10 @@ from pathlib import Path
 CLK_TCK = os.sysconf("SC_CLK_TCK")
 PAGE = os.sysconf("SC_PAGE_SIZE")
 
-PANE_FMT = ("#{session_name}\t#{window_index}\t#{window_name}\t"
-            "#{pane_index}\t#{pane_current_command}\t#{pane_pid}")
+PANE_FMT = (
+    "#{session_name}\t#{window_index}\t#{window_name}\t"
+    "#{pane_index}\t#{pane_current_command}\t#{pane_pid}"
+)
 
 
 def snapshot():
@@ -18,15 +20,20 @@ def snapshot():
             continue
         try:
             stat = (entry / "stat").read_text()
-            fields = stat[stat.rindex(")") + 2:].split()
+            fields = stat[stat.rindex(")") + 2 :].split()
             pid = int(entry.name)
             ppid[pid] = int(fields[1])
             cpu[pid] = int(fields[11]) + int(fields[12])
-            comm[pid] = stat[stat.index("(") + 1:stat.rindex(")")]
+            comm[pid] = stat[stat.index("(") + 1 : stat.rindex(")")]
             statm = (entry / "statm").read_text()
             rss[pid] = int(statm.split()[1]) * PAGE
-        except (FileNotFoundError, ProcessLookupError, IndexError,
-                ValueError, PermissionError):
+        except (
+            FileNotFoundError,
+            ProcessLookupError,
+            IndexError,
+            ValueError,
+            PermissionError,
+        ):
             continue
     return rss, ppid, cpu, comm
 
@@ -102,8 +109,12 @@ def server_sockets():
                 sockets.append(str(sock))
     live = []
     for sock in sockets:
-        res = subprocess.run(["tmux", "-S", sock, "list-sessions"],
-                             capture_output=True, text=True, check=False)
+        res = subprocess.run(
+            ["tmux", "-S", sock, "list-sessions"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         if res.returncode == 0:
             live.append(sock)
     return live
@@ -120,25 +131,35 @@ def server_label(sock):
 def main():
     parser = argparse.ArgumentParser(
         description="tmux session/window/pane RAM and CPU usage across "
-                    "all tmux servers. CPU percent is relative to one "
-                    "core. Add --orphans to show orphaned tmux processes "
-                    "(tmux process trees not under any reachable "
-                    "server).")
-    parser.add_argument("level", nargs="?", default="sessions",
-                        choices=["sessions", "windows", "panes"])
-    parser.add_argument("-i", "--interval", type=float, default=0.5,
-                        help="CPU sampling interval in seconds")
-    parser.add_argument("-s", "--sort", default="ram",
-                        choices=["ram", "cpu", "name"])
-    parser.add_argument("--orphans", action="store_true",
-                        help="show orphaned tmux processes")
+        "all tmux servers. CPU percent is relative to one "
+        "core. Add --orphans to show orphaned tmux processes "
+        "(tmux process trees not under any reachable "
+        "server)."
+    )
+    parser.add_argument(
+        "level", nargs="?", default="sessions", choices=["sessions", "windows", "panes"]
+    )
+    parser.add_argument(
+        "-i",
+        "--interval",
+        type=float,
+        default=0.5,
+        help="CPU sampling interval in seconds",
+    )
+    parser.add_argument("-s", "--sort", default="ram", choices=["ram", "cpu", "name"])
+    parser.add_argument(
+        "--orphans", action="store_true", help="show orphaned tmux processes"
+    )
     args = parser.parse_args()
 
     panes = []
     for sock in server_sockets():
-        res = subprocess.run(["tmux", "-S", sock, "list-panes", "-a",
-                              "-F", PANE_FMT],
-                             capture_output=True, text=True, check=False)
+        res = subprocess.run(
+            ["tmux", "-S", sock, "list-panes", "-a", "-F", PANE_FMT],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         if res.returncode != 0:
             continue
         for line in res.stdout.splitlines():
@@ -170,8 +191,7 @@ def main():
             g[0] += 1
             g[1] += ram
             g[2] += cd
-        rows = [(srv, name, v[0], v[1], v[2])
-                for (srv, name), v in groups.items()]
+        rows = [(srv, name, v[0], v[1], v[2]) for (srv, name), v in groups.items()]
 
     elif args.level == "windows":
         header = ("SERVER", "SESSION:WIN", "NAME", "PANES", "RAM", "CPU")
@@ -184,16 +204,14 @@ def main():
             g[0] += 1
             g[1] += ram
             g[2] += cd
-        rows = [(k[0], k[1], k[2], v[0], v[1], v[2])
-                for k, v in groups.items()]
+        rows = [(k[0], k[1], k[2], v[0], v[1], v[2]) for k, v in groups.items()]
 
     else:
         header = ("SERVER", "PANE", "COMMAND", "PID", "RAM", "CPU")
         for pane in panes:
             srv, session, win, wname, pidx, cmd, pid = pane
             ram, cd = pid_stats(pid)
-            rows.append((srv, f"{session}:{win}.{pidx}", cmd, pid,
-                         ram, cd))
+            rows.append((srv, f"{session}:{win}.{pidx}", cmd, pid, ram, cd))
 
     if panes:
         ram_idx = len(header) - 2
@@ -213,8 +231,7 @@ def main():
         total_ram = sum(r[-2] for r in rows)
         total_cpu = sum(r[-1] for r in rows)
         filler = [""] * (len(header) - 4)
-        table.append(["TOTAL", *filler, fmt_ram(total_ram),
-                      cpu_fmt(total_cpu)])
+        table.append(["TOTAL", *filler, fmt_ram(total_ram), cpu_fmt(total_cpu)])
         print_table(header, table, len(header) - 3)
 
     if not args.orphans:
@@ -243,8 +260,7 @@ def main():
     orphan_rows.sort(key=lambda r: -r[2])
 
     print()
-    print("TMUX ORPHANS (tmux process trees not under any reachable "
-          "server)")
+    print("TMUX ORPHANS (tmux process trees not under any reachable server)")
     o_header = ("PID", "COMMAND", "RAM", "CPU")
     o_table = []
     for pid, cmd, ram, cd in orphan_rows:

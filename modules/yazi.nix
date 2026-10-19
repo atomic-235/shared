@@ -64,7 +64,7 @@ in
       opener = {
         termusic = [
           {
-            run = ''termusic %s'';
+            run = "termusic %s";
             block = true;
             desc = "Termusic";
             for = "unix";
@@ -74,8 +74,17 @@ in
 
       open = {
         prepend_rules = [
-          { mime = "audio/*"; use = [ "termusic" ]; }
-          { url = "*/"; use = [ "edit" "termusic" ]; }
+          {
+            mime = "audio/*";
+            use = [ "termusic" ];
+          }
+          {
+            url = "*/";
+            use = [
+              "edit"
+              "termusic"
+            ];
+          }
         ];
       };
     };
@@ -88,42 +97,70 @@ in
           desc = "Compress (zip default)";
         }
         {
-          on = [ "c" "z" ];
+          on = [
+            "c"
+            "z"
+          ];
           run = "plugin ouch tar.zst";
           desc = "Compress to tar.zst";
         }
         {
-          on = [ "c" "g" ];
+          on = [
+            "c"
+            "g"
+          ];
           run = "plugin ouch tar.gz";
           desc = "Compress to tar.gz";
         }
         {
-          on = [ "c" "x" ];
+          on = [
+            "c"
+            "x"
+          ];
           run = "plugin ouch tar.xz";
           desc = "Compress to tar.xz";
         }
         {
-          on = [ "c" "7" ];
+          on = [
+            "c"
+            "7"
+          ];
           run = "plugin ouch 7z";
           desc = "Compress to 7z";
         }
         {
-          on = [ "g" "p" "p" ];
+          on = [
+            "g"
+            "p"
+            "p"
+          ];
           run = "cd ~/projects/personal";
           desc = "Go to personal projects";
         }
         {
-          on = [ "g" "p" "w" ];
+          on = [
+            "g"
+            "p"
+            "w"
+          ];
           run = "cd ~/projects/work";
           desc = "Go to work projects";
         }
         {
-          on = [ "g" "d" "p" ];
+          on = [
+            "g"
+            "d"
+            "p"
+          ];
           run = "cd ~/Downloads/personal";
           desc = "Go to personal downloads";
         }
         {
-          on = [ "g" "d" "w" ];
+          on = [
+            "g"
+            "d"
+            "w"
+          ];
           run = "cd ~/Downloads/work";
           desc = "Go to work downloads";
         }

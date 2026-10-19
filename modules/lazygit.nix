@@ -10,7 +10,10 @@
         sidePanelWidth = 0.25;
         border = "single";
         theme = {
-          activeBorderColor = [ "#7aa2f7" "bold" ];
+          activeBorderColor = [
+            "#7aa2f7"
+            "bold"
+          ];
           inactiveBorderColor = [ "#444b6a" ];
         };
       };

@@ -2,9 +2,15 @@
 
 let
   opencodeDir = ../opencode;
-  cfg = config.opencode.variants or {};
+  cfg = config.opencode.variants or { };
 
-  mkAgentVariant = { skill, name, model, description }:
+  mkAgentVariant =
+    {
+      skill,
+      name,
+      model,
+      description,
+    }:
     let
       content = ''
         ---
@@ -38,64 +44,178 @@ let
       };
     };
 
-  variants = lib.flatten (lib.mapAttrsToList
-    (suffix: model:
+  variants = lib.flatten (
+    lib.mapAttrsToList (
+      suffix: model:
       map
-        (entry: mkAgentVariant {
-          skill = entry.skill;
-          name = "${entry.agent}-${suffix}";
-          inherit model;
-          description = "${entry.desc} (${suffix}).";
-        })
+        (
+          entry:
+          mkAgentVariant {
+            skill = entry.skill;
+            name = "${entry.agent}-${suffix}";
+            inherit model;
+            description = "${entry.desc} (${suffix}).";
+          }
+        )
         [
-          { agent = "research-red-team"; skill = "red-team"; desc = "Red team"; }
-          { agent = "research-ach"; skill = "ach"; desc = "ACH"; }
-          { agent = "research-inversion"; skill = "inversion"; desc = "Inversion"; }
-          { agent = "research-premortem"; skill = "premortem"; desc = "Premortem"; }
-          { agent = "research-cynefin"; skill = "cynefin"; desc = "Cynefin"; }
-          { agent = "research-wrap"; skill = "wrap"; desc = "WRAP"; }
-          { agent = "research-ooda"; skill = "ooda-loop"; desc = "OODA"; }
-          { agent = "research-first-principles"; skill = "first-principles"; desc = "First principles"; }
-          { agent = "research-systems-thinking"; skill = "systems-thinking"; desc = "Systems thinking"; }
-          { agent = "research-toc"; skill = "theory-of-constraints"; desc = "Theory of constraints"; }
-          { agent = "research-triz"; skill = "triz"; desc = "TRIZ"; }
-          { agent = "research-investigation"; skill = "structured-investigation"; desc = "Investigation"; }
-          { agent = "research-hilp"; skill = "high-impact-low-probability"; desc = "HILP"; }
-          { agent = "research-link-analysis"; skill = "link-analysis"; desc = "Link analysis"; }
-          { agent = "research-alternative-futures"; skill = "alternative-futures"; desc = "Alternative futures"; }
-          { agent = "research-negotiate"; skill = "negotiate"; desc = "Negotiate"; }
-          { agent = "research-scientific"; skill = "scientific-method"; desc = "Scientific method"; }
-          { agent = "research-decision-record"; skill = "decision-record"; desc = "Decision record"; }
-          { agent = "research-ppdac"; skill = "research-ppdac"; desc = "PPDAC"; }
-          { agent = "research-polya"; skill = "research-polya"; desc = "Polya"; }
-          { agent = "research-io-uncertainty-quadrant"; skill = "io-uncertainty-quadrant"; desc = "IO uncertainty"; }
-          { agent = "research-coverage-audit"; skill = "coverage-audit"; desc = "Coverage audit"; }
-          { agent = "research-design"; skill = "software-design"; desc = "Software design"; }
-          { agent = "research-microservices"; skill = "microservices"; desc = "Microservices"; }
-          { agent = "research-testing"; skill = "ai-testing"; desc = "AI testing"; }
-          { agent = "research-debug"; skill = "debugging"; desc = "Debug"; }
-          { agent = "research-rl-decision"; skill = "rl-decision"; desc = "RL decision"; }
-        ])
-    cfg);
+          {
+            agent = "research-red-team";
+            skill = "red-team";
+            desc = "Red team";
+          }
+          {
+            agent = "research-ach";
+            skill = "ach";
+            desc = "ACH";
+          }
+          {
+            agent = "research-inversion";
+            skill = "inversion";
+            desc = "Inversion";
+          }
+          {
+            agent = "research-premortem";
+            skill = "premortem";
+            desc = "Premortem";
+          }
+          {
+            agent = "research-cynefin";
+            skill = "cynefin";
+            desc = "Cynefin";
+          }
+          {
+            agent = "research-wrap";
+            skill = "wrap";
+            desc = "WRAP";
+          }
+          {
+            agent = "research-ooda";
+            skill = "ooda-loop";
+            desc = "OODA";
+          }
+          {
+            agent = "research-first-principles";
+            skill = "first-principles";
+            desc = "First principles";
+          }
+          {
+            agent = "research-systems-thinking";
+            skill = "systems-thinking";
+            desc = "Systems thinking";
+          }
+          {
+            agent = "research-toc";
+            skill = "theory-of-constraints";
+            desc = "Theory of constraints";
+          }
+          {
+            agent = "research-triz";
+            skill = "triz";
+            desc = "TRIZ";
+          }
+          {
+            agent = "research-investigation";
+            skill = "structured-investigation";
+            desc = "Investigation";
+          }
+          {
+            agent = "research-hilp";
+            skill = "high-impact-low-probability";
+            desc = "HILP";
+          }
+          {
+            agent = "research-link-analysis";
+            skill = "link-analysis";
+            desc = "Link analysis";
+          }
+          {
+            agent = "research-alternative-futures";
+            skill = "alternative-futures";
+            desc = "Alternative futures";
+          }
+          {
+            agent = "research-negotiate";
+            skill = "negotiate";
+            desc = "Negotiate";
+          }
+          {
+            agent = "research-scientific";
+            skill = "scientific-method";
+            desc = "Scientific method";
+          }
+          {
+            agent = "research-decision-record";
+            skill = "decision-record";
+            desc = "Decision record";
+          }
+          {
+            agent = "research-ppdac";
+            skill = "research-ppdac";
+            desc = "PPDAC";
+          }
+          {
+            agent = "research-polya";
+            skill = "research-polya";
+            desc = "Polya";
+          }
+          {
+            agent = "research-io-uncertainty-quadrant";
+            skill = "io-uncertainty-quadrant";
+            desc = "IO uncertainty";
+          }
+          {
+            agent = "research-coverage-audit";
+            skill = "coverage-audit";
+            desc = "Coverage audit";
+          }
+          {
+            agent = "research-design";
+            skill = "software-design";
+            desc = "Software design";
+          }
+          {
+            agent = "research-microservices";
+            skill = "microservices";
+            desc = "Microservices";
+          }
+          {
+            agent = "research-testing";
+            skill = "ai-testing";
+            desc = "AI testing";
+          }
+          {
+            agent = "research-debug";
+            skill = "debugging";
+            desc = "Debug";
+          }
+          {
+            agent = "research-rl-decision";
+            skill = "rl-decision";
+            desc = "RL decision";
+          }
+        ]
+    ) cfg
+  );
 
   mergedOpencodeJson =
     let
       personalPath = config.opencode.personalConfigFile or null;
       sharedLsp = builtins.fromJSON (builtins.readFile "${opencodeDir}/opencode-lsp.json");
     in
-      if personalPath == null then
-        null
-      else
-        let
-          personal = builtins.fromJSON (builtins.readFile personalPath);
-          mergedLsp = (personal.lsp or {}) // sharedLsp.lsp;
-          merged = personal // { lsp = mergedLsp; subagent_depth = personal.subagent_depth or 2; };
-          merged' =
-            if config.opencode.model != null
-            then merged // { model = config.opencode.model; }
-            else merged;
-        in
-          builtins.toFile "opencode.json" (builtins.toJSON merged');
+    if personalPath == null then
+      null
+    else
+      let
+        personal = builtins.fromJSON (builtins.readFile personalPath);
+        mergedLsp = (personal.lsp or { }) // sharedLsp.lsp;
+        merged = personal // {
+          lsp = mergedLsp;
+          subagent_depth = personal.subagent_depth or 2;
+        };
+        merged' =
+          if config.opencode.model != null then merged // { model = config.opencode.model; } else merged;
+      in
+      builtins.toFile "opencode.json" (builtins.toJSON merged');
 in
 {
   options.opencode.model = lib.mkOption {
@@ -106,7 +226,7 @@ in
 
   options.opencode.variants = lib.mkOption {
     type = lib.types.attrsOf lib.types.str;
-    default = {};
+    default = { };
     description = "Model variants for research agents. Key = suffix, value = model id. e.g. { fast = \"provider/model-id\"; }";
   };
 
@@ -119,55 +239,61 @@ in
   config.xdg.configFile = builtins.listToAttrs (
     builtins.concatLists [
       # tui.json (theme + keybindings)
-      [{
-        name = "opencode/tui.json";
-        value = { source = "${opencodeDir}/tui.json"; };
-      }]
+      [
+        {
+          name = "opencode/tui.json";
+          value = {
+            source = "${opencodeDir}/tui.json";
+          };
+        }
+      ]
 
       # commands/*.md
-      (lib.optionals (builtins.pathExists "${opencodeDir}/commands")
-        (map
-          (name: {
-            name = "opencode/commands/${name}";
-            value = { source = "${opencodeDir}/commands/${name}"; };
-          })
-          (builtins.attrNames (builtins.readDir "${opencodeDir}/commands"))))
+      (lib.optionals (builtins.pathExists "${opencodeDir}/commands") (
+        map (name: {
+          name = "opencode/commands/${name}";
+          value = {
+            source = "${opencodeDir}/commands/${name}";
+          };
+        }) (builtins.attrNames (builtins.readDir "${opencodeDir}/commands"))
+      ))
 
       # plugins/*.ts (loaded at startup by opencode; deterministic hooks)
-      (lib.optionals (builtins.pathExists "${opencodeDir}/plugins")
-        (map
-          (name: {
-            name = "opencode/plugins/${name}";
-            value = { source = "${opencodeDir}/plugins/${name}"; };
-          })
-          (builtins.attrNames (builtins.readDir "${opencodeDir}/plugins"))))
+      (lib.optionals (builtins.pathExists "${opencodeDir}/plugins") (
+        map (name: {
+          name = "opencode/plugins/${name}";
+          value = {
+            source = "${opencodeDir}/plugins/${name}";
+          };
+        }) (builtins.attrNames (builtins.readDir "${opencodeDir}/plugins"))
+      ))
 
       # agents/research-*.md (base agents from filesystem)
-      (map
-        (name: {
-          name = "opencode/agents/${name}";
-          value = { source = "${opencodeDir}/agents/${name}"; };
-        })
-        (builtins.attrNames (builtins.readDir "${opencodeDir}/agents")))
+      (map (name: {
+        name = "opencode/agents/${name}";
+        value = {
+          source = "${opencodeDir}/agents/${name}";
+        };
+      }) (builtins.attrNames (builtins.readDir "${opencodeDir}/agents")))
 
       # agents generated from model variants (nix-generated, no file on disk)
       variants
 
       # skills/<name>/ (each skill is a directory)
-      (map
-        (skillName: {
-          name = "opencode/skills/${skillName}";
-          value = {
-            source = "${opencodeDir}/skills/${skillName}";
-            recursive = true;
-          };
-        })
-        (builtins.attrNames (builtins.readDir "${opencodeDir}/skills")))
+      (map (skillName: {
+        name = "opencode/skills/${skillName}";
+        value = {
+          source = "${opencodeDir}/skills/${skillName}";
+          recursive = true;
+        };
+      }) (builtins.attrNames (builtins.readDir "${opencodeDir}/skills")))
 
       # opencode.json (personal + shared LSP deep-merge)
       (lib.optional (mergedOpencodeJson != null) {
         name = "opencode/opencode.json";
-        value = { source = mergedOpencodeJson; };
+        value = {
+          source = mergedOpencodeJson;
+        };
       })
     ]
   );

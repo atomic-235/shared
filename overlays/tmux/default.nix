@@ -5,7 +5,7 @@
 pkgs.tmux.overrideAttrs (oldAttrs: {
   pname = "tmux-clean-tree";
 
-  patches = (oldAttrs.patches or []) ++ [
+  patches = (oldAttrs.patches or [ ]) ++ [
     ./clean-tree-lines.patch
   ];
 })
