@@ -26,15 +26,24 @@ jobs:
           name: atomic-235
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
+      - name: Current waybar derivation
+        id: before
+        run: echo "drv=$(nix eval --raw .#packages.x86_64-linux.waybar.drvPath)" >> "$GITHUB_OUTPUT"
+
       - name: Update nixpkgs
         if: github.event_name == 'schedule'
         run: nix flake update nixpkgs
 
+      - name: Updated waybar derivation
+        id: after
+        run: echo "drv=$(nix eval --raw .#packages.x86_64-linux.waybar.drvPath)" >> "$GITHUB_OUTPUT"
+
       - name: Build
+        if: github.event_name != 'schedule' || steps.before.outputs.drv != steps.after.outputs.drv
         run: nix build --no-link .#packages.x86_64-linux.waybar
 
       - name: Commit lock
-        if: github.event_name == 'schedule'
+        if: github.event_name == 'schedule' && steps.before.outputs.drv != steps.after.outputs.drv
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
