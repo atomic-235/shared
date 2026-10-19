@@ -208,9 +208,12 @@ let
       let
         personal = builtins.fromJSON (builtins.readFile personalPath);
         mergedLsp = (personal.lsp or { }) // sharedLsp.lsp;
+        personalExperimental = personal.experimental or { };
         merged = personal // {
           lsp = mergedLsp;
-          subagent_depth = personal.subagent_depth or 2;
+          experimental = personalExperimental // {
+            subagent_depth = personalExperimental.subagent_depth or personal.subagent_depth or 2;
+          };
         };
         merged' =
           if config.opencode.model != null then merged // { model = config.opencode.model; } else merged;
