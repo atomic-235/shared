@@ -3,6 +3,10 @@ name: Update opencode
 on:
   schedule:
     - cron: "0 */6 * * *"
+  push:
+    paths:
+      - "overlays/opencode/**"
+      - ".github/workflows/update-opencode.yml"
   workflow_dispatch:
 
 permissions:
