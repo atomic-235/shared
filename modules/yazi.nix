@@ -134,17 +134,8 @@ in
             "p"
             "p"
           ];
-          run = "cd ~/projects/personal";
-          desc = "Go to personal projects";
-        }
-        {
-          on = [
-            "g"
-            "p"
-            "w"
-          ];
-          run = "cd ~/projects/work";
-          desc = "Go to work projects";
+          run = "cd ~/projects";
+          desc = "Go to projects";
         }
         {
           on = [
@@ -152,17 +143,8 @@ in
             "d"
             "p"
           ];
-          run = "cd ~/Downloads/personal";
-          desc = "Go to personal downloads";
-        }
-        {
-          on = [
-            "g"
-            "d"
-            "w"
-          ];
-          run = "cd ~/Downloads/work";
-          desc = "Go to work downloads";
+          run = "cd ~/Downloads";
+          desc = "Go to downloads";
         }
       ];
     };

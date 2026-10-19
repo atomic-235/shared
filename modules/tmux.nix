@@ -60,7 +60,7 @@
       bind-key D select-window -t deploy
 
       # Project sessionizer
-      bind-key -r P display-popup -E "case \$TMUX in *share*) tmux-sessionizer ~/projects/work/ ;; *) tmux-sessionizer ~/projects/personal/ ;; esac"
+      bind-key -r P display-popup -E "tmux-sessionizer ~/projects/"
 
       # Popup border style (Tokyo Night)
       set -g popup-border-style "fg=#7aa2f7"

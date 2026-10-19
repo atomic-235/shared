@@ -23,7 +23,7 @@ Use this exact pattern for each command:
 
 ```bash
 echo -e "\e[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "\e[1;33m  ▶ TUI (cloud): \e[1;32mwith-secrets cloud ./packages/tui/cloud.sh pnpm --filter @inventory/tui start\e[0m"
+echo -e "\e[1;33m  ▶ TUI (cloud): \e[1;32mwith-secrets cloud ./packages/tui/cloud.sh pnpm --filter @your-org/tui start\e[0m"
 echo -e "\e[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
 ```
 
@@ -57,7 +57,7 @@ One banner block per command. Group related variants:
 ```bash
 banner() {
   echo -e "\e[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo -e "\e[1;33m  ▶ TUI (cloud): \e[1;32mwith-secrets cloud ./packages/tui/cloud.sh pnpm --filter @inventory/tui start\e[0m"
+  echo -e "\e[1;33m  ▶ TUI (cloud): \e[1;32mwith-secrets cloud ./packages/tui/cloud.sh pnpm --filter @your-org/tui start\e[0m"
   echo -e "\e[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
   echo -e "\e[1;33m  ▶ Dev server: \e[1;32mpnpm dev\e[0m"
   echo -e "\e[1;36m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
