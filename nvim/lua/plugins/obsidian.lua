@@ -8,7 +8,7 @@ return {
     "ibhagwan/fzf-lua",
   },
   init = function()
-    local notes_path = vim.fn.expand("~/notes")
+    local notes_path = vim.fn.expand("~/projects/personal/notes")
     local daily_folder = "private/daily"
 
     local function is_in_notes()
@@ -272,7 +272,7 @@ return {
     workspaces = {
       {
         name = "notes",
-        path = "~/notes",
+        path = "~/projects/personal/notes",
       },
     },
     daily_notes = {
