@@ -49,9 +49,6 @@
       # For consumers that want to evaluate modules directly
       lib = {
         forAllSystems = forAllSystems;
-        mkOpencode = { version, hash }: final: prev: {
-          opencode = import ./overlays/opencode { pkgs = prev; inherit version hash; };
-        };
       };
     };
 }
