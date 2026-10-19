@@ -79,7 +79,8 @@ pkgs.stdenv.mkDerivation {
     runHook preInstall
     install -Dm755 bin/opencode $out/bin/opencode
     wrapProgram $out/bin/opencode \
-      --set OPENCODE_PTY_BIN ${opencode-pty}/bin/opencode-pty
+      --set OPENCODE_PTY_BIN ${opencode-pty}/bin/opencode-pty \
+      --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath [ pkgs.wayland ]}
     runHook postInstall
   '';
 
