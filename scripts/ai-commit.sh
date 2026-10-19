@@ -39,7 +39,7 @@ if ss -tlnH "sport = :${PROXY_PORT}" 2>/dev/null | grep -q .; then
 fi
 
 TERM_PROGRAM=Apple_Terminal gum spin --spinner dot --title "Generating..." -- \
-  bash -c "with-secrets ai opencode run --standalone --auto ${MODEL_ARG[*]:-} --format json 'Generate a single concise conventional commit message for this diff. Output ONLY the commit message, nothing else:' -f '$DIFF_FILE' 2>/dev/null > '$OUT_FILE'"
+  bash -c "with-secrets ai opencode run --auto ${MODEL_ARG[*]:-} --format json 'Generate a single concise conventional commit message for this diff. Output ONLY the commit message, nothing else:' -f '$DIFF_FILE' 2>/dev/null > '$OUT_FILE'"
 
 MSG=$(cat "$OUT_FILE" | grep '"type":"text"' | jq -r '.part.text' | tr '\n' ' ' | sed 's/[[:space:]]*$//')
 
