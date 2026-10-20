@@ -134,7 +134,6 @@ in
     vscode-langservers-extracted
     lua-language-server
     nixd
-    nls
     yaml-language-server
     nixfmt
     ruff
