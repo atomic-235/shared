@@ -1,13 +1,8 @@
--- Nickel (.ncl) support: treesitter highlight + LSP (nls).
--- nvim recognises .ncl as filetype "nickel"; nvim-treesitter ships the parser
--- entry pointing at nickel-lang/tree-sitter-nickel, so it only needs installing.
+-- Nickel (.ncl) support: LSP (nls) only.
+-- The tree-sitter grammar is provided by Nix in dotfiles/modules/packages.nix
+-- (tree-sitter-nickel -> nvim/site/parser/nickel.so), not installed at runtime.
+-- .ncl is already recognised as filetype "nickel" by Neovim.
 return {
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = { "nickel" },
-    },
-  },
   {
     "neovim/nvim-lspconfig",
     opts = {

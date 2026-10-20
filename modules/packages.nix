@@ -25,6 +25,18 @@ let
     };
   };
 
+  # Nickel grammar — highlights .ncl files.
+  tree-sitter-nickel = pkgs.tree-sitter.buildGrammar {
+    language = "nickel";
+    version = "2026-07-31";
+    src = pkgs.fetchFromGitHub {
+      owner = "nickel-lang";
+      repo = "tree-sitter-nickel";
+      rev = "fd65591d3c7812b0e3e733506f3f08a354a38ea6";
+      hash = "sha256-882e4ot/nEaRZ+YvVxn8IIfVlhmD44AnWgEhp5xfN6U=";
+    };
+  };
+
   # Prebuilt release binary (the Go module proxy fetch fails on some networks).
   gittop = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     pname = "gittop";
@@ -185,5 +197,8 @@ in
     "nvim/site/queries/clingo/indents.scm".source = "${tree-sitter-clingo}/queries/indents.scm";
     "nvim/site/queries/clingo/textobjects.scm".source = "${tree-sitter-clingo}/queries/textobjects.scm";
     "nvim/site/parser/cypher.so".source = "${tree-sitter-cypher}/parser";
+    "nvim/site/parser/nickel.so".source = "${tree-sitter-nickel}/parser";
+    "nvim/site/queries/nickel/highlights.scm".source = "${tree-sitter-nickel}/queries/highlights.scm";
+    "nvim/site/queries/nickel/injections.scm".source = "${tree-sitter-nickel}/queries/injections.scm";
   };
 }
