@@ -36,14 +36,6 @@ return {
         },
       },
       sources = {
-        -- nls (Nickel) reports every document symbol as SymbolKind.VARIABLE,
-        -- which is not in snacks' default kind filter. Include all kinds for
-        -- .ncl files, or the outline is always empty.
-        lsp_symbols = {
-          filter = {
-            nickel = true,
-          },
-        },
         files = {
           hidden = true,
           ignored = true,
