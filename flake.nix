@@ -62,6 +62,9 @@
         with-secrets = final: prev: {
           with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
         };
+        with-jail = final: prev: {
+          with-jail = import ./scripts/with-jail.nix { pkgs = prev; };
+        };
         opencode = final: prev: {
           opencode = import ./overlays/opencode { pkgs = prev; };
         };
@@ -91,6 +94,7 @@
         self.overlays.lazygit
         self.overlays.tmux
         self.overlays.with-secrets
+        self.overlays.with-jail
         self.overlays.opencode
         self.overlays.waybar
         self.overlays.xdg-desktop-portal
