@@ -54,6 +54,10 @@ return {
           mason = false,
           cmd = { "cypher-language-server", "--stdio" },
         },
+        svelte = {
+          mason = false,
+          cmd = { "svelteserver", "--stdio" },
+        },
       },
     },
   },

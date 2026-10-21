@@ -123,6 +123,7 @@ in
     lua-language-server
     nixd
     yaml-language-server
+    svelte-language-server
     nixfmt
     ruff
     python313Packages.debugpy
