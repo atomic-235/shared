@@ -17,6 +17,7 @@ permission:
   question: allow
   webfetch: deny
   websearch: deny
+  execute: deny
   ai_venice_web_search: deny
   ai_venice_chat: deny
   ai_venice_chat_with_character: deny
