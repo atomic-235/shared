@@ -1,0 +1,15 @@
+--- a/mode-tree.c
++++ b/mode-tree.c
+@@ -44,10 +44,10 @@
+ 	"#{p/#{mode_tree_key_width}:" \
+ 	"#{?#{!=:#{mode_tree_key},},(#{mode_tree_key}),}}" \
+ 	"#{R:#{?mode_tree_parent_last,    ," \
+-	"#[acs]x" MODE_TREE_PREFIX_STYLE "   }," \
++	"│" MODE_TREE_PREFIX_STYLE "   }," \
+ 	"#{mode_tree_repeat}}" \
+ 	"#{?mode_tree_branch," \
+-	"#[acs]#{?mode_tree_last,mq,tq}+" MODE_TREE_PREFIX_STYLE " ,}" \
++	"#{?mode_tree_last,└──,├──}" MODE_TREE_PREFIX_STYLE " ,}" \
+ 	"#{?mode_tree_has_children," \
+ 	"#{?mode_tree_expanded,#[fg=themered]-" MODE_TREE_PREFIX_STYLE " ," \
+ 	"#[fg=themegreen]+" MODE_TREE_PREFIX_STYLE " }," \
