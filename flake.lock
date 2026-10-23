@@ -113,11 +113,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792751834,
-        "narHash": "sha256-6bYgg2RjO7pCOZwyIuuJZQsVD9wBrMoUk4bwYqM4yws=",
+        "lastModified": 1792761226,
+        "narHash": "sha256-AqeGM0CGChK96KR9Mi678zk7tekhuACKfdFffLXLfu4=",
         "owner": "atomic-235",
         "repo": "venice-mcp-flake",
-        "rev": "2ca943c1f4aa95be8e34c224d88da471afeabeb2",
+        "rev": "9ead49ad67a96f024adff91103536d87616eca43",
         "type": "github"
       },
       "original": {
