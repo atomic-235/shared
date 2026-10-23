@@ -24,22 +24,6 @@ let
       hash = "sha256-kO6pryiKKCNxg7Gx1neUf4Zw+i7J6OsJkCTi0o9MZZw=";
     };
   };
-
-  # Prebuilt release binary (the Go module proxy fetch fails on some networks).
-  gittop = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
-    pname = "gittop";
-    version = "0.4.0";
-    src = pkgs.fetchurl {
-      url = "https://github.com/hjr265/gittop/releases/download/v${finalAttrs.version}/gittop_${finalAttrs.version}_linux_amd64.tar.gz";
-      hash = "sha256-FhGZMxgXh4mGVzEPEYqL00Z7utJ3pb8WlN2jXR5eKDs=";
-    };
-    sourceRoot = ".";
-    installPhase = ''
-      mkdir -p $out/bin
-      install -m755 gittop $out/bin/gittop
-    '';
-    meta.mainProgram = "gittop";
-  });
 in
 {
   home.packages = with pkgs; [

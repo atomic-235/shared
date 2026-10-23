@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "gittop-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792775753,
+        "narHash": "sha256-C0yr9iw7cQfAYWKnBCeqm3AH+VNpJYoPGBCMXFZQ9HI=",
+        "owner": "atomic-235",
+        "repo": "gittop-flake",
+        "rev": "5ba3ad7f627dfad079b5138c2f0786464cafefd8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "atomic-235",
+        "repo": "gittop-flake",
+        "type": "github"
+      }
+    },
     "lazygit-flake": {
       "inputs": {
         "nixpkgs": [
@@ -58,6 +78,7 @@
     },
     "root": {
       "inputs": {
+        "gittop-flake": "gittop-flake",
         "lazygit-flake": "lazygit-flake",
         "nixpkgs": "nixpkgs",
         "opencode-flake": "opencode-flake",

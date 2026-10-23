@@ -26,6 +26,10 @@
       url = "github:atomic-235/lazygit-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    gittop-flake = {
+      url = "github:atomic-235/gittop-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -37,6 +41,7 @@
       swls-flake,
       tmux-flake,
       lazygit-flake,
+      gittop-flake,
       ...
     }:
     let
@@ -90,6 +95,7 @@
         swls-flake.overlays.default
         tmux-flake.overlays.default
         lazygit-flake.overlays.default
+        gittop-flake.overlays.default
       ];
 
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (
