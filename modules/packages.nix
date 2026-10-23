@@ -89,6 +89,9 @@
     stylua
     prettier
 
+    # used by clingo.nvim for solver diagnostics
+    clingo
+
     # nvim dependencies
     sqlite
     sqlite.out
