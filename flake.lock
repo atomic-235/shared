@@ -49,8 +49,7 @@
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
-        "swls": "swls",
-        "venice-mcp-server": "venice-mcp-server"
+        "swls": "swls"
       }
     },
     "rust-overlay": {
@@ -108,22 +107,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "venice-mcp-server": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1792106953,
-        "narHash": "sha256-bOJlxPPikKlvrkXJYurKv9HCSfDMFe7mI3nkQJOjWXM=",
-        "owner": "veniceai",
-        "repo": "venice-mcp-server",
-        "rev": "e995a387650c63b60277970cb1dfe653ed7e2507",
-        "type": "github"
-      },
-      "original": {
-        "owner": "veniceai",
-        "repo": "venice-mcp-server",
         "type": "github"
       }
     }

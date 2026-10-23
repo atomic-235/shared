@@ -5,11 +5,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     swls.url = "github:SemanticWebLanguageServer/swls/b5c3a82f8cf84992f103c9e8b8b01a5303d6b92d";
-
-    venice-mcp-server = {
-      url = "github:veniceai/venice-mcp-server";
-      flake = false;
-    };
   };
 
   outputs =
@@ -17,7 +12,6 @@
       self,
       nixpkgs,
       swls,
-      venice-mcp-server,
       ...
     }:
     let
@@ -74,12 +68,6 @@
         wl-kbptr = final: prev: {
           wl-kbptr = import ./overlays/wl-kbptr { pkgs = prev; };
         };
-        venice-mcp-server = final: prev: {
-          venice-mcp-server = import ./overlays/venice-mcp-server {
-            inherit (prev) lib buildNpmPackage makeWrapper;
-            src = venice-mcp-server;
-          };
-        };
         swls = final: prev: {
           swls = swls.packages.${prev.stdenv.hostPlatform.system}.swls;
         };
@@ -95,7 +83,6 @@
         self.overlays.waybar
         self.overlays.xdg-desktop-portal
         self.overlays.wl-kbptr
-        self.overlays.venice-mcp-server
         self.overlays.swls
       ];
 
@@ -112,7 +99,6 @@
             swls
             xdg-desktop-portal
             wl-kbptr
-            venice-mcp-server
             ;
           default = self.packages.${system}.waybar;
         }
