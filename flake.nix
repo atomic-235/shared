@@ -78,15 +78,6 @@
         with-jail = final: prev: {
           with-jail = import ./scripts/with-jail.nix { pkgs = prev; };
         };
-        waybar = final: prev: {
-          waybar = import ./overlays/waybar { pkgs = prev; };
-        };
-        xdg-desktop-portal = final: prev: {
-          xdg-desktop-portal = import ./overlays/xdg-desktop-portal { pkgs = prev; };
-        };
-        wl-kbptr = final: prev: {
-          wl-kbptr = import ./overlays/wl-kbptr { pkgs = prev; };
-        };
         default = self.defaultOverlay;
       };
 
@@ -94,9 +85,6 @@
       defaultOverlay = nixpkgs.lib.composeManyExtensions [
         self.overlays.with-secrets
         self.overlays.with-jail
-        self.overlays.waybar
-        self.overlays.xdg-desktop-portal
-        self.overlays.wl-kbptr
         opencode-flake.overlays.default
         venice-mcp-flake.overlays.default
         swls-flake.overlays.default
