@@ -43,11 +43,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792750828,
-        "narHash": "sha256-h6u6nMVhpI63o/zrCWwvGOoBDBgRkClNf3EKEbY6xng=",
+        "lastModified": 1792760301,
+        "narHash": "sha256-X0GnJYKhBVqpjvSjbTRyOZ4N3NAbQinBtBIs58N12o8=",
         "owner": "atomic-235",
         "repo": "opencode-flake",
-        "rev": "1cc1c7b205d867532219c34eaf827bd98d597f36",
+        "rev": "e97816aba374256e6d1a5279954b2cffafba639a",
         "type": "github"
       },
       "original": {
