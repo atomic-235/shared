@@ -4,14 +4,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    swls.url = "github:SemanticWebLanguageServer/swls/b5c3a82f8cf84992f103c9e8b8b01a5303d6b92d";
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      swls,
       ...
     }:
     let
@@ -68,9 +66,6 @@
         wl-kbptr = final: prev: {
           wl-kbptr = import ./overlays/wl-kbptr { pkgs = prev; };
         };
-        swls = final: prev: {
-          swls = swls.packages.${prev.stdenv.hostPlatform.system}.swls;
-        };
         default = self.defaultOverlay;
       };
 
@@ -83,7 +78,6 @@
         self.overlays.waybar
         self.overlays.xdg-desktop-portal
         self.overlays.wl-kbptr
-        self.overlays.swls
       ];
 
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (
@@ -96,7 +90,6 @@
             waybar
             lazygit
             tmux
-            swls
             xdg-desktop-portal
             wl-kbptr
             ;
