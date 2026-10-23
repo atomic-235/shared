@@ -48,9 +48,6 @@
         lazygit = final: prev: {
           lazygit = import ./overlays/lazygit { pkgs = prev; };
         };
-        tmux = final: prev: {
-          tmux = import ./overlays/tmux { pkgs = prev; };
-        };
         with-secrets = final: prev: {
           with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
         };
@@ -72,7 +69,6 @@
       # Combined overlay for consumers: every package cache-built by shared.
       defaultOverlay = nixpkgs.lib.composeManyExtensions [
         self.overlays.lazygit
-        self.overlays.tmux
         self.overlays.with-secrets
         self.overlays.with-jail
         self.overlays.waybar
@@ -89,7 +85,6 @@
           inherit (pkgs)
             waybar
             lazygit
-            tmux
             xdg-desktop-portal
             wl-kbptr
             ;
