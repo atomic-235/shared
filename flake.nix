@@ -4,12 +4,39 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    # Release flakes: each upstream version is built and published by its own
+    # CI, consumed here as a store-path fetch.
+    opencode-flake = {
+      url = "github:atomic-235/opencode-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    venice-mcp-flake = {
+      url = "github:atomic-235/venice-mcp-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    swls-flake = {
+      url = "github:atomic-235/swls-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    tmux-flake = {
+      url = "github:atomic-235/tmux-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    lazygit-flake = {
+      url = "github:atomic-235/lazygit-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       self,
       nixpkgs,
+      opencode-flake,
+      venice-mcp-flake,
+      swls-flake,
+      tmux-flake,
+      lazygit-flake,
       ...
     }:
     let
@@ -45,9 +72,6 @@
       };
 
       overlays = {
-        lazygit = final: prev: {
-          lazygit = import ./overlays/lazygit { pkgs = prev; };
-        };
         with-secrets = final: prev: {
           with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
         };
@@ -68,12 +92,16 @@
 
       # Combined overlay for consumers: every package cache-built by shared.
       defaultOverlay = nixpkgs.lib.composeManyExtensions [
-        self.overlays.lazygit
         self.overlays.with-secrets
         self.overlays.with-jail
         self.overlays.waybar
         self.overlays.xdg-desktop-portal
         self.overlays.wl-kbptr
+        opencode-flake.overlays.default
+        venice-mcp-flake.overlays.default
+        swls-flake.overlays.default
+        tmux-flake.overlays.default
+        lazygit-flake.overlays.default
       ];
 
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (
@@ -84,7 +112,6 @@
         {
           inherit (pkgs)
             waybar
-            lazygit
             xdg-desktop-portal
             wl-kbptr
             ;
