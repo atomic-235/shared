@@ -84,6 +84,8 @@
         "opencode-flake": "opencode-flake",
         "swls-flake": "swls-flake",
         "tmux-flake": "tmux-flake",
+        "tree-sitter-clingo-flake": "tree-sitter-clingo-flake",
+        "tree-sitter-cypher-flake": "tree-sitter-cypher-flake",
         "venice-mcp-flake": "venice-mcp-flake"
       }
     },
@@ -124,6 +126,46 @@
       "original": {
         "owner": "atomic-235",
         "repo": "tmux-flake",
+        "type": "github"
+      }
+    },
+    "tree-sitter-clingo-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792776642,
+        "narHash": "sha256-61WEaevWC7K9zlLrke2ofPAqqii/cRFUW1pSAocV05s=",
+        "owner": "atomic-235",
+        "repo": "tree-sitter-clingo-flake",
+        "rev": "66f39b3992973a04d9110def845f1606a54c73d8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "atomic-235",
+        "repo": "tree-sitter-clingo-flake",
+        "type": "github"
+      }
+    },
+    "tree-sitter-cypher-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792776651,
+        "narHash": "sha256-RzT1W3vBE68L20FH16BWyyDb/W3cwEz9ESL8lTl8LEw=",
+        "owner": "atomic-235",
+        "repo": "tree-sitter-cypher-flake",
+        "rev": "0d8bdd1c2cab38941fe5b61a5ba2a5a0638e3d10",
+        "type": "github"
+      },
+      "original": {
+        "owner": "atomic-235",
+        "repo": "tree-sitter-cypher-flake",
         "type": "github"
       }
     },

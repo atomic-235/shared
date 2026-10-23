@@ -1,30 +1,4 @@
 { pkgs, ... }:
-
-let
-  tree-sitter-clingo = pkgs.tree-sitter.buildGrammar {
-    language = "clingo";
-    version = "2025-07-04";
-    src = pkgs.fetchFromGitHub {
-      owner = "potassco";
-      repo = "tree-sitter-clingo";
-      rev = "58e062c1c6c2ac0bad54fee054573c5a9e6dd759";
-      hash = "sha256-rygMKByGqO0P0ftNezCJxWkZJVIsZv9j91avaUWQ3Sk=";
-    };
-  };
-
-  # openCypher grammar — highlights .cypher files and Cypher injected into
-  # Python strings (see nvim after/queries/python/injections.scm).
-  tree-sitter-cypher = pkgs.tree-sitter.buildGrammar {
-    language = "cypher";
-    version = "2026-10-15";
-    src = pkgs.fetchFromGitHub {
-      owner = "simplificare-org";
-      repo = "tree-sitter-cypher";
-      rev = "775717a2de6ca76a5a75e8076b411dbc1ae4c281";
-      hash = "sha256-kO6pryiKKCNxg7Gx1neUf4Zw+i7J6OsJkCTi0o9MZZw=";
-    };
-  };
-in
 {
   home.packages = with pkgs; [
     # Editors
@@ -167,11 +141,11 @@ in
   # Placed in stdpath("data")/site — stable path, HM-managed symlinks to nix store
   # (cypher highlights live in the nvim config repo: queries/cypher/highlights.scm)
   xdg.dataFile = {
-    "nvim/site/parser/clingo.so".source = "${tree-sitter-clingo}/parser";
-    "nvim/site/queries/clingo/highlights.scm".source = "${tree-sitter-clingo}/queries/highlights.scm";
-    "nvim/site/queries/clingo/injections.scm".source = "${tree-sitter-clingo}/queries/injections.scm";
-    "nvim/site/queries/clingo/indents.scm".source = "${tree-sitter-clingo}/queries/indents.scm";
-    "nvim/site/queries/clingo/textobjects.scm".source = "${tree-sitter-clingo}/queries/textobjects.scm";
-    "nvim/site/parser/cypher.so".source = "${tree-sitter-cypher}/parser";
+    "nvim/site/parser/clingo.so".source = "${pkgs.tree-sitter-clingo}/parser";
+    "nvim/site/queries/clingo/highlights.scm".source = "${pkgs.tree-sitter-clingo}/queries/highlights.scm";
+    "nvim/site/queries/clingo/injections.scm".source = "${pkgs.tree-sitter-clingo}/queries/injections.scm";
+    "nvim/site/queries/clingo/indents.scm".source = "${pkgs.tree-sitter-clingo}/queries/indents.scm";
+    "nvim/site/queries/clingo/textobjects.scm".source = "${pkgs.tree-sitter-clingo}/queries/textobjects.scm";
+    "nvim/site/parser/cypher.so".source = "${pkgs.tree-sitter-cypher}/parser";
   };
 }

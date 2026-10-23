@@ -30,6 +30,14 @@
       url = "github:atomic-235/gittop-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    tree-sitter-clingo-flake = {
+      url = "github:atomic-235/tree-sitter-clingo-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    tree-sitter-cypher-flake = {
+      url = "github:atomic-235/tree-sitter-cypher-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -42,6 +50,8 @@
       tmux-flake,
       lazygit-flake,
       gittop-flake,
+      tree-sitter-clingo-flake,
+      tree-sitter-cypher-flake,
       ...
     }:
     let
@@ -96,6 +106,8 @@
         tmux-flake.overlays.default
         lazygit-flake.overlays.default
         gittop-flake.overlays.default
+        tree-sitter-clingo-flake.overlays.default
+        tree-sitter-cypher-flake.overlays.default
       ];
 
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (
