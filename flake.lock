@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792756696,
-        "narHash": "sha256-m+LFoPm6w01YMFxT0Dxsjx3ZqLb3b8v8DBqyNhzxT5w=",
+        "lastModified": 1792757098,
+        "narHash": "sha256-AU6gkgnhQdocmYLOVz5ov9882O/N4zsD2HGpnAHn8kk=",
         "owner": "atomic-235",
         "repo": "lazygit-flake",
-        "rev": "2f39742f2b86405ce4a4a86b763ef00f44a30c2f",
+        "rev": "4bbcb909ebb93fb1f02f1d1ce7f937b43d2e2810",
         "type": "github"
       },
       "original": {
