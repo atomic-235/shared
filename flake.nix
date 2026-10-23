@@ -65,9 +65,6 @@
         with-jail = final: prev: {
           with-jail = import ./scripts/with-jail.nix { pkgs = prev; };
         };
-        opencode = final: prev: {
-          opencode = import ./overlays/opencode { pkgs = prev; };
-        };
         waybar = final: prev: {
           waybar = import ./overlays/waybar { pkgs = prev; };
         };
@@ -95,7 +92,6 @@
         self.overlays.tmux
         self.overlays.with-secrets
         self.overlays.with-jail
-        self.overlays.opencode
         self.overlays.waybar
         self.overlays.xdg-desktop-portal
         self.overlays.wl-kbptr
@@ -110,7 +106,6 @@
         in
         {
           inherit (pkgs)
-            opencode
             waybar
             lazygit
             tmux
@@ -119,7 +114,7 @@
             wl-kbptr
             venice-mcp-server
             ;
-          default = self.packages.${system}.opencode;
+          default = self.packages.${system}.waybar;
         }
       );
 
