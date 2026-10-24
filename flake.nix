@@ -100,7 +100,9 @@
       defaultOverlay = nixpkgs.lib.composeManyExtensions [
         self.overlays.with-secrets
         self.overlays.with-jail
-        opencode-flake.overlays.default
+        # Temporarily use nixpkgs' opencode; the arx bundle hides host
+        # /nix/store and breaks MCPs and home-manager config symlinks.
+        # opencode-flake.overlays.default
         venice-mcp-flake.overlays.default
         swls-flake.overlays.default
         tmux-flake.overlays.default
