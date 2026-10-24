@@ -9,6 +9,8 @@
     "session.line.down": "ctrl+alt+e,super+j",
     "session.half.page.up": "ctrl+alt+u,ctrl+k",
     "session.half.page.down": "ctrl+alt+d,linefeed",
+    "session.tab.next": "ctrl+tab",
+    "session.tab.previous": "ctrl+shift+tab",
     "input.move.up": "up",
     "input.move.down": "down",
     "prompt.history.previous": "alt+up",
