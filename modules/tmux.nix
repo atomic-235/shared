@@ -21,8 +21,20 @@
       set -ag terminal-overrides ",xterm-256color:RGB"
       set -ag terminal-overrides ",*-ghostty:Tc"
 
-      # Use the terminal's palette instead of tmux 3.8's built-in themes
-      set -s theme terminal
+      # tmux 3.8 themes: force the dark variant and remap its palette to
+      # Tokyo Night, so every themed style (borders, copy-mode, popups,
+      # clock, scrollbars) uses Tokyo Night instead of the terminal palette.
+      set -s theme dark
+      set -s dark-theme-black "#1a1b26"
+      set -s dark-theme-white "#c0caf5"
+      set -s dark-theme-light-grey "#565f89"
+      set -s dark-theme-dark-grey "#292e42"
+      set -s dark-theme-green "#9ece6a"
+      set -s dark-theme-yellow "#e0af68"
+      set -s dark-theme-red "#f7768e"
+      set -s dark-theme-blue "#7aa2f7"
+      set -s dark-theme-cyan "#7dcfff"
+      set -s dark-theme-magenta "#bb9af7"
 
       # Enable image passthrough for yazi (Kitty graphics protocol)
       set -g allow-passthrough on
