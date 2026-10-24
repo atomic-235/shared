@@ -41,6 +41,11 @@
       # (bound to ctrl+tab / ctrl+shift+tab) can fire.
       set -g extended-keys always
       set -g extended-keys-format csi-u
+      # tmux re-encodes Ctrl+Shift+Tab as legacy BTab, which the TUI reads as
+      # plain Shift+Tab (agent cycling). Emit the csi-u sequence opencode
+      # binds to session.tab.previous. Ctrl+Tab forwards natively, no binding.
+      bind-key -n C-S-Tab send-keys -H 1b 5b 39 3b 36 75
+      bind-key -n C-BTab send-keys -H 1b 5b 39 3b 36 75
 
       # Enable image passthrough for yazi (Kitty graphics protocol)
       set -g allow-passthrough on
