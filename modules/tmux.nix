@@ -21,6 +21,9 @@
       set -ag terminal-overrides ",xterm-256color:RGB"
       set -ag terminal-overrides ",*-ghostty:Tc"
 
+      # Use the terminal's palette instead of tmux 3.8's built-in themes
+      set -s theme terminal
+
       # Enable image passthrough for yazi (Kitty graphics protocol)
       set -g allow-passthrough on
       set -ga update-environment TERM
