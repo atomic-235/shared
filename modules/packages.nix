@@ -58,6 +58,7 @@
     sops
     age
     age-plugin-yubikey
+    gitleaks
 
     # Backup
     restic
@@ -145,10 +146,13 @@
   # (cypher highlights live in the nvim config repo: queries/cypher/highlights.scm)
   xdg.dataFile = {
     "nvim/site/parser/clingo.so".source = "${pkgs.tree-sitter-clingo}/parser";
-    "nvim/site/queries/clingo/highlights.scm".source = "${pkgs.tree-sitter-clingo}/queries/highlights.scm";
-    "nvim/site/queries/clingo/injections.scm".source = "${pkgs.tree-sitter-clingo}/queries/injections.scm";
+    "nvim/site/queries/clingo/highlights.scm".source =
+      "${pkgs.tree-sitter-clingo}/queries/highlights.scm";
+    "nvim/site/queries/clingo/injections.scm".source =
+      "${pkgs.tree-sitter-clingo}/queries/injections.scm";
     "nvim/site/queries/clingo/indents.scm".source = "${pkgs.tree-sitter-clingo}/queries/indents.scm";
-    "nvim/site/queries/clingo/textobjects.scm".source = "${pkgs.tree-sitter-clingo}/queries/textobjects.scm";
+    "nvim/site/queries/clingo/textobjects.scm".source =
+      "${pkgs.tree-sitter-clingo}/queries/textobjects.scm";
     "nvim/site/parser/cypher.so".source = "${pkgs.tree-sitter-cypher}/parser";
   };
 }
