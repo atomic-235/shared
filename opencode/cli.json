@@ -33,6 +33,6 @@
   "animations": true,
   "tabs": {
     "layout": "horizontal",
-    "mode": "off"
+    "mode": "on"
   }
 }
