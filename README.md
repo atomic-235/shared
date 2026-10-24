@@ -22,7 +22,6 @@ attribute set:
 
 | Attribute | Source |
 |---|---|
-| `opencode` | `opencode-flake` |
 | `venice-mcp-server` | `venice-mcp-flake` |
 | `swls` | `swls-flake` |
 | `tmux` | `tmux-flake` |
