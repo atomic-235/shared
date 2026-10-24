@@ -21,15 +21,6 @@ fi
 DIFF_FILE=$(mktemp)
 git diff --cached > "$DIFF_FILE"
 
-# The ai group is also encrypted to a software age key so this can run without
-# a YubiKey touch. Fall back to the hardware key prompt when it is absent.
-SOFTWARE_KEY="${XDG_CONFIG_HOME:-$HOME/.config}/sops/age/ai.txt"
-if [ -f "$SOFTWARE_KEY" ]; then
-  export SOPS_AGE_KEY_FILE="$SOFTWARE_KEY"
-else
-  TERM_PROGRAM=Apple_Terminal gum confirm "Touch YubiKey to decrypt?" || exit 1
-fi
-
 OUT_FILE=$(mktemp)
 
 if [ -n "${AI_MODEL_FAST:-}" ]; then
