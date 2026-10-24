@@ -56,32 +56,11 @@
         "type": "github"
       }
     },
-    "opencode-flake": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1792760301,
-        "narHash": "sha256-X0GnJYKhBVqpjvSjbTRyOZ4N3NAbQinBtBIs58N12o8=",
-        "owner": "atomic-235",
-        "repo": "opencode-flake",
-        "rev": "e97816aba374256e6d1a5279954b2cffafba639a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "atomic-235",
-        "repo": "opencode-flake",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "gittop-flake": "gittop-flake",
         "lazygit-flake": "lazygit-flake",
         "nixpkgs": "nixpkgs",
-        "opencode-flake": "opencode-flake",
         "swls-flake": "swls-flake",
         "tmux-flake": "tmux-flake",
         "tree-sitter-clingo-flake": "tree-sitter-clingo-flake",

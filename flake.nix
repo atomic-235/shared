@@ -6,10 +6,6 @@
 
     # Release flakes: each upstream version is built and published by its own
     # CI, consumed here as a store-path fetch.
-    opencode-flake = {
-      url = "github:atomic-235/opencode-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     venice-mcp-flake = {
       url = "github:atomic-235/venice-mcp-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,7 +40,6 @@
     {
       self,
       nixpkgs,
-      opencode-flake,
       venice-mcp-flake,
       swls-flake,
       tmux-flake,
@@ -100,9 +95,6 @@
       defaultOverlay = nixpkgs.lib.composeManyExtensions [
         self.overlays.with-secrets
         self.overlays.with-jail
-        # Temporarily use nixpkgs' opencode; the arx bundle hides host
-        # /nix/store and breaks MCPs and home-manager config symlinks.
-        # opencode-flake.overlays.default
         venice-mcp-flake.overlays.default
         swls-flake.overlays.default
         tmux-flake.overlays.default
