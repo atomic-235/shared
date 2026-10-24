@@ -84,6 +84,10 @@
       # run in display-popup (fzf, sessionizer) don't sit on themedarkgrey.
       set -g popup-style "bg=themeblack,fg=themewhite"
 
+      # Session/window tree (choose-tree): same background as the terminal
+      # instead of the themedarkgrey tile.
+      set -g tree-mode-border-style "bg=themeblack,fg=themelightgrey"
+
       # Source project .tmux manually (prefix T). Never auto-source: a
       # foreign repo's .tmux would execute unsandboxed code server-side.
       bind-key T run-shell 'tmux source-file "#{pane_current_path}/.tmux"'
