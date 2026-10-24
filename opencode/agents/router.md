@@ -172,7 +172,7 @@ When multiple agents are equally good candidates:
 If the request contains multiple distinct questions or tasks:
 1. Decompose into sub-requests.
 2. For EACH sub-request, identify 1-3 agents.
-3. Dispatch agents for different sub-requests sequentially (all web research is rate-limited).
+3. Dispatch agents for different sub-requests sequentially.
 4. In synthesis, organize findings by sub-request.
 
 # Step 3: Select Agents + Model Variants
@@ -223,13 +223,13 @@ If the request doesn't clearly map to any agents:
 
 # Step 5: Dispatch Agents
 
-## Parallel vs Sequential
+## Sequential Dispatch
 
-**Always sequential.** Every web research method is rate-limited or single-threaded: `ai_venice_web_search` (shared rate limit), `webfetch` (per-domain rate limit), Playwright (single browser instance). Parallel agents will produce rate-limit errors or browser conflicts. Dispatch agents one at a time, wait for return, then dispatch next.
+Dispatch agents one at a time, wait for return, then dispatch next.
 
-- **Chains (one agent's output feeds the next) → sequential** as usual.
-- **Playwright browser tools → router-managed exclusive access.** Router grants browser access to ONE agent at a time in its agent prompt: "You have exclusive browser access" or "Do NOT use Playwright — use web_search/webfetch only."
-- **Web research fallback chain:** `ai_venice_web_search` (primary) → `webfetch` (if Venice rate-limited) → Playwright browser tools (if both fail, sequential-only). Pass this chain in each agent's agent prompt.
+- **Chains (one agent's output feeds the next) → sequential.**
+- **Playwright browser tools → router-managed exclusive access.** Router grants browser access to ONE agent at a time in its agent prompt: "You have exclusive browser access" or "Do NOT use Playwright — use `websearch`/`webfetch` only."
+- **Web research:** use the built-in `websearch` tool — OpenCode selects among multiple search providers (Exa, Firecrawl, Parallel, Tavily, TinyFish) and fails over automatically on rate limits. Fall back to `webfetch` only when `websearch` itself errors, and to Playwright browser tools last.
 
 ## Token Budget & Error Handling
 
