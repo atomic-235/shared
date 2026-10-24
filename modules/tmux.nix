@@ -36,6 +36,12 @@
       set -s dark-theme-cyan "#7dcfff"
       set -s dark-theme-magenta "#bb9af7"
 
+      # Report Ctrl+Tab / Ctrl+Shift+Tab as distinct keys instead of
+      # collapsing them to Tab, so opencode's session.tab.next/previous
+      # (bound to ctrl+tab / ctrl+shift+tab) can fire.
+      set -g extended-keys always
+      set -g extended-keys-format csi-u
+
       # Enable image passthrough for yazi (Kitty graphics protocol)
       set -g allow-passthrough on
       set -ga update-environment TERM
