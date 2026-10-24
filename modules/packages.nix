@@ -60,6 +60,10 @@
     age-plugin-yubikey
     gitleaks
 
+    # Git hook linters (see dotfiles .githooks/pre-commit)
+    shellcheck
+    actionlint
+
     # Backup
     restic
 
