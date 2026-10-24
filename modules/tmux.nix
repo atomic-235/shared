@@ -80,6 +80,10 @@
       # Popup border style (Tokyo Night)
       set -g popup-border-style "fg=#7aa2f7"
 
+      # Popup background follows the theme (themeblack = #1a1b26), so apps
+      # run in display-popup (fzf, sessionizer) don't sit on themedarkgrey.
+      set -g popup-style "bg=themeblack,fg=themewhite"
+
       # Source project .tmux manually (prefix T). Never auto-source: a
       # foreign repo's .tmux would execute unsandboxed code server-side.
       bind-key T run-shell 'tmux source-file "#{pane_current_path}/.tmux"'
