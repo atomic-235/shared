@@ -56,32 +56,11 @@
         "type": "github"
       }
     },
-    "privacy-filter-flake": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1793722394,
-        "narHash": "sha256-1a0Y51kjq1Vc51HkduMd+XNS9uIcPMf4M+HWQMKnIes=",
-        "owner": "atomic-235",
-        "repo": "privacy-filter-flake",
-        "rev": "d191d4c95c847649f71a0220481b0a8364bc96d0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "atomic-235",
-        "repo": "privacy-filter-flake",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "gittop-flake": "gittop-flake",
         "lazygit-flake": "lazygit-flake",
         "nixpkgs": "nixpkgs",
-        "privacy-filter-flake": "privacy-filter-flake",
         "swls-flake": "swls-flake",
         "tmux-flake": "tmux-flake",
         "tree-sitter-clingo-flake": "tree-sitter-clingo-flake",
