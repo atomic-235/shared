@@ -39,10 +39,63 @@ const STRUCTURAL_KEYS = new Set([
   "baseURL",
 ])
 
+const ENV_EXCLUDE = new Set([
+  "PWD",
+  "SECRETS_DIR",
+  "SSH_AUTH_SOCK",
+  "SSH_ASKPASS",
+  "GPG_TTY",
+  "GNUPGHOME",
+  "XDG_RUNTIME_DIR",
+  "HYPRLAND_INSTANCE_SIGNATURE",
+  "DBUS_SESSION_BUS_ADDRESS",
+  "STARSHIP_SESSION_KEY",
+  "OPENCODE_SESSION_ID",
+  "OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX",
+  "MANAGERPID",
+  "MANAGERPIDFDID",
+])
+const SECRET_NAME = /(TOKEN|KEY|SECRET|PASSWORD|PASSWD|PWD|API_KEY|APIKEY|AUTH|CREDENTIAL|DSN|WEBHOOK|PRIVATE)/i
+const ENV_VALUES = Object.entries(process.env)
+  .filter(
+    ([name, value]) =>
+      !!value && value.length >= 8 && SECRET_NAME.test(name) && !ENV_EXCLUDE.has(name),
+  )
+  .map(([, value]) => value)
+  .sort((a, b) => b.length - a.length)
+
 const cache = new Map<string, string>()
 let disabledUntil = 0
 
 const digest = (value: string) => createHash("sha1").update(value).digest("hex")
+
+const RULES: [string, RegExp][] = [
+  ["aws", /AKIA[0-9A-Z]{16}/g],
+  ["github", /gh[pousr]_[A-Za-z0-9]{36,}/g],
+  ["openai", /sk-(?:proj-)?[A-Za-z0-9_-]{20,}/g],
+  ["anthropic", /sk-ant-[A-Za-z0-9_-]{20,}/g],
+  ["slack", /xox[baprs]-[A-Za-z0-9-]{10,}/g],
+  ["stripe", /sk_live_[A-Za-z0-9]{20,}/g],
+  ["jwt", /eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g],
+  ["pem", /-----BEGIN [A-Z ]+PRIVATE KEY-----[\s\S]+?-----END [A-Z ]+PRIVATE KEY-----/g],
+  ["npm", /npm_[A-Za-z0-9]{30,}/g],
+  ["gitlab", /glpat-[A-Za-z0-9_-]{20,}/g],
+  ["discord", /[MN][A-Za-z\d]{23,}\.[\w-]{6}\.[\w-]{27,}/g],
+  ["telegram", /\d{8,10}:[A-Za-z0-9_-]{35}/g],
+  ["urlcreds", /:\/\/[^:\s/]+:[^@\s/]+@/g],
+  ["bearer", /bearer\s+[A-Za-z0-9._-]{16,}/gi],
+]
+
+function regexMask(value: string): string {
+  let out = value
+  for (const secret of ENV_VALUES) out = out.split(secret).join("[REDACTED:env]")
+  for (const [label, rule] of RULES) out = out.replace(rule, `[REDACTED:${label}]`)
+  out = out.replace(
+    /((?:password|passwd|pwd|secret|token|api[_-]?key)\s*[:=]\s*["'])([^"']{6,})(["'])/gi,
+    "$1[REDACTED:secret]$3",
+  )
+  return out
+}
 
 function collect(value: unknown, out: string[]): void {
   if (typeof value === "string") {
@@ -109,8 +162,9 @@ export default Plugin.define({
       collect(parsed, all)
       if (all.length === 0) return
 
-      const unique = [...new Set(all)]
-      const unseen = unique.filter((value) => !cache.has(digest(value)))
+      const raw = [...new Set(all)]
+      const pre = raw.map(regexMask)
+      const unseen = [...new Set(pre)].filter((value) => !cache.has(digest(value)))
       if (unseen.length > 0 && Date.now() >= disabledUntil) {
         const selected: string[] = []
         let total = 0
@@ -139,7 +193,9 @@ export default Plugin.define({
         }
       }
 
-      const map = new Map(unique.map((value) => [value, cache.get(digest(value)) ?? value]))
+      const map = new Map(
+        raw.map((value, index) => [value, cache.get(digest(pre[index])) ?? pre[index]]),
+      )
       const body = JSON.stringify(replace(parsed, map))
       const headers = new Headers(event.request.headers)
       headers.delete("content-length")
