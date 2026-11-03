@@ -20,26 +20,6 @@
         "type": "github"
       }
     },
-    "kiji-pii-flake": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1793724602,
-        "narHash": "sha256-ZRZYUN1Ug+Mb+UGT5D1xfgLIFYm9dpnv6elfTe7X7WA=",
-        "owner": "atomic-235",
-        "repo": "kiji-pii-flake",
-        "rev": "5549e1a35926108caff10029c2c44b15e4d182f3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "atomic-235",
-        "repo": "kiji-pii-flake",
-        "type": "github"
-      }
-    },
     "lazygit-flake": {
       "inputs": {
         "nixpkgs": [
@@ -79,7 +59,6 @@
     "root": {
       "inputs": {
         "gittop-flake": "gittop-flake",
-        "kiji-pii-flake": "kiji-pii-flake",
         "lazygit-flake": "lazygit-flake",
         "nixpkgs": "nixpkgs",
         "swls-flake": "swls-flake",

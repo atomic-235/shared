@@ -6,10 +6,6 @@
 
     # Release flakes: each upstream version is built and published by its own
     # CI, consumed here as a store-path fetch.
-    kiji-pii-flake = {
-      url = "github:atomic-235/kiji-pii-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     venice-mcp-flake = {
       url = "github:atomic-235/venice-mcp-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,7 +40,6 @@
     {
       self,
       nixpkgs,
-      kiji-pii-flake,
       venice-mcp-flake,
       swls-flake,
       tmux-flake,
@@ -78,7 +73,6 @@
         lazygit = import ./modules/lazygit.nix;
         lazysql = import ./modules/lazysql.nix;
         opencode = import ./modules/opencode.nix;
-        pii-filter = import ./modules/pii-filter.nix;
         bash = import ./modules/bash.nix;
         yazi = import ./modules/yazi.nix;
         delta = import ./modules/delta.nix;
@@ -101,7 +95,6 @@
       defaultOverlay = nixpkgs.lib.composeManyExtensions [
         self.overlays.with-secrets
         self.overlays.with-jail
-        kiji-pii-flake.overlays.default
         venice-mcp-flake.overlays.default
         swls-flake.overlays.default
         tmux-flake.overlays.default
