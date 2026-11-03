@@ -11,7 +11,7 @@ const TIMEOUT_MS = 20_000
 const MIN_LENGTH = 4
 const MAX_STRING = 20_000
 const MAX_BATCH_CHARS = 16_000
-const MAX_NEW_CHARS = 64_000
+const MAX_NEW_CHARS = 24_000
 const DISABLE_MS = 300_000
 const BINARY_KEYS = new Set(["data", "media", "base64", "image"])
 
