@@ -13,6 +13,31 @@ const MAX_BATCH_CHARS = 8_000
 const MAX_NEW_CHARS = 24_000
 const DISABLE_MS = 300_000
 const BINARY_KEYS = new Set(["data", "media", "base64", "image"])
+const STRUCTURAL_KEYS = new Set([
+  "model",
+  "modelID",
+  "providerID",
+  "provider",
+  "variant",
+  "agent",
+  "id",
+  "sessionID",
+  "messageID",
+  "callID",
+  "tool",
+  "toolName",
+  "name",
+  "role",
+  "type",
+  "mime",
+  "filename",
+  "filePath",
+  "path",
+  "directory",
+  "worktree",
+  "version",
+  "baseURL",
+])
 
 const cache = new Map<string, string>()
 let disabledUntil = 0
@@ -30,7 +55,7 @@ function collect(value: unknown, out: string[]): void {
   }
   if (value && typeof value === "object") {
     for (const [key, item] of Object.entries(value)) {
-      if (!BINARY_KEYS.has(key)) collect(item, out)
+      if (!BINARY_KEYS.has(key) && !STRUCTURAL_KEYS.has(key)) collect(item, out)
     }
   }
 }
@@ -40,7 +65,8 @@ function replace(value: unknown, map: Map<string, string>): unknown {
   if (Array.isArray(value)) return value.map((item) => replace(item, map))
   if (value && typeof value === "object") {
     for (const [key, item] of Object.entries(value)) {
-      if (!BINARY_KEYS.has(key)) (value as Record<string, unknown>)[key] = replace(item, map)
+      if (!BINARY_KEYS.has(key) && !STRUCTURAL_KEYS.has(key))
+        (value as Record<string, unknown>)[key] = replace(item, map)
     }
     return value
   }
