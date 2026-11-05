@@ -3,6 +3,9 @@
     "pyright": {
       "disabled": true
     },
+    "gopls": {
+      "disabled": true
+    },
     "basedpyright": {
       "command": ["basedpyright-langserver", "--stdio"],
       "extensions": [".py", ".pyi"]
@@ -14,6 +17,10 @@
     "ruff": {
       "command": ["ruff", "server"],
       "extensions": [".py", ".pyi"]
+    },
+    "go": {
+      "command": ["gopls"],
+      "extensions": [".go"]
     },
     "nixd": {
       "command": ["nixd"],
