@@ -15,10 +15,6 @@
       "command": ["ruff", "server"],
       "extensions": [".py", ".pyi"]
     },
-    "gopls": {
-      "command": ["gopls"],
-      "extensions": [".go"]
-    },
     "nixd": {
       "command": ["nixd"],
       "extensions": [".nix"],
