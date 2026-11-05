@@ -48,6 +48,7 @@
     # Development
     python3
     bun
+    go
     pkg-config
     openssl
     opentimestamps-client
@@ -85,6 +86,7 @@
     vscode-langservers-extracted
     lua-language-server
     nixd
+    gopls
     yaml-language-server
     svelte-language-server
     nixfmt
