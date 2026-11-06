@@ -88,6 +88,7 @@
     nixd
     gopls
     yaml-language-server
+    marksman
     svelte-language-server
     nixfmt
     ruff
