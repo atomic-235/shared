@@ -53,8 +53,8 @@ TERM_PROGRAM=Apple_Terminal gum spin --spinner dot --title "Generating..." -- \
 # surrounding blank lines. Flattening newlines here would merge the body into
 # the summary and break the template.
 MSG=$(jq -r 'select(.type == "text") | .part.text' "$OUT_FILE" |
-  sed 's/[[:space:]]*$//' |
-  awk 'NF { n = NR } { l[NR] = $0 } END { for (i = 1; i <= n; i++) print l[i] }')
+  sed -e 's/[[:space:]]*$//' -e '/^```/d' |
+  awk 'NF { if (!start) start = NR; n = NR } { l[NR] = $0 } END { for (i = start; i <= n; i++) print l[i] }')
 
 rm "$DIFF_FILE" "$OUT_FILE"
 
