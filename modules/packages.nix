@@ -124,6 +124,7 @@
       version = "0.1.0";
       src = ../scripts/ai-commit;
       vendorHash = null;
+      nativeBuildInputs = [ pkgs.makeWrapper ];
       postInstall = ''
         wrapProgram $out/bin/ai-commit \
           --prefix PATH : ${
