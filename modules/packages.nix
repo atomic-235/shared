@@ -123,7 +123,7 @@
       pname = "ai-commit";
       version = "0.1.0";
       src = ../scripts/ai-commit;
-      vendorHash = null;
+      vendorHash = "sha256-VXCsoGNmno0l1w1SJuoaFRAH8W2xVlWrffHM8A4chpo=";
       nativeBuildInputs = [ pkgs.makeWrapper ];
       postInstall = ''
         wrapProgram $out/bin/ai-commit \

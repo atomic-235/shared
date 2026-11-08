@@ -18,6 +18,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/spf13/pflag"
 )
 
 const prompt = `Generate a Conventional Commits message for this diff.
@@ -29,15 +31,25 @@ Template:
 Rules: type is one of feat, fix, refactor, perf, docs, test, build, ci, chore, style. Scope is optional. Summary is imperative mood, lower-case, no trailing period, at most 72 characters. Add a body only when the summary alone does not explain the change, and wrap it at 72 columns. Output ONLY the commit message, with no code fences.`
 
 func main() {
-	wantCommit := false
-	for _, arg := range os.Args[1:] {
-		switch arg {
-		case "--commit", "-c":
-			wantCommit = true
-		default:
-			fmt.Fprintf(os.Stderr, "ai-commit: unknown argument %q\n", arg)
-			os.Exit(2)
-		}
+	var (
+		wantCommit = pflag.BoolP("commit", "c", false, "commit the generated message instead of printing it")
+		wantHelp   = pflag.BoolP("help", "h", false, "show this help")
+	)
+	pflag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: ai-commit [flags]\n\n")
+		fmt.Fprintf(os.Stderr, "Generate a Conventional Commits message for staged changes.\n\nFlags:\n")
+		pflag.PrintDefaults()
+	}
+	pflag.Parse()
+
+	if *wantHelp {
+		pflag.Usage()
+		return
+	}
+	if pflag.NArg() > 0 {
+		fmt.Fprintf(os.Stderr, "ai-commit: unexpected argument %q\n", pflag.Arg(0))
+		pflag.Usage()
+		os.Exit(2)
 	}
 
 	diff, err := exec.Command("git", "diff", "--cached").Output()
@@ -72,7 +84,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if !wantCommit {
+	if !*wantCommit {
 		fmt.Println(msg)
 		return
 	}
