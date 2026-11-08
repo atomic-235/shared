@@ -137,19 +137,14 @@ type event struct {
 
 // parseEvents collects the text parts of the run and surfaces API errors.
 func parseEvents(raw string) (string, string) {
+	decoder := json.NewDecoder(strings.NewReader(raw))
 	var text strings.Builder
 	apiErr := ""
 
-	scanner := bufio.NewScanner(strings.NewReader(raw))
-	scanner.Buffer(make([]byte, 0, 64*1024), 16*1024*1024)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" {
-			continue
-		}
+	for {
 		var ev event
-		if err := json.Unmarshal([]byte(line), &ev); err != nil {
-			continue
+		if err := decoder.Decode(&ev); err != nil {
+			break
 		}
 		switch ev.Type {
 		case "text":
