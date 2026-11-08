@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"os/exec"
@@ -115,7 +116,7 @@ func generate(diffPath string) (string, error) {
 	err := cmd.Run()
 	stop()
 
-	msg, parseErr := parseEvents(stdout.String())
+	msg, parseErr := parseEvents(&stdout)
 	if parseErr != nil {
 		return "", parseErr
 	}
@@ -136,8 +137,8 @@ type event struct {
 }
 
 // parseEvents collects the text parts of the run and surfaces API errors.
-func parseEvents(raw string) (string, error) {
-	decoder := json.NewDecoder(strings.NewReader(raw))
+func parseEvents(r io.Reader) (string, error) {
+	decoder := json.NewDecoder(r)
 	var text strings.Builder
 	var apiErr error
 
