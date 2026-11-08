@@ -89,6 +89,11 @@
     gopls
     yaml-language-server
     marksman
+    rust-analyzer
+    cargo
+    nimlangserver
+    nim
+    nimble
     svelte-language-server
     nixfmt
     ruff
