@@ -115,9 +115,9 @@ func generate(diffPath string) (string, error) {
 	err := cmd.Run()
 	stop()
 
-	msg, apiErr := parseEvents(stdout.String())
-	if apiErr != "" {
-		return "", fmt.Errorf("%s", apiErr)
+	msg, parseErr := parseEvents(stdout.String())
+	if parseErr != nil {
+		return "", parseErr
 	}
 	if err != nil && msg == "" {
 		return "", fmt.Errorf("opencode run failed: %w", err)
@@ -136,10 +136,10 @@ type event struct {
 }
 
 // parseEvents collects the text parts of the run and surfaces API errors.
-func parseEvents(raw string) (string, string) {
+func parseEvents(raw string) (string, error) {
 	decoder := json.NewDecoder(strings.NewReader(raw))
 	var text strings.Builder
-	apiErr := ""
+	var apiErr error
 
 	for {
 		var ev event
@@ -150,7 +150,7 @@ func parseEvents(raw string) (string, string) {
 		case "text":
 			text.WriteString(ev.Part.Text)
 		case "error":
-			apiErr = ev.Error.Message
+			apiErr = fmt.Errorf("opencode: %s", ev.Error.Message)
 		}
 	}
 	return trimMessage(text.String()), apiErr
