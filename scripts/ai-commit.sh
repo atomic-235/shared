@@ -38,10 +38,23 @@ if ss -tlnH "sport = :${PROXY_PORT}" 2>/dev/null | grep -q .; then
   export NO_PROXY="127.0.0.1,localhost,::1"
 fi
 
-TERM_PROGRAM=Apple_Terminal gum spin --spinner dot --title "Generating..." -- \
-  bash -c "with-secrets ai opencode run --auto ${MODEL_ARG[*]:-} --format json 'Generate a single concise conventional commit message for this diff. Output ONLY the commit message, nothing else:' -f '$DIFF_FILE' 2>/dev/null > '$OUT_FILE'"
+PROMPT='Generate a Conventional Commits message for this diff.
+Template:
+<type>(<scope>): <summary>
+<blank line>
+<body explaining why the change was made, wrapped at 72 columns>
 
-MSG=$(cat "$OUT_FILE" | grep '"type":"text"' | jq -r '.part.text' | tr '\n' ' ' | sed 's/[[:space:]]*$//')
+Rules: type is one of feat, fix, refactor, perf, docs, test, build, ci, chore, style. Scope is optional. Summary is imperative mood, lower-case, no trailing period, at most 72 characters. Add a body only when the summary alone does not explain the change, and wrap it at 72 columns. Output ONLY the commit message, with no code fences.'
+
+TERM_PROGRAM=Apple_Terminal gum spin --spinner dot --title "Generating..." -- \
+  with-secrets ai opencode run --auto "${MODEL_ARG[@]}" --format json "$PROMPT" -f "$DIFF_FILE" >"$OUT_FILE" 2>/dev/null
+
+# Keep the blank line and body: join all text parts, trim trailing spaces and
+# surrounding blank lines. Flattening newlines here would merge the body into
+# the summary and break the template.
+MSG=$(jq -r 'select(.type == "text") | .part.text' "$OUT_FILE" |
+  sed 's/[[:space:]]*$//' |
+  awk 'NF { n = NR } { l[NR] = $0 } END { for (i = 1; i <= n; i++) print l[i] }')
 
 rm "$DIFF_FILE" "$OUT_FILE"
 
