@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   home.packages = with pkgs; [
     # Editors
@@ -119,15 +119,20 @@
     (pkgs.writers.writePython3Bin "tmux-stats" {
       flakeIgnore = [ "E203" ];
     } (builtins.readFile ../scripts/tmux-stats.py))
-    (pkgs.writeShellApplication {
-      name = "ai-commit";
-      runtimeInputs = [
-        pkgs.gum
-        pkgs.jq
-        pkgs.git
-        pkgs.iproute2
-      ];
-      text = builtins.readFile ../scripts/ai-commit.sh;
+    (pkgs.buildGoModule {
+      pname = "ai-commit";
+      version = "0.1.0";
+      src = ../scripts/ai-commit;
+      vendorHash = null;
+      postInstall = ''
+        wrapProgram $out/bin/ai-commit \
+          --prefix PATH : ${
+            lib.makeBinPath [
+              pkgs.gum
+              pkgs.git
+            ]
+          }
+      '';
     })
     (pkgs.writeShellApplication {
       name = "qr-secure";
