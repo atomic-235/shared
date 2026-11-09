@@ -102,18 +102,3 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
--- Quint (.qnt): start the language server on the filetype. nvim-lspconfig has
--- no Quint server definition, so follow the upstream instructions and call
--- vim.lsp.start directly. The binary comes from Nix (shared packages.nix).
-vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("quint_lsp", { clear = true }),
-  pattern = "quint",
-  callback = function(args)
-    local root = vim.fs.root(args.buf, { ".git" }) or vim.fs.dirname(vim.api.nvim_buf_get_name(args.buf))
-    vim.lsp.start({
-      name = "quint",
-      cmd = { "quint-language-server", "--stdio" },
-      root_dir = root,
-    })
-  end,
-})

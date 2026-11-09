@@ -1,7 +1,4 @@
 { pkgs, lib, ... }:
-let
-  quint-language-server = pkgs.callPackage ../packages/quint-language-server.nix { };
-in
 {
   home.packages = with pkgs; [
     # Editors
@@ -91,7 +88,6 @@ in
     nixd
     gopls
     yaml-language-server
-    quint-language-server
     marksman
     rust-analyzer
     cargo
