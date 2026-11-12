@@ -54,7 +54,6 @@
     opentimestamps-client
 
     # Secret management
-    gnupg
     git-crypt
     sops
     age
