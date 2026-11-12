@@ -115,26 +115,11 @@
     graphviz
 
     # Scripts
+    ai-commit
     tmux-sessionizer
     (pkgs.writers.writePython3Bin "tmux-stats" {
       flakeIgnore = [ "E203" ];
     } (builtins.readFile ../scripts/tmux-stats.py))
-    (pkgs.buildGoModule {
-      pname = "ai-commit";
-      version = "0.1.0";
-      src = ../scripts/ai-commit;
-      vendorHash = "sha256-VXCsoGNmno0l1w1SJuoaFRAH8W2xVlWrffHM8A4chpo=";
-      nativeBuildInputs = [ pkgs.makeWrapper ];
-      postInstall = ''
-        wrapProgram $out/bin/ai-commit \
-          --prefix PATH : ${
-            lib.makeBinPath [
-              pkgs.gum
-              pkgs.git
-            ]
-          }
-      '';
-    })
     (pkgs.writeShellApplication {
       name = "qr-secure";
       runtimeInputs = [ pkgs.cliqr ];

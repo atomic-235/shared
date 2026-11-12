@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "ai-commit-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794470295,
+        "narHash": "sha256-/diK5+VnHvcLB55DX2rCF+yBjjx9wM4ro3nd3+riQIA=",
+        "owner": "atomic-235",
+        "repo": "ai-commit-flake",
+        "rev": "30883caa2515476236942ec1b451e6710e24866b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "atomic-235",
+        "repo": "ai-commit-flake",
+        "type": "github"
+      }
+    },
     "gittop-flake": {
       "inputs": {
         "nixpkgs": [
@@ -58,6 +78,7 @@
     },
     "root": {
       "inputs": {
+        "ai-commit-flake": "ai-commit-flake",
         "gittop-flake": "gittop-flake",
         "lazygit-flake": "lazygit-flake",
         "nixpkgs": "nixpkgs",

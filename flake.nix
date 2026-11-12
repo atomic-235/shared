@@ -26,6 +26,10 @@
       url = "github:atomic-235/gittop-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ai-commit-flake = {
+      url = "github:atomic-235/ai-commit-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     tmux-sessionizer-flake = {
       url = "github:atomic-235/tmux-sessionizer-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -49,6 +53,7 @@
       tmux-flake,
       lazygit-flake,
       gittop-flake,
+      ai-commit-flake,
       tmux-sessionizer-flake,
       tree-sitter-clingo-flake,
       tree-sitter-cypher-flake,
@@ -105,6 +110,7 @@
         tmux-flake.overlays.default
         lazygit-flake.overlays.default
         gittop-flake.overlays.default
+        ai-commit-flake.overlays.default
         tmux-sessionizer-flake.overlays.default
         tree-sitter-clingo-flake.overlays.default
         tree-sitter-cypher-flake.overlays.default
