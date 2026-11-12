@@ -90,6 +90,7 @@
     yaml-language-server
     marksman
     rust-analyzer
+    rustc
     cargo
     nimlangserver
     nim
@@ -113,9 +114,15 @@
     graphviz
 
     # Scripts
-    (pkgs.writers.writePython3Bin "tmux-sessionizer" { } (
-      builtins.readFile ../scripts/tmux-sessionizer.py
-    ))
+    (pkgs.rustPlatform.buildRustPackage {
+      pname = "tmux-sessionizer";
+      version = "0.1.0";
+      src = lib.cleanSourceWith {
+        src = ../scripts/tmux-sessionizer;
+        filter = path: _: baseNameOf path != "target";
+      };
+      cargoLock.lockFile = ../scripts/tmux-sessionizer/Cargo.lock;
+    })
     (pkgs.writers.writePython3Bin "tmux-stats" {
       flakeIgnore = [ "E203" ];
     } (builtins.readFile ../scripts/tmux-stats.py))
@@ -158,6 +165,10 @@
     # with-jail — bubblewrap sandbox for running untrusted project code
     (import ../scripts/with-jail.nix { inherit pkgs; })
   ];
+
+  # rust-analyzer shells out to `rustc --print sysroot` and reads std sources
+  # from RUST_SRC_PATH; the nix sysroot only ships compiler sources.
+  home.sessionVariables.RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
   # tree-sitter-clingo + tree-sitter-cypher parsers for neovim
   # Placed in stdpath("data")/site — stable path, HM-managed symlinks to nix store
