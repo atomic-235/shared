@@ -116,11 +116,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794468236,
-        "narHash": "sha256-jMRezuFjvdWFZOuxKStkYTgwD/xko8ONkakPKQ68FL8=",
+        "lastModified": 1794469348,
+        "narHash": "sha256-0RKOnswbEQwgyCmadwWBHnD2DfzBCCSnjHORjHDaVOc=",
         "owner": "atomic-235",
         "repo": "tmux-sessionizer-flake",
-        "rev": "c18ea631e88ade9acd161635c8e3917471414d38",
+        "rev": "3e266b41fc65a31a9407c95320971924f5e0def8",
         "type": "github"
       },
       "original": {
