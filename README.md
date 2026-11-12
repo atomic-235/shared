@@ -13,7 +13,7 @@ GUI tools and secrets stay in the consumers.
 `shell-tools` (fzf/zoxide/direnv), `starship`, `termusic`, `tmux`, `yazi`.
 
 `modules/packages.nix` also installs the tree-sitter parsers used by Neovim and
-a few small CLI scripts (`gittop-all`, `with-secrets`, `with-jail`).
+a few small CLI scripts (`gittop-all`, `with-jail`).
 
 ## Overlays
 
@@ -28,7 +28,7 @@ attribute set:
 | `lazygit` | `lazygit-flake` |
 | `gittop` | `gittop-flake` |
 | `tree-sitter-clingo`, `tree-sitter-cypher` | grammar flakes |
-| `with-secrets`, `with-jail` | `scripts/` |
+| `with-jail` | `scripts/` |
 
 Patched nixpkgs packages (waybar, the xdg-desktop-portal family,
 amd-debug-tools) live in [cached](https://github.com/atomic-235/cached) instead,
@@ -68,6 +68,6 @@ out-of-store symlink so `:Lazy update` can rewrite `lazy-lock.json`.
 ```
 modules/     home-manager modules
 nvim/        LazyVim configuration (symlinked, not copied)
-scripts/     with-secrets, with-jail, helper scripts
+scripts/     with-jail, helper scripts
 flake.nix    module/overlay exports
 ```

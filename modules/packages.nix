@@ -137,9 +137,6 @@
       '';
     })
 
-    # with-secrets — sops exec-env wrapper for decrypting secrets at runtime
-    (import ../scripts/with-secrets.nix { inherit pkgs; })
-
     # with-jail — bubblewrap sandbox for running untrusted project code
     (import ../scripts/with-jail.nix { inherit pkgs; })
   ];

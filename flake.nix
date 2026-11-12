@@ -92,9 +92,6 @@
       };
 
       overlays = {
-        with-secrets = final: prev: {
-          with-secrets = import ./scripts/with-secrets.nix { pkgs = prev; };
-        };
         with-jail = final: prev: {
           with-jail = import ./scripts/with-jail.nix { pkgs = prev; };
         };
@@ -103,7 +100,6 @@
 
       # Combined overlay for consumers: every package cache-built by shared.
       defaultOverlay = nixpkgs.lib.composeManyExtensions [
-        self.overlays.with-secrets
         self.overlays.with-jail
         venice-mcp-flake.overlays.default
         swls-flake.overlays.default
