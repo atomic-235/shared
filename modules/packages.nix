@@ -114,15 +114,7 @@
     graphviz
 
     # Scripts
-    (pkgs.rustPlatform.buildRustPackage {
-      pname = "tmux-sessionizer";
-      version = "0.1.0";
-      src = lib.cleanSourceWith {
-        src = ../scripts/tmux-sessionizer;
-        filter = path: _: baseNameOf path != "target";
-      };
-      cargoLock.lockFile = ../scripts/tmux-sessionizer/Cargo.lock;
-    })
+    tmux-sessionizer
     (pkgs.writers.writePython3Bin "tmux-stats" {
       flakeIgnore = [ "E203" ];
     } (builtins.readFile ../scripts/tmux-stats.py))

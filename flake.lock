@@ -63,6 +63,7 @@
         "nixpkgs": "nixpkgs",
         "swls-flake": "swls-flake",
         "tmux-flake": "tmux-flake",
+        "tmux-sessionizer-flake": "tmux-sessionizer-flake",
         "tree-sitter-clingo-flake": "tree-sitter-clingo-flake",
         "tree-sitter-cypher-flake": "tree-sitter-cypher-flake",
         "venice-mcp-flake": "venice-mcp-flake"
@@ -105,6 +106,26 @@
       "original": {
         "owner": "atomic-235",
         "repo": "tmux-flake",
+        "type": "github"
+      }
+    },
+    "tmux-sessionizer-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794468236,
+        "narHash": "sha256-jMRezuFjvdWFZOuxKStkYTgwD/xko8ONkakPKQ68FL8=",
+        "owner": "atomic-235",
+        "repo": "tmux-sessionizer-flake",
+        "rev": "c18ea631e88ade9acd161635c8e3917471414d38",
+        "type": "github"
+      },
+      "original": {
+        "owner": "atomic-235",
+        "repo": "tmux-sessionizer-flake",
         "type": "github"
       }
     },
