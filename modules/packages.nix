@@ -92,6 +92,7 @@
     rust-analyzer
     rustc
     cargo
+    evcxr
     nimlangserver
     nim
     nimble
