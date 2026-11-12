@@ -78,7 +78,7 @@
       bind-key L switch-client -l
 
       # Quick window switching
-      bind-key O select-window -t ai
+      bind-key O run-shell "${pkgs.tmux-sessionizer}/bin/tmux-sessionizer --ai"
       bind-key N select-window -t nvim
       bind-key S select-window -t bash
       bind-key B select-window -t backend
