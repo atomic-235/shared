@@ -71,9 +71,6 @@
     cryptomator-cli
     rclone
 
-    # Media
-    termusic
-
     # File sharing
     cliqr
 
