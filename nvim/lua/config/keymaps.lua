@@ -32,6 +32,9 @@ end, { desc = "Insert Jupyter Cell" })
 -- Move right in insert mode (jump past auto-pairs)
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move right" })
 
+-- Enter accepts completion (blink.cmp), Shift+Enter inserts a newline
+vim.keymap.set("i", "<S-CR>", "<CR>", { desc = "New line" })
+
 -- Search marks (only letter marks, no automatic ones)
 local function open_marks_picker()
   local items = {}

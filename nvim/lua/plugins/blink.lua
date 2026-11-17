@@ -2,9 +2,8 @@ return {
   "saghen/blink.cmp",
   opts = {
     keymap = {
-      ["<CR>"] = false,
+      ["<CR>"] = { "accept", "fallback" },
       ["<Tab>"] = { "accept", "snippet_forward", "fallback" },
-      ["<S-CR>"] = { "accept", "snippet_forward", "fallback" },
     },
   },
 }
