@@ -3,7 +3,7 @@ return {
   opts = {
     keymap = {
       ["<CR>"] = { "accept", "fallback" },
-      ["<Tab>"] = { "accept", "snippet_forward", "fallback" },
+      ["<Tab>"] = { "snippet_forward", "fallback" },
     },
   },
 }
