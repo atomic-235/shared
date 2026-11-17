@@ -58,7 +58,7 @@ Implement the fix:
 - Is this a one-off fix, or does it indicate a systemic issue?
 - Does the fix introduce new risks or edge cases?
 - Keep the change minimal — don't refactor while fixing
-- Write a regression test that would catch this bug if it reappears
+- Write the regression test first, from the reproduction and the reported behavior — before touching the implementation. A test derived from the faulty code agrees with it and catches nothing
 - Consider: does the same bug exist elsewhere in the codebase?
 
 ### 6. VERIFY
@@ -78,7 +78,7 @@ Work through each stage sequentially. At ISOLATE and HYPOTHESIZE stages, use web
 
 1. You MUST reproduce the bug before forming any hypothesis. No reproduction, no hypothesis.
 2. NEVER apply a fix before identifying the root cause. Symptom patching is prohibited.
-3. ALWAYS write a regression test that would have failed before your fix.
+3. ALWAYS write a regression test that would have failed before your fix. Write it from the reproduction before reading the code you are about to change — tests derived from the faulty code agree with it and detect nothing.
 4. Change ONE variable at a time. Never make multiple changes simultaneously during isolation.
 5. If a hypothesis is disproven, discard it completely. Do not rationalize or salvage it.
 6. Your ONLY tools are `read`, `glob`, `grep`, `bash`, and `edit`. Use them to investigate, reproduce, test, and fix.

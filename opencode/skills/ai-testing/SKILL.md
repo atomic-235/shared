@@ -29,19 +29,21 @@ Determine whether the closed-loop problem applies and what level of verification
 
 The oracle problem: how do you know the test is correct? If AI wrote the test, what's the independent oracle? LLM-generated oracles "assume the current version is correct" — they cannot detect faults in the code they were trained on or generated alongside.
 
+**Ordering is the cheapest control available.** Generate tests from the requirement before any implementation exists, and never with the implementation in context. Faulty code in context propagates into the tests: they get written to agree with it, and the two then mask each other. Measured penalty for generating tests after faulty code instead of independently: fault detection falls from 25% to 14% (Konstantinou, Tambon, Papadakis, arXiv 2607.05139, 2026), and the effect persists under chain-of-thought and multi-step agentic workflows. If the implementation already exists, write a new test file from the requirement before reading or modifying it.
+
 Oracle strategies:
 - **Property-based testing**: Define relationships that should hold true (e.g., "sorted output has same elements as input") rather than exact expected values — provides oracle without hardcoding expected outputs
 - **Spec-derived oracles**: Derive test inputs from natural-language spec via category partitioning; score (input, output) pairs against the spec
-- **Metamorphic relations**: Define relations between follow-up test cases (e.g., "narrowed search produces fewer results") — works when exact output is hard to predict
+- **Metamorphic relations**: Define relations between follow-up test cases (e.g., "narrowed search produces fewer results") — works when exact output is hard to predict; a supplementary check, not a replacement for requirement-derived tests
 - **Human judgment**: For subjective/complex outputs — doesn't scale but sometimes the only honest oracle
-- **Reference implementations**: Compare AI output against a known-good reference
+- **Reference implementations**: Compare AI output against a known-good reference. A second implementation from a *different* model beats one from the same model, but it is not an oracle: same-model solutions are near-duplicates, and different models still fail on the same tests far more often than independence predicts — N-version ensembles realize only 0.43 (3-version) and 0.44 (5-version) of the reliability gain expected under independence, below 0.3 when built from one model, and distinct failure patterns often share a root cause (Nogueira, Pattabiraman, Vieira, Campos, arXiv 2607.02808, 2026). Treat cross-model disagreement as a bug-finder, never as a verdict; agreement is not proof
 - **TDD as oracle**: Write tests BEFORE asking AI to generate code — "you own the spec, the AI owns the implementation, so it can't validate its own bugs" (Kent Beck calls this a "superpower")
 - **Test-first prompting**: Validates AI's machine-driven intent aligns with requirements before implementation begins
 
 ### 3. VALIDATE TEST EFFECTIVENESS
 **IMPORTANT: You MUST use the `ai_venice_web_search` tool to research current mutation testing tools and practices. Do NOT rely on training data.**
 
-Coverage is a vanity metric. Mutation score measures actual bug-catching ability.
+Coverage is a vanity metric. Mutation score measures actual bug-catching ability, and mutation score plus static analysis are the primary quality signals — weight both above cross-model differential testing, which only tells you that two implementations disagree, not which one is wrong.
 
 Key findings:
 - 85% code coverage, all tests pass, but 57.3% mutation kill rate — 43% of bugs went undetected
@@ -149,3 +151,4 @@ Work through each stage sequentially. At stages 2-7, use `ai_venice_web_search` 
 8. Do NOT diagnose or fix bugs — that belongs to the `debugging` skill/agent. This agent prevents and detects, it doesn't fix production code.
 9. Do NOT evaluate code structure/design — that belongs to the `software-design` skill/agent. This agent evaluates test quality and verification strategy.
 10. When writing tests, you MUST follow existing test conventions in the codebase (framework, naming, structure). Read existing tests first with `read` and `glob`.
+11. You MUST derive tests from the requirement before the implementation is in context. If the implementation already exists, write the new test file first, then read it.
