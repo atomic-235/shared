@@ -45,6 +45,10 @@ return {
           },
         },
       },
+      -- Menu mode: minuet items come through blink on <A-y>, never
+      -- automatically. Ghost text (<A-]>) stays available for the other path.
+      blink = { enable_auto_complete = false },
+
       -- Manual only: at ~0.9s per suggestion, auto-triggering ghosts text that
       -- is already stale by the time it renders. Add filetypes here to enable.
       virtualtext = {

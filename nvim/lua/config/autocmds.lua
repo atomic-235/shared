@@ -84,8 +84,7 @@ vim.api.nvim_create_autocmd("RecordingLeave", {
 -- docstring blocks read as documentation (muted, like Comment, but bold).
 vim.api.nvim_set_hl(0, "@comment.documentation", { fg = "#636da6", italic = true, bold = true })
 
--- Force LSP document resync on :e reload for YAML files.
--- yaml-language-server caches parsed documents by version (YamlDocuments
+-- Force LSP document resync on :e reload for YAML files.-- yaml-language-server caches parsed documents by version (YamlDocuments
 -- class in yaml-documents.ts). Version only bumps on textDocument/didChange.
 -- On :e reload, TextChanged does not fire, so the server keeps stale symbols.
 -- Firing TextChanged manually makes neovim's LSP client detect the content
@@ -102,3 +101,14 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
+-- vim.snippet keeps a session pointing at an extmark that another plugin, an
+-- undo, or a buffer switch may have already cleared. Its CursorMovedI handler
+-- then dies with `snippet.lua:get_range: attempt to index a nil value`
+-- (neovim#27927, neovim#29525). Nothing in the config can patch that handler,
+-- but ending the session where stale ones come from stops it from firing.
+vim.api.nvim_create_autocmd({ "InsertLeave", "BufLeave" }, {
+  group = vim.api.nvim_create_augroup("snippet_session_guard", { clear = true }),
+  callback = function()
+    pcall(vim.snippet.stop)
+  end,
+})
