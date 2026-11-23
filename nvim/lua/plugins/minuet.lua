@@ -1,26 +1,32 @@
--- Inline AI completion via Venice.
+-- Inline AI completion via any OpenAI-compatible chat endpoint.
+--
+-- The endpoint and key come from OPENAI_BASE_URL / OPENAI_API_KEY (see
+-- config/minuet.lua): under `with-nono ai` the proxy exports both, portable
+-- sets them in local.nix, and with either missing the plugin never loads.
 --
 -- Venice has no FIM endpoint (/v1/completions and /v1/fim/completions both
 -- 404), so this uses the chat provider with minuet's completion-tuned prompt.
--- Launch nvim as `with-nono ai nvim` so the proxy can inject the key; the
--- env var is a phantom placeholder and auth happens at 127.0.0.1:20174.
---
--- Two settings are load-bearing, both measured:
+-- The two Venice body parameters are load-bearing and only sent to Venice:
 --   * reasoning.enabled = false -> deepseek defaults to effort "high", which
 --     burns the whole max_tokens budget on thinking and returns empty content
 --   * include_venice_system_prompt = false -> otherwise ~1700 prompt tokens
 --     of Venice boilerplate ride along on every keystroke request
+local minuet = require("config.minuet")
+
+local optional = {
+  max_tokens = 128,
+  temperature = 0.2,
+}
+if minuet.is_venice then
+  optional.reasoning = { enabled = false }
+  optional.venice_parameters = { include_venice_system_prompt = false }
+end
+
 return {
   "milanglacier/minuet-ai.nvim",
   event = "InsertEnter",
+  enabled = minuet.enabled(),
   config = function()
-    -- Outside the proxy there is no key and no CA, so minuet would only 401.
-    -- Stay silent instead of shouting on every start.
-    if not vim.env.VENICE_API_KEY then
-      vim.notify("minuet: no VENICE_API_KEY (run nvim via `with-nono ai nvim`)", vim.log.levels.DEBUG)
-      return
-    end
-
     require("minuet").setup({
       provider = "openai_compatible",
       request_timeout = 3,
@@ -32,17 +38,12 @@ return {
       provider_options = {
         openai_compatible = {
           -- name of the env var, not the key. Phantom under with-nono.
-          api_key = "VENICE_API_KEY",
-          end_point = "https://api.venice.ai/api/v1/chat/completions",
-          model = "deepseek-v4-1-flash-1017-uncensored",
-          name = "Venice",
+          api_key = minuet.key_env,
+          end_point = minuet.end_point,
+          model = minuet.model,
+          name = minuet.is_venice and "Venice" or "OpenAI",
           stream = true,
-          optional = {
-            max_tokens = 128,
-            temperature = 0.2,
-            reasoning = { enabled = false },
-            venice_parameters = { include_venice_system_prompt = false },
-          },
+          optional = optional,
         },
       },
       -- Menu mode: minuet items come through blink on <A-y>, never
