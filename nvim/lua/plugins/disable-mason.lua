@@ -62,6 +62,10 @@ return {
           mason = false,
           cmd = { "svelteserver", "--stdio" },
         },
+        vtsls = {
+          mason = false,
+          cmd = { "vtsls", "--stdio" },
+        },
       },
     },
   },

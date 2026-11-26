@@ -93,6 +93,7 @@
     nim
     nimble
     svelte-language-server
+    vtsls
     nixfmt
     ruff
     python313Packages.debugpy
