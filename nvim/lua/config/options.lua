@@ -53,4 +53,11 @@ if vim.uv.fs_stat(sqlite_lib) then
   vim.g.sqlite_clib_path = sqlite_lib
 end
 
+-- tree-sitter compiles parsers with `cc` from PATH, but ~/.local/bin/cc is an
+-- rclone crypt helper, not a compiler. Point the build at gcc unless CC is
+-- already set, otherwise every parser install fails on that binary.
+if vim.env.CC == nil and vim.fn.executable("gcc") == 1 then
+  vim.env.CC = "gcc"
+end
+
 
